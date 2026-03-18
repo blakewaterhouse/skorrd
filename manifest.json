@@ -2,7 +2,7 @@
   "name": "Skorrd",
   "short_name": "Skorrd",
   "description": "Last-minute appointments, better prices",
-  "start_url": "./skorrd-landing.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
@@ -33,7 +33,7 @@
     {
       "name": "Browse slots",
       "short_name": "Browse",
-      "url": "./skorrd-landing.html",
+      "url": "./",
       "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     },
     {

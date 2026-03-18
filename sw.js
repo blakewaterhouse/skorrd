@@ -1,6 +1,6 @@
 const CACHE = 'skorrd-v1'
 const PRECACHE = [
-  './skorrd-landing.html',
+  './',
   './skorrd-business.html',
   './manifest.json',
   './icons/icon-192.png',
