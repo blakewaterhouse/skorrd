@@ -691,7 +691,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
             <div class="sb-user-name" id="sb-user-name">Owner</div>
             <div class="sb-user-role">Business owner</div>
           </div>
-          <a href="skorrd-app.html" title="Browse customer app" style="color:rgba(255,255,255,.35);font-size:16px;padding:4px;transition:color .2s;text-decoration:none" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.35)'">🛍</a>
+          <a href="skorrd-landing.html" title="Browse customer app" style="color:rgba(255,255,255,.35);font-size:16px;padding:4px;transition:color .2s;text-decoration:none" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.35)'">🛍</a>
           <button class="sb-logout" onclick="logout()" title="Log out">↩</button>
         </div>
       </div>
@@ -1412,6 +1412,7 @@ async function loadSlots() {
     time:   new Date(s.appointment_at),
     status: s.status,
     notes:  s.notes,
+    dur:    s.duration_mins || 60,
     bookedBy: null, // would come from bookings join — future enhancement
   }))
 }
@@ -1543,7 +1544,7 @@ function renderSlotsList(filter) {
             <div class="si-svc">${s.svc}</div>
             <div class="si-meta">
               <span>📅 ${fmtFull(s.time)}</span>
-              <span>⏱ 60 min</span>
+              <span>⏱ ${s.dur} min</span>
               ${s.bookedBy ? `<span>👤 ${s.bookedBy}</span>` : ''}
               ${s.notes ? `<span>📝 ${s.notes}</span>` : ''}
             </div>
@@ -1632,11 +1633,11 @@ function updatePreview() {
   document.getElementById('preview-body').innerHTML = `
     <div class="pc-stripe" style="background:${color}"></div>
     <div class="pc-cat">${cat ? `<span style="font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 10px;border-radius:50px;background:${color}">${cat}</span>` : ''}</div>
-    <div class="pc-svc">${svc || 'Service name'}</div>
-    <div class="pc-biz">at ${BIZ?.name || 'Your business'}</div>
+    <div class="pc-svc">${esc(svc) || 'Service name'}</div>
+    <div class="pc-biz">at ${esc(BIZ?.name) || 'Your business'}</div>
     <div class="pc-meta">
       <span class="pc-meta-item">📅 ${timeStr}</span>
-      ${notes ? `<span class="pc-meta-item">📝 ${notes.slice(0,40)}${notes.length>40?'...':''}</span>` : ''}
+      ${notes ? `<span class="pc-meta-item">📝 ${esc(notes).slice(0,40)}${notes.length>40?'...':''}</span>` : ''}
     </div>
     <div class="pc-pricing">
       <div>
@@ -1658,7 +1659,7 @@ function toggleRepeatEnd() {
     document.getElementById('f-repeat-end').value = def.toISOString().split('T')[0]
   }
   updateRepeatPreview()
-  document.getElementById('f-repeat-end').addEventListener('change', updateRepeatPreview)
+  document.getElementById('f-repeat-end').onchange = updateRepeatPreview
 }
 
 function updateRepeatPreview() {
@@ -1847,6 +1848,7 @@ document.getElementById('modal-overlay').addEventListener('click', e => { if(e.t
 // ════════════════════════════════════════════
 // UTILS
 // ════════════════════════════════════════════
+function esc(s){ const d=document.createElement('div');d.textContent=s??'';return d.innerHTML }
 function fmt(d){ return d.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit',hour12:true}) }
 function fmtFull(d){
   const today = new Date(); const tom = new Date(today); tom.setDate(today.getDate()+1)
@@ -2002,7 +2004,7 @@ function updateProfilePreview() {
 
   document.getElementById('pp-name').textContent = name
   document.getElementById('pp-cat').textContent  = cat
-  document.getElementById('pp-address').innerHTML = `<span>📍</span><span>${addr}</span>`
+  document.getElementById('pp-address').innerHTML = `<span>📍</span><span>${esc(addr)}</span>`
 }
 
 async function saveProfile() {
