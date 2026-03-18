@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://js.stripe.com/v3/"></script>
 <style>
 :root{
   --bg:#fffbf5;--ink:#1a1207;--muted:#8a7a65;
@@ -149,9 +150,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .fee-row .fl{color:var(--muted);font-weight:600}.fee-row .fr{font-family:'Nunito',sans-serif;font-weight:800}
 .fee-row.total{border-top:1.5px solid var(--border);margin-top:6px;padding-top:10px}
 .fee-row.total .fr{color:var(--coral);font-size:16px}
-.card-field{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rsm);padding:13px 14px;margin-bottom:14px;font-size:14px;color:#c4b9aa;transition:border-color .2s;cursor:text}
-.card-field.active{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,107,74,.1);color:var(--ink)}
-.card-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+#stripe-card-element{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rsm);padding:13px 14px;margin-bottom:14px;transition:border-color .2s}
+#stripe-card-element.StripeElement--focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,107,74,.1)}
+#stripe-card-element.StripeElement--invalid{border-color:#e53e3e}
+.stripe-error{color:#c0392b;font-size:12px;font-weight:600;margin-bottom:12px;display:none}
+.stripe-error.show{display:block}
 .book-btn{width:100%;background:var(--coral);color:#fff;border:none;padding:15px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,107,74,.3);transition:transform .15s}
 .book-btn:hover{transform:translateY(-2px)}.book-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .panel-note{margin-top:12px;text-align:center;font-size:11px;color:var(--muted);font-weight:600;line-height:1.5}
@@ -1005,11 +1008,8 @@ function renderSlotDetail(s) {
       <div class="fee-row"><span class="fl">Service (pay at appointment)</span><span class="fr">$${s.disc}</span></div>
       <div class="fee-row total"><span class="fl">Hold fee (pay now)</span><span class="fr">$${BOOKING_FEE}</span></div>
     </div>
-    <div class="card-field" id="card-num" onclick="focusCard('card-num')" style="display:flex;justify-content:space-between;align-items:center"><span id="card-num-txt">Card number</span><span style="font-size:18px;opacity:.4">💳</span></div>
-    <div class="card-row-2">
-      <div class="card-field" id="card-exp" onclick="focusCard('card-exp')"><span id="card-exp-txt">MM / YY</span></div>
-      <div class="card-field" id="card-cvc" onclick="focusCard('card-cvc')"><span id="card-cvc-txt">CVC</span></div>
-    </div>
+    <div id="stripe-card-element"></div>
+    <div class="stripe-error" id="stripe-error"></div>
     <button class="book-btn" id="pay-btn" onclick="handlePay()">Pay $${BOOKING_FEE} &amp; confirm booking</button>
     <p class="panel-note">🔒 Secure payment via Stripe<br>Hold fee secures your slot. Non-refundable on cancellation.</p>` : `
     <div class="panel-title">Ready to book?</div>
@@ -1053,52 +1053,105 @@ function renderSlotDetail(s) {
       <div class="book-panel">${bookingPanel}</div>
     </div>`
 
-  if (state.user) setupCardInput()
+  if (state.user) setupStripeCard()
 }
 
-function setupCardInput() {
-  let cv='',ev='',ccv=''
-  function upd(id,ph,v){const e=document.getElementById(id+'-txt');if(e)e.textContent=v||ph}
-  function handler(e) {
-    if(state.screen!=='slot'){document.removeEventListener('keydown',handler);return}
-    const a=state.focusedCard; if(!a) return
-    if(e.key==='Backspace'){
-      if(a==='card-num'){cv=cv.slice(0,-1);upd('card-num','Card number',cv||null)}
-      if(a==='card-exp'){ev=ev.slice(0,-1);upd('card-exp','MM / YY',ev||null)}
-      if(a==='card-cvc'){ccv=ccv.slice(0,-1);upd('card-cvc','CVC',ccv||null)}
-    } else if(e.key.length===1&&/[\d\/]/.test(e.key)){
-      if(a==='card-num'&&cv.replace(/\s/g,'').length<16){cv+=e.key;upd('card-num','Card number',cv.replace(/\s/g,'').replace(/(.{4})/g,'$1 ').trim());if(cv.replace(/\s/g,'').length>=16)focusCard('card-exp')}
-      if(a==='card-exp'&&ev.replace('/','').length<4){ev+=e.key;let f=ev.replace(/\//g,'');if(f.length>2)f=f.slice(0,2)+'/'+f.slice(2);upd('card-exp','MM / YY',f);if(ev.replace('/','').length>=4)focusCard('card-cvc')}
-      if(a==='card-cvc'&&ccv.length<3){ccv+=e.key;upd('card-cvc','CVC',ccv)}
+const STRIPE_PK = 'pk_test_51TA16GEjUdtxg8QL98jcBaovfsvE494iSxBnIkGR9utfZBmlhfjmKBWj5hc4B65W9WdRzWhlLk867uRqA8J6s6v30083gdnRFR'
+let stripeInstance = null
+let stripeCardElement = null
+
+function setupStripeCard() {
+  if (!window.Stripe) { console.error('Stripe.js not loaded'); return }
+  if (!stripeInstance) stripeInstance = Stripe(STRIPE_PK)
+  const elements = stripeInstance.elements()
+  stripeCardElement = elements.create('card', {
+    style: {
+      base: {
+        fontFamily: "'Nunito Sans', sans-serif",
+        fontSize: '14px',
+        color: '#1a1207',
+        '::placeholder': { color: '#c4b9aa' },
+      },
+      invalid: { color: '#c0392b' },
     }
-  }
-  document.addEventListener('keydown',handler)
+  })
+  const container = document.getElementById('stripe-card-element')
+  if (container) stripeCardElement.mount('#stripe-card-element')
 }
-function focusCard(id){document.querySelectorAll('.card-field').forEach(f=>f.classList.remove('active'));const el=document.getElementById(id);if(el)el.classList.add('active');state.focusedCard=id}
 
 async function handlePay() {
-  const btn=document.getElementById('pay-btn'); if(!btn) return
-  const s=state.currentSlot; if(!s) return
-  btn.disabled=true; btn.textContent='Processing...'
-  showProcessing('Confirming booking...')
+  const btn = document.getElementById('pay-btn'); if (!btn) return
+  const s = state.currentSlot; if (!s) return
+  const errEl = document.getElementById('stripe-error')
+
+  if (!stripeInstance || !stripeCardElement) {
+    showToast('Payment not ready — please refresh','err'); return
+  }
+
+  btn.disabled = true; btn.textContent = 'Processing...'
+  if (errEl) { errEl.textContent = ''; errEl.classList.remove('show') }
+
   try {
-    const sessionResult=await Promise.race([sb.auth.getSession(),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),5000))])
-    let token=sessionResult?.data?.session?.access_token
+    // Get auth token
+    const sessionResult = await Promise.race([sb.auth.getSession(), new Promise((_,r) => setTimeout(() => r(new Error('timeout')), 5000))])
+    let token = sessionResult?.data?.session?.access_token
     if (!token) {
-      // Try refreshing the session
       const { data: refreshed } = await sb.auth.refreshSession()
       token = refreshed?.session?.access_token
     }
-    if (!token) { showToast('Please log in to book','err'); btn.disabled=false; btn.textContent=`Pay $${BOOKING_FEE} & confirm booking`; go('login',{mode:'login'}); return }
-    const res=await fetch(`${SUPABASE_URL}/functions/v1/create-booking`,{
-      method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({slot_id:s.id,hold_fee:BOOKING_FEE})
+    if (!token) {
+      showToast('Please log in to book','err')
+      btn.disabled = false; btn.textContent = `Pay $${BOOKING_FEE} & confirm booking`
+      go('login', {mode:'login'}); return
+    }
+
+    // Step 1: Create PaymentIntent on server
+    showProcessing('Preparing payment...')
+    const intentRes = await fetch(`${SUPABASE_URL}/functions/v1/create-payment-intent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ slot_id: s.id })
     })
-    const result=await res.json()
+    const intentData = await intentRes.json()
     hideProcessing()
-    if (!res.ok){showToast(result.error||'Booking failed — please try again','err');btn.disabled=false;btn.textContent=`Pay $${BOOKING_FEE} & confirm booking`;return}
-    await loadBookings(); await loadSlots(); renderCards(); renderMap(); updateNav(); go('confirm',{slot:s})
-  } catch(e){hideProcessing();showToast('Network error — please try again','err');btn.disabled=false;btn.textContent=`Pay $${BOOKING_FEE} & confirm booking`}
+    if (!intentRes.ok) {
+      if (errEl) { errEl.textContent = intentData.error || 'Could not start payment'; errEl.classList.add('show') }
+      btn.disabled = false; btn.textContent = `Pay $${BOOKING_FEE} & confirm booking`; return
+    }
+
+    // Step 2: Confirm card payment with Stripe.js
+    showProcessing('Confirming payment...')
+    const { paymentIntent, error: stripeError } = await stripeInstance.confirmCardPayment(
+      intentData.client_secret,
+      { payment_method: { card: stripeCardElement } }
+    )
+    hideProcessing()
+    if (stripeError) {
+      if (errEl) { errEl.textContent = stripeError.message; errEl.classList.add('show') }
+      btn.disabled = false; btn.textContent = `Pay $${BOOKING_FEE} & confirm booking`; return
+    }
+
+    // Step 3: Confirm booking on server now that payment succeeded
+    showProcessing('Confirming booking...')
+    const confirmRes = await fetch(`${SUPABASE_URL}/functions/v1/confirm-booking`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ payment_intent_id: paymentIntent.id })
+    })
+    const confirmData = await confirmRes.json()
+    hideProcessing()
+    if (!confirmRes.ok) {
+      showToast(confirmData.error || 'Booking failed — please contact support', 'err')
+      btn.disabled = false; btn.textContent = `Pay $${BOOKING_FEE} & confirm booking`; return
+    }
+
+    await loadBookings(); await loadSlots(); renderCards(); renderMap(); updateNav()
+    go('confirm', { slot: s })
+  } catch(e) {
+    hideProcessing()
+    showToast('Network error — please try again', 'err')
+    btn.disabled = false; btn.textContent = `Pay $${BOOKING_FEE} & confirm booking`
+  }
 }
 
 function renderConfirm(s) {
