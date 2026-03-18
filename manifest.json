@@ -1,0 +1,46 @@
+{
+  "name": "Skorrd",
+  "short_name": "Skorrd",
+  "description": "Last-minute appointments, better prices",
+  "start_url": "./skorrd-landing.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fffbf5",
+  "theme_color": "#ff6b4a",
+  "categories": ["lifestyle", "shopping"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse slots",
+      "short_name": "Browse",
+      "url": "./skorrd-landing.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Business dashboard",
+      "short_name": "Dashboard",
+      "url": "./skorrd-business.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
