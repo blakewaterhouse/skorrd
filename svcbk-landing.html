@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0iI0ZGNkI0QSIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMyIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLCBBcmlhbCIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlM8L3RleHQ+Cjwvc3ZnPg==">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skorrd — Last-minute appointments, better prices</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#fffbf5;--ink:#1a1207;--muted:#8a7a65;
+  --coral:#ff6b4a;--yellow:#ffd84d;--sky:#c8eaff;
+  --mint:#b8f0d8;--lavender:#e0d4ff;--peach:#ffe4d4;
+  --border:#ede8df;--r:18px;--rsm:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;overflow-x:hidden;min-height:100vh}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content:space-between;align-items:center;padding:14px 36px;background:rgba(255,251,245,.94);backdrop-filter:blur(16px);border-bottom:1.5px solid var(--border)}
+.nav-logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:22px;color:var(--ink);letter-spacing:-1px;text-decoration:none;cursor:pointer;background:none;border:none}
+.nav-logo span{color:var(--coral)}
+.nav-mid{display:flex;gap:8px}
+.nav-chip{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:6px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.nav-chip:hover,.nav-chip.on{background:var(--peach);border-color:var(--coral);color:var(--coral)}
+.nav-right{display:flex;gap:10px;align-items:center}
+.nav-btn{font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;border-radius:50px;cursor:pointer;border:none;transition:all .2s}
+.nav-btn-ghost{background:none;color:var(--muted);border:1.5px solid var(--border)}.nav-btn-ghost:hover{color:var(--ink);border-color:var(--ink)}
+.nav-btn-fill{background:var(--coral);color:#fff;box-shadow:0 4px 12px rgba(255,107,74,.3)}.nav-btn-fill:hover{transform:translateY(-1px)}
+.nav-back{display:none;align-items:center;gap:6px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;background:none;border:none}.nav-back:hover{color:var(--ink)}
+
+/* SCREENS */
+.screen{display:none;animation:fadeIn .3s ease}.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* HERO */
+.hero{padding:108px 36px 0;max-width:860px;margin:0 auto;text-align:center}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--border);border-radius:50px;padding:7px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:24px}
+.live-dot{width:7px;height:7px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+.hero-title{font-family:'Nunito',sans-serif;font-size:clamp(38px,6vw,70px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:20px}
+.hero-title em{font-style:normal;color:var(--coral)}
+.hero-title .hl{position:relative;white-space:nowrap;display:inline-block}
+.hero-title .hl::after{content:'';position:absolute;left:0;right:0;bottom:2px;height:6px;background:var(--yellow);border-radius:3px;z-index:-1;opacity:.8}
+.hero-sub{font-size:17px;color:var(--muted);font-weight:600;max-width:500px;margin:0 auto 32px;line-height:1.65}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:40px}
+.btn-hero{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;padding:15px 30px;border-radius:50px;border:none;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.btn-hero-fill{background:var(--coral);color:#fff;box-shadow:0 6px 20px rgba(255,107,74,.35)}.btn-hero-fill:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,107,74,.45)}
+.btn-hero-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--border)}.btn-hero-ghost:hover{border-color:var(--ink)}
+
+/* CATEGORY PILLS */
+.cat-scroll{padding:0 36px 24px;display:flex;gap:10px;overflow-x:auto;scrollbar-width:none}
+.cat-scroll::-webkit-scrollbar{display:none}
+.cat-btn{font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;padding:9px 18px;border-radius:50px;border:1.5px solid var(--border);background:#fff;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.cat-btn:hover,.cat-btn.on{background:var(--peach);border-color:var(--coral);color:var(--coral)}
+
+/* FILTERS */
+.filters-bar{background:#fff;border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border);padding:12px 36px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:63px;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.chip{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 16px;border-radius:50px;cursor:pointer;border:1.5px solid var(--border);background:var(--bg);color:var(--muted);transition:all .2s;white-space:nowrap}
+.chip:hover,.chip.on{background:var(--peach);border-color:var(--coral);color:var(--coral)}
+.chip-select{appearance:none;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 30px 7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--bg) url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238a7a65' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;color:var(--muted);cursor:pointer;outline:none}
+.chip-select:focus{border-color:var(--coral)}
+.view-toggle{display:flex;background:var(--bg);border:1.5px solid var(--border);border-radius:50px;padding:3px;gap:2px;margin-left:auto}
+.vtbtn{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:6px 14px;border-radius:50px;border:none;cursor:pointer;background:transparent;color:var(--muted);transition:all .2s;display:flex;align-items:center;gap:5px}
+.vtbtn.on{background:#fff;color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.slot-count{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+
+/* CARDS */
+.slots-grid{padding:24px 36px 80px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.slot-card{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .25s;animation:cardIn .35s ease both}
+.slot-card:hover{transform:translateY(-5px);box-shadow:0 14px 36px rgba(0,0,0,.1)}
+@keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.card-stripe{height:5px}.card-body{padding:18px}
+.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.pill{font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:4px 10px;border-radius:50px}
+.pill-bar{background:var(--sky);color:#1a5a8a}.pill-nail{background:var(--lavender);color:#5a2a8a}.pill-physio{background:var(--mint);color:#1a6a4a}.pill-beauty{background:var(--peach);color:#8a3a1a}.pill-pt{background:#fff0c8;color:#7a5a00}
+.save-badge{background:var(--coral);color:#fff;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;padding:4px 10px;border-radius:50px}
+.biz-name{font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;margin-bottom:2px}
+.svc-name{font-size:13px;color:var(--muted);margin-bottom:14px}
+.card-meta{display:flex;gap:0}.meta{flex:1}
+.mlabel{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:2px}
+.mval{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800}.mval.coral{color:var(--coral)}.mval.strike{text-decoration:line-through;color:var(--muted);font-size:12px;font-weight:600}
+.card-foot{padding:12px 18px;border-top:1.5px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;align-items:center}
+.card-loc{font-size:12px;color:var(--muted);font-weight:600}.card-cta{font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:var(--coral)}
+
+/* MAP */
+#map-view{display:none;height:calc(100vh - 128px);position:relative}
+#leaflet-map{height:100%;width:100%}
+.map-sidebar{position:absolute;top:16px;left:16px;bottom:16px;width:300px;z-index:400;display:flex;flex-direction:column;pointer-events:none}
+.map-sidebar-inner{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);box-shadow:0 8px 32px rgba(0,0,0,.1);overflow:hidden;pointer-events:all;display:flex;flex-direction:column;max-height:100%}
+.sidebar-header{padding:16px 18px 12px;border-bottom:1.5px solid var(--border);flex-shrink:0}
+.sidebar-title{font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;margin-bottom:2px}
+.sidebar-sub{font-size:12px;color:var(--muted);font-weight:600}
+.sidebar-slots{overflow-y:auto;flex:1}
+.sidebar-card{padding:14px 18px;border-bottom:1.5px solid var(--border);cursor:pointer;transition:background .15s;display:flex;gap:12px;align-items:flex-start}
+.sidebar-card:hover,.sidebar-card.highlighted{background:var(--peach)}
+.sc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.sc-right{flex:1;min-width:0}.sc-biz{font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;margin-bottom:1px}
+.sc-svc{font-size:12px;color:var(--muted);margin-bottom:6px}
+.sc-meta{display:flex;gap:8px;align-items:center}
+.sc-price{font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;color:var(--coral)}
+.sc-save{background:var(--mint);color:#1a6a4a;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;padding:2px 8px;border-radius:50px}
+.sc-time{font-size:11px;color:var(--muted);font-weight:600;margin-left:auto}
+.leaflet-popup-content-wrapper{border-radius:14px!important;border:1.5px solid var(--border)!important;box-shadow:0 8px 28px rgba(0,0,0,.12)!important;padding:0!important}
+.leaflet-popup-content{margin:0!important;font-family:'Nunito Sans',sans-serif}
+.map-popup{padding:16px;min-width:200px}
+.mp-biz{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:2px}
+.mp-svc{font-size:13px;color:var(--muted);margin-bottom:10px}
+.mp-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.mp-price{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900}
+.mp-save{background:var(--coral);color:#fff;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;padding:3px 10px;border-radius:50px}
+.mp-btn{display:block;width:100%;background:var(--coral);color:#fff;border:none;padding:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;border-radius:50px}
+.mp-btn:hover{opacity:.9}
+.leaflet-popup-tip-container{display:none}
+.map-marker{background:var(--coral);color:#fff;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;padding:5px 10px;border-radius:50px;white-space:nowrap;box-shadow:0 3px 10px rgba(255,107,74,.4);border:2px solid #fff;cursor:pointer}
+
+/* SLOT DETAIL */
+.slot-wrap{max-width:880px;margin:0 auto;padding:36px 32px 80px}
+.slot-layout{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+.slot-info-card{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);overflow:hidden}
+.slot-accent-bar{height:6px}.slot-info-body{padding:28px}
+.slot-title{font-family:'Nunito',sans-serif;font-size:24px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px;margin-top:10px}
+.slot-biz{font-size:15px;color:var(--muted);font-weight:600;margin-bottom:24px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+.detail-box{background:var(--bg);border-radius:var(--rsm);padding:14px;border:1.5px solid var(--border)}
+.dlabel{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:5px}
+.dval{font-family:'Nunito',sans-serif;font-size:17px;font-weight:800}.dval.accent{color:var(--coral)}
+.notes-box{background:#fff9f0;border-radius:var(--rsm);padding:14px;border:1.5px solid #ffe4c8;font-size:13px;line-height:1.6;margin-bottom:16px}
+.notes-box strong{font-family:'Nunito',sans-serif;font-weight:800;display:block;margin-bottom:3px}
+.price-row{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-top:1.5px solid var(--border);margin-top:8px}
+.price-was{font-size:13px;color:var(--muted);text-decoration:line-through}.price-now{font-family:'Nunito',sans-serif;font-size:30px;font-weight:900}
+.saving-chip{background:var(--mint);color:#1a6a4a;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;padding:7px 14px;border-radius:50px}
+.book-panel{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:sticky;top:88px}
+.panel-title{font-family:'Nunito',sans-serif;font-size:17px;font-weight:900;margin-bottom:5px}
+.panel-sub{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:20px;line-height:1.5}
+.fee-box{background:var(--bg);border-radius:var(--rsm);padding:14px;border:1.5px solid var(--border);margin-bottom:18px}
+.fee-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0}
+.fee-row .fl{color:var(--muted);font-weight:600}.fee-row .fr{font-family:'Nunito',sans-serif;font-weight:800}
+.fee-row.total{border-top:1.5px solid var(--border);margin-top:6px;padding-top:10px}
+.fee-row.total .fr{color:var(--coral);font-size:16px}
+.card-field{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rsm);padding:13px 14px;margin-bottom:14px;font-size:14px;color:#c4b9aa;transition:border-color .2s;cursor:text}
+.card-field.active{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,107,74,.1);color:var(--ink)}
+.card-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.book-btn{width:100%;background:var(--coral);color:#fff;border:none;padding:15px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,107,74,.3);transition:transform .15s}
+.book-btn:hover{transform:translateY(-2px)}.book-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.panel-note{margin-top:12px;text-align:center;font-size:11px;color:var(--muted);font-weight:600;line-height:1.5}
+.login-nudge{background:var(--peach);border-radius:var(--rsm);padding:18px;text-align:center;border:1.5px solid #ffcca8}
+.login-nudge p{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:12px;line-height:1.5}
+.login-nudge-btn{display:block;background:var(--coral);color:#fff;border:none;padding:13px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;border-radius:50px;width:100%}
+
+/* AUTH */
+.auth-wrap{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden}
+.auth-blob{position:absolute;border-radius:50%;pointer-events:none;filter:blur(60px)}
+.auth-blob-1{width:400px;height:400px;background:var(--yellow);top:-80px;right:-80px;opacity:.45}
+.auth-blob-2{width:300px;height:300px;background:var(--sky);bottom:-60px;left:-60px;opacity:.45}
+.auth-card{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:40px 36px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,.08);position:relative;z-index:2}
+.auth-tabs{display:flex;gap:4px;background:var(--bg);border-radius:50px;padding:4px;margin-bottom:28px}
+.auth-tab{flex:1;text-align:center;padding:9px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;border-radius:50px;cursor:pointer;transition:all .2s;color:var(--muted);border:none;background:transparent}
+.auth-tab.on{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.fgroup{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
+.fgroup label{font-family:'Nunito',sans-serif;font-size:12px;font-weight:800}
+.fgroup input{background:#fff;border:1.5px solid var(--border);border-radius:var(--rsm);padding:11px 14px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .2s;width:100%}
+.fgroup input:focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,107,74,.1)}
+.fgroup input::placeholder{color:#c4b9aa}
+.auth-submit{width:100%;background:var(--coral);color:#fff;border:none;padding:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 18px rgba(255,107,74,.3);margin-top:6px;transition:transform .15s}
+.auth-submit:hover{transform:translateY(-2px)}
+.auth-foot{text-align:center;font-size:13px;color:var(--muted);font-weight:600;margin-top:18px}
+.auth-foot a{color:var(--coral);font-weight:800;cursor:pointer}
+.auth-msg{border-radius:var(--rsm);padding:11px 14px;font-size:13px;font-weight:600;margin-bottom:14px;display:none}
+.auth-msg.show{display:block}
+.auth-msg.err{background:#fef2f2;border:1.5px solid #fecaca;color:#991b1b}
+.auth-msg.ok{background:#f0fdf4;border:1.5px solid #bbf7d0;color:#166534}
+
+/* CONFIRM */
+.confirm-wrap{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden}
+.confirm-card{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:44px 40px;width:100%;max-width:460px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.08);position:relative;z-index:2;animation:popIn .5s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes popIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.confirm-emoji{font-size:58px;margin-bottom:16px;display:block;animation:wiggle 2s ease-in-out infinite}
+@keyframes wiggle{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+.confirm-title{font-family:'Nunito',sans-serif;font-size:28px;font-weight:900;letter-spacing:-.5px;margin-bottom:8px}
+.confirm-sub{font-size:15px;color:var(--muted);font-weight:600;line-height:1.6;margin-bottom:28px}
+.summary-box{background:var(--bg);border-radius:var(--rsm);border:1.5px solid var(--border);padding:20px;text-align:left;margin-bottom:24px}
+.sum-row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;font-size:13px}
+.sum-row:not(:last-child){border-bottom:1px solid var(--border)}
+.sum-l{color:var(--muted);font-weight:600}.sum-r{font-family:'Nunito',sans-serif;font-weight:800;text-align:right}
+.confirm-actions{display:flex;flex-direction:column;gap:10px}
+.btn-pri{display:block;background:var(--coral);color:#fff;border:none;padding:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;width:100%;text-align:center}
+.btn-sec{display:block;background:#fff;color:var(--ink);border:2px solid var(--border);padding:12px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:50px;width:100%;text-align:center}
+.btn-sec:hover{border-color:var(--ink)}
+
+/* DRAWER */
+.drawer-overlay{position:fixed;inset:0;background:rgba(26,18,7,.4);backdrop-filter:blur(3px);z-index:800;opacity:0;pointer-events:none;transition:opacity .3s}
+.drawer-overlay.open{opacity:1;pointer-events:all}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:100vw;background:var(--bg);z-index:801;transform:translateX(100%);transition:transform .35s cubic-bezier(0.32,0.72,0,1);display:flex;flex-direction:column;box-shadow:-12px 0 48px rgba(0,0,0,.12)}
+.drawer.open{transform:translateX(0)}
+.drawer-header{padding:20px 24px 16px;background:#fff;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.drawer-title{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900}
+.drawer-close{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted)}
+.drawer-close:hover{background:var(--peach);border-color:var(--coral);color:var(--coral)}
+.drawer-tabs{display:flex;padding:12px 24px 0;gap:4px;background:#fff;border-bottom:1.5px solid var(--border);flex-shrink:0}
+.drawer-tab{font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;padding:8px 16px;border-radius:50px 50px 0 0;cursor:pointer;border:none;background:none;color:var(--muted);position:relative;bottom:-1px}
+.drawer-tab.on{background:#fff;color:var(--ink);border:1.5px solid var(--border);border-bottom-color:#fff}
+.drawer-body{flex:1;overflow-y:auto;padding:20px 24px 40px}
+.drawer-empty{text-align:center;padding:60px 24px}
+.drawer-empty-icon{font-size:52px;margin-bottom:14px}
+.drawer-empty-title{font-family:'Nunito',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px}
+.drawer-empty-sub{font-size:14px;color:var(--muted);font-weight:600;line-height:1.6;margin-bottom:20px}
+.drawer-empty-btn{display:inline-block;background:var(--coral);color:#fff;border:none;padding:12px 24px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;border-radius:50px}
+.bk-card{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);overflow:hidden;margin-bottom:14px;animation:cardIn .3s ease both}
+.bk-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.08)}.bk-card.cancelled{opacity:.6}
+.bk-stripe{height:5px}.bk-body{padding:18px}
+.bk-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.bk-svc{font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;margin-bottom:2px}
+.bk-biz{font-size:13px;color:var(--muted);font-weight:600}
+.bk-status{font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;padding:4px 10px;border-radius:50px;white-space:nowrap;flex-shrink:0}
+.bk-status.confirmed{background:var(--mint);color:#1a6a4a}.bk-status.cancelled{background:var(--border);color:var(--muted)}.bk-status.completed{background:var(--sky);color:#1a5a8a}
+.bk-details{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.bk-detail-row{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--muted);font-weight:600}
+.bk-detail-row strong{color:var(--ink);font-weight:700}
+.bk-actions{display:flex;gap:8px;padding-top:12px;border-top:1.5px solid var(--border)}
+.bk-btn-cal{flex:1;background:var(--bg);color:var(--ink);border:1.5px solid var(--border);padding:9px 14px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:50px;display:flex;align-items:center;justify-content:center;gap:6px}
+.bk-btn-cal:hover{border-color:var(--ink)}
+.bk-btn-cancel{background:#fff;color:var(--muted);border:1.5px solid var(--border);padding:9px 14px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:50px}
+.bk-btn-cancel:hover{background:#fef2f2;border-color:#fca5a5;color:#991b1b}
+.bk-badge{background:var(--coral);color:#fff;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;padding:2px 6px;border-radius:50px;margin-left:-6px;margin-top:-12px;vertical-align:top}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(26,18,7,.45);backdrop-filter:blur(4px);z-index:8000;display:none;align-items:center;justify-content:center;padding:24px}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:var(--r);padding:32px;width:100%;max-width:380px;box-shadow:0 24px 60px rgba(0,0,0,.15);animation:popIn .3s cubic-bezier(0.34,1.56,0.64,1)}
+.modal-title{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;margin-bottom:8px}
+.modal-sub{font-size:14px;color:var(--muted);font-weight:600;line-height:1.6;margin-bottom:24px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+.btn-ghost-sm{background:#fff;color:var(--ink);border:1.5px solid var(--border);padding:10px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:50px}
+.btn-ghost-sm:hover{border-color:var(--ink)}
+.btn-danger{background:#fff;color:#991b1b;border:1.5px solid #fecaca;padding:10px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:50px}
+.btn-danger:hover{background:#fef2f2;border-color:#991b1b}
+
+/* FOOTER */
+.site-footer{padding:40px 36px;border-top:1.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:20px;color:var(--ink);text-decoration:none;cursor:pointer;background:none;border:none}
+.footer-logo span{color:var(--coral)}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap}
+.footer-links a{font-size:13px;color:var(--muted);font-weight:600;text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--ink)}
+.footer-copy{font-size:12px;color:var(--muted);font-weight:600}
+
+/* SKELETON */
+.skeleton{background:linear-gradient(90deg,#f0ead8 25%,#e8e0cc 50%,#f0ead8 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--r);height:200px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* TOAST + PROCESSING */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;box-shadow:0 8px 28px rgba(0,0,0,.2);z-index:9999;transition:transform .35s cubic-bezier(0.34,1.56,0.64,1);white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}.toast.ok{background:#1a7a4a}.toast.err{background:#c0392b}
+.processing{position:fixed;inset:0;background:rgba(255,251,245,.88);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;z-index:9998}
+.processing.show{display:flex}
+.spin{width:44px;height:44px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--coral);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.proc-label{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800}
+
+@media(max-width:700px){
+  nav{padding:12px 16px;gap:8px}
+  .nav-mid{display:none}
+  .nav-right{gap:8px}
+  .nav-right .nav-btn{font-size:12px;padding:7px 12px}
+  .nav-logo{font-size:18px}
+
+  .hero{padding:80px 16px 24px}
+  .hero-title{font-size:32px;line-height:1.1}
+  .hero-sub{font-size:14px}
+  .hero-actions{flex-direction:column;align-items:stretch;gap:10px}
+  .hero-actions .btn-hero{font-size:14px;padding:14px 20px;text-align:center}
+
+  .cat-scroll{padding:0 16px 16px}
+  .cat-scroll button{font-size:13px;padding:8px 14px}
+
+  .filters-bar{padding:10px 16px;gap:8px;flex-wrap:wrap}
+  .filters-bar select{font-size:13px;padding:8px 10px}
+
+  .slots-grid{padding:12px 16px 80px;grid-template-columns:1fr}
+  .slot-card{padding:16px}
+
+  .slot-layout{grid-template-columns:1fr}
+  .book-panel{position:static;margin-top:16px}
+
+  #map-view{height:50vh}
+  .map-sidebar{left:8px;right:8px;width:auto;top:auto;bottom:12px;height:180px}
+
+  .site-footer{flex-direction:column;text-align:center;padding:24px 16px;gap:12px}
+
+  .about-stats{grid-template-columns:1fr !important}
+  .about-stats>div{border-right:none !important;border-bottom:1.5px solid var(--border)}
+  .about-steps{grid-template-columns:1fr !important}
+  .about-steps>div{border-radius:var(--r) !important}
+  .about-two-col{grid-template-columns:1fr !important}
+
+  .policies-grid{grid-template-columns:1fr !important}
+
+  /* Slot detail page */
+  .slot-detail-grid{grid-template-columns:1fr !important}
+  .book-panel{border-radius:var(--r);border:1.5px solid var(--border);padding:20px}
+
+  /* Auth screen */
+  .login-wrap{padding:16px}
+  .lf-card{padding:24px 20px}
+
+  /* Drawer */
+  #bookings-drawer{width:100% !important;right:0 !important}
+
+  /* Confirm screen */
+  .confirm-card{padding:24px 16px}
+  .summary-box{padding:16px}
+
+  /* General section padding */
+  section[style*="padding"]{padding-left:16px !important;padding-right:16px !important}
+  div[style*="padding:72px 36px"]{padding:40px 16px !important}
+  div[style*="padding:64px 36px"]{padding:40px 16px !important}
+  div[style*="padding:80px 36px"]{padding:48px 16px !important}
+  div[style*="max-width:900px"]{max-width:100% !important}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <button class="nav-logo" onclick="go('browse')">sk<span>orr</span>d</button>
+  <div class="nav-mid">
+    <span class="nav-chip on" id="nav-chip-browse" onclick="go('browse')" style="cursor:pointer">🔍 Browse slots</span>
+    <span class="nav-chip" id="nav-chip-about" onclick="go('about')" style="cursor:pointer">💡 How it works</span>
+    <a class="nav-chip" href="svcbk-business.html">💼 For businesses</a>
+  </div>
+  <div class="nav-right" id="nav-right">
+    <button class="nav-btn nav-btn-ghost" onclick="go('login',{mode:'login'})">Log in</button>
+    <button class="nav-btn nav-btn-fill" onclick="go('login',{mode:'signup'})">Sign up free</button>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════
+     BROWSE
+════════════════════════════════ -->
+<div class="screen active" id="screen-browse" style="padding-top:63px;min-height:100vh">
+
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="live-dot"></span>
+      Live appointments near you right now
+    </div>
+    <h1 class="hero-title">
+      Last-minute slots.<br>
+      <span class="hl">Better prices.</span><br>
+      <em>Book in seconds.</em>
+    </h1>
+    <p class="hero-sub">Discover discounted appointments at local businesses — barbers, salons, physios and more. They have the time. You want the deal.</p>
+    <div class="hero-actions">
+      <button class="btn-hero btn-hero-fill" onclick="document.getElementById('filters-anchor').scrollIntoView({behavior:'smooth'})">Browse deals near me →</button>
+      <a class="btn-hero btn-hero-ghost" href="svcbk-business.html">List your business</a>
+    </div>
+  </div>
+
+  <!-- CATEGORY PILLS -->
+  <div class="cat-scroll">
+    <button class="cat-btn on" onclick="setCat(this,'')">All</button>
+    <button class="cat-btn" onclick="setCat(this,'Barbershop')">✂️ Barbers</button>
+    <button class="cat-btn" onclick="setCat(this,'Nail Salon')">💅 Nail salons</button>
+    <button class="cat-btn" onclick="setCat(this,'Physiotherapy')">🫁 Physio</button>
+    <button class="cat-btn" onclick="setCat(this,'Beauty & Wellness')">💆 Beauty &amp; Wellness</button>
+    <button class="cat-btn" onclick="setCat(this,'Hair Salon')">💇 Hair salons</button>
+    <button class="cat-btn" onclick="setCat(this,'Personal Training')">🏋️ Personal training</button>
+    <button class="cat-btn" onclick="setCat(this,'Yoga & Fitness')">🧘 Yoga &amp; fitness</button>
+    <button class="cat-btn" onclick="setCat(this,'Dental')">🦷 Dental</button>
+    <button class="cat-btn" onclick="setCat(this,'Tutoring')">📚 Tutoring</button>
+    <button class="cat-btn" onclick="setCat(this,'Skin & Aesthetics')">🧴 Skin &amp; Aesthetics</button>
+    <button class="cat-btn" onclick="setCat(this,'Therapy & Counselling')">🧠 Therapy</button>
+  </div>
+
+  <div id="filters-anchor"></div>
+  <div class="filters-bar">
+    <span class="slot-count" id="slot-count">Loading...</span>
+    <div class="chip on" data-win="all" onclick="setWin(this)">All times</div>
+    <div class="chip" data-win="today" onclick="setWin(this)">Today</div>
+
+    <select class="chip-select" id="f-sort" onchange="renderCards()">
+      <option value="time">Soonest first</option>
+      <option value="disc">Biggest saving</option>
+      <option value="price">Lowest price</option>
+    </select>
+    <div class="view-toggle">
+      <button class="vtbtn on" id="vt-list" onclick="setView('list')">☰ List</button>
+      <button class="vtbtn" id="vt-map" onclick="setView('map')">🗺 Map</button>
+    </div>
+  </div>
+
+  <div id="list-view">
+    <div class="slots-grid" id="slots-grid">
+      <div class="skeleton"></div><div class="skeleton" style="animation-delay:.1s"></div><div class="skeleton" style="animation-delay:.2s"></div>
+    </div>
+  </div>
+
+  <div id="map-view">
+    <div id="leaflet-map"></div>
+    <div class="map-sidebar">
+      <div class="map-sidebar-inner">
+        <div class="sidebar-header">
+          <div class="sidebar-title" id="sidebar-title">Slots nearby</div>
+          <div class="sidebar-sub">Click a pin or card to explore</div>
+        </div>
+        <div class="sidebar-slots" id="sidebar-slots"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <button class="footer-logo" onclick="go('browse')">sk<span>orr</span>d</button>
+    <div class="footer-links">
+      <a href="svcbk-business.html">For businesses</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-copy">© 2026 Skorrd. All rights reserved.</div>
+  </footer>
+</div>
+
+<!-- ════════════════════════════════
+     SLOT DETAIL
+════════════════════════════════ -->
+<div class="screen" id="screen-slot" style="padding-top:63px;min-height:100vh">
+  <div class="slot-wrap"><div id="slot-detail"></div></div>
+</div>
+
+<!-- ════════════════════════════════
+     AUTH
+════════════════════════════════ -->
+<div class="screen" id="screen-login" style="padding-top:63px">
+  <div class="auth-wrap">
+    <div class="auth-blob auth-blob-1"></div>
+    <div class="auth-blob auth-blob-2"></div>
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab on" id="tab-login" onclick="authMode('login')">Log in</button>
+        <button class="auth-tab" id="tab-signup" onclick="authMode('signup')">Sign up free</button>
+      </div>
+      <div class="auth-msg" id="auth-msg"></div>
+      <div class="fgroup"><label>Email address</label><input id="auth-email" type="email" placeholder="you@email.com" autocomplete="email"></div>
+      <div class="fgroup"><label>Password</label><input id="auth-pass" type="password" placeholder="Password" autocomplete="current-password"></div>
+      <button class="auth-submit" id="auth-submit" onclick="handleAuth()">Log in</button>
+      <div class="auth-foot" id="auth-foot">No account? <a onclick="authMode('signup')">Sign up free</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     CONFIRM
+════════════════════════════════ -->
+<div class="screen" id="screen-confirm" style="padding-top:63px">
+  <div class="confirm-wrap">
+    <div class="auth-blob auth-blob-1"></div>
+    <div class="auth-blob auth-blob-2" style="background:var(--mint)"></div>
+    <div class="confirm-card" id="confirm-card"></div>
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="bookings-drawer">
+  <div class="drawer-header">
+    <div class="drawer-title">My Bookings</div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-tabs">
+    <button class="drawer-tab on" id="dtab-upcoming" onclick="setDrawerTab('upcoming')">Upcoming</button>
+    <button class="drawer-tab" id="dtab-past" onclick="setDrawerTab('past')">Past</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</div>
+
+<!-- ════════════════════════════════
+     ABOUT / HOW IT WORKS
+════════════════════════════════ -->
+<div class="screen" id="screen-about" style="padding-top:63px;min-height:100vh">
+
+  <!-- HERO BANNER -->
+  <div style="background:var(--yellow);padding:64px 36px 56px;text-align:center;position:relative;overflow:hidden">
+    <div style="position:absolute;top:-80px;right:-80px;width:300px;height:300px;background:var(--peach);border-radius:50%;opacity:.5;pointer-events:none"></div>
+    <div style="position:absolute;bottom:-60px;left:-60px;width:240px;height:240px;background:var(--sky);border-radius:50%;opacity:.5;pointer-events:none"></div>
+    <div style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:rgba(26,18,7,.55);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px">How Skorrd works</div>
+    <h1 style="font-family:'Nunito',sans-serif;font-size:clamp(32px,5vw,54px);font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px;position:relative">Last-minute slots.<br>Win-win for everyone.</h1>
+    <p style="font-size:16px;color:rgba(26,18,7,.65);font-weight:600;max-width:500px;margin:0 auto;line-height:1.65;position:relative">Service businesses have spare time they can't sell at full price. Customers want great local services at a discount. Skorrd connects both sides instantly.</p>
+  </div>
+
+  <!-- STATS -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1.5px solid var(--border)" class="about-stats">
+    <div style="padding:40px 36px;border-right:1.5px solid var(--border)">
+      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:var(--coral);line-height:1;margin-bottom:6px">30%</div>
+      <div style="font-size:14px;color:var(--muted);font-weight:600;line-height:1.5">Average unused appointment<br>capacity per week</div>
+    </div>
+    <div style="padding:40px 36px;border-right:1.5px solid var(--border)">
+      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:var(--coral);line-height:1;margin-bottom:6px">$0</div>
+      <div style="font-size:14px;color:var(--muted);font-weight:600;line-height:1.5">Revenue earned from<br>empty slots</div>
+    </div>
+    <div style="padding:40px 36px">
+      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:var(--coral);line-height:1;margin-bottom:6px">7 days</div>
+      <div style="font-size:14px;color:var(--muted);font-weight:600;line-height:1.5">Booking window — list<br>slots up to a week ahead</div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS STEPS -->
+  <div style="padding:72px 36px;max-width:900px;margin:0 auto">
+    <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--coral);margin-bottom:12px">✦ Simple on both sides</div>
+    <h2 style="font-family:'Nunito',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:900;letter-spacing:-1px;margin-bottom:48px">Three steps, that's it.</h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px" class="about-steps">
+      <div style="background:#fff;padding:36px 28px;border-radius:var(--r) 0 0 var(--r);border:1.5px solid var(--border)">
+        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,107,74,.12);line-height:1;margin-bottom:16px">01</div>
+        <div style="font-size:22px;margin-bottom:10px">📋</div>
+        <h3 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px">Business lists a slot</h3>
+        <p style="font-size:14px;color:var(--muted);line-height:1.7;font-weight:600">Takes under 60 seconds. Pick a service, set the time, choose your own discount. It goes live immediately for nearby customers to discover.</p>
+      </div>
+      <div style="background:#fff;padding:36px 28px;border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border)">
+        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,107,74,.12);line-height:1;margin-bottom:16px">02</div>
+        <div style="font-size:22px;margin-bottom:10px">🔍</div>
+        <h3 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px">Customer discovers &amp; books</h3>
+        <p style="font-size:14px;color:var(--muted);line-height:1.7;font-weight:600">Nearby customers browse by category, time, or saving size. They book instantly with a small $5 hold fee — no phone calls, no back-and-forth.</p>
+      </div>
+      <div style="background:#fff;padding:36px 28px;border-radius:0 var(--r) var(--r) 0;border:1.5px solid var(--border)">
+        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,107,74,.12);line-height:1;margin-bottom:16px">03</div>
+        <div style="font-size:22px;margin-bottom:10px">🎉</div>
+        <h3 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px">Both sides confirmed</h3>
+        <p style="font-size:14px;color:var(--muted);line-height:1.7;font-weight:600">Instant notification for the business and customer. The slot is locked. Customer pays the full service fee at the appointment — you keep control of your money.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOR CUSTOMERS -->
+  <div style="background:#fff;border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border);padding:72px 36px">
+    <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center" class="about-two-col">
+      <div>
+        <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--coral);margin-bottom:12px">✦ For customers</div>
+        <h2 style="font-family:'Nunito',sans-serif;font-size:clamp(26px,3.5vw,38px);font-weight:900;letter-spacing:-1px;line-height:1.1;margin-bottom:20px">Great services.<br>Better prices.</h2>
+        <p style="font-size:15px;color:var(--muted);line-height:1.7;font-weight:600;margin-bottom:28px">Discover real last-minute appointments at businesses near you — not fake "deals". These are genuine spare slots that would otherwise go empty, offered at a real discount.</p>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:12px">
+          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:var(--coral);flex-shrink:0;font-size:13px;margin-top:2px">→</span>Browse by service type, time of day, or discount size</li>
+          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:var(--coral);flex-shrink:0;font-size:13px;margin-top:2px">→</span>Map view — see what's physically closest to you</li>
+          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:var(--coral);flex-shrink:0;font-size:13px;margin-top:2px">→</span>Book instantly — no calls, no waiting for confirmation</li>
+          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:var(--coral);flex-shrink:0;font-size:13px;margin-top:2px">→</span>$5 hold fee secures your slot — pay the rest at the appointment</li>
+          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:var(--coral);flex-shrink:0;font-size:13px;margin-top:2px">→</span>New deals listed throughout the day — check back often</li>
+        </ul>
+      </div>
+      <div style="background:var(--bg);border-radius:var(--r);border:1.5px solid var(--border);padding:28px;display:flex;flex-direction:column;gap:16px">
+        <!-- Mock slot cards -->
+        <div style="background:#fff;border-radius:14px;border:1.5px solid var(--border);overflow:hidden">
+          <div style="height:4px;background:#c8eaff"></div>
+          <div style="padding:16px 18px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <span style="font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;background:var(--sky);color:#1a5a8a;padding:3px 10px;border-radius:50px;text-transform:uppercase;letter-spacing:.5px">Barbershop</span>
+              <span style="background:var(--coral);color:#fff;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;padding:3px 10px;border-radius:50px">Save 35%</span>
+            </div>
+            <div style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:2px">Sharp &amp; Co.</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Classic fade + hot towel shave</div>
+            <div style="display:flex;gap:0">
+              <div style="flex:1"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:2px">When</div><div style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:800">Today, 11:00 AM</div></div>
+              <div style="flex:1"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:2px">Was</div><div style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;text-decoration:line-through;color:var(--muted)">$45</div></div>
+              <div style="flex:1"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:2px">Now</div><div style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--coral)">$29</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:14px;border:1.5px solid var(--border);overflow:hidden">
+          <div style="height:4px;background:#e0d4ff"></div>
+          <div style="padding:16px 18px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <span style="font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;background:var(--lavender);color:#5a2a8a;padding:3px 10px;border-radius:50px;text-transform:uppercase;letter-spacing:.5px">Nail Salon</span>
+              <span style="background:var(--coral);color:#fff;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;padding:3px 10px;border-radius:50px">Save 25%</span>
+            </div>
+            <div style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:2px">Lacquer Studio</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Gel manicure</div>
+            <div style="display:flex;gap:0">
+              <div style="flex:1"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:2px">When</div><div style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:800">Today, 2:30 PM</div></div>
+              <div style="flex:1"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:2px">Was</div><div style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;text-decoration:line-through;color:var(--muted)">$60</div></div>
+              <div style="flex:1"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:2px">Now</div><div style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--coral)">$45</div></div>
+            </div>
+          </div>
+        </div>
+        <button onclick="go('browse')" style="width:100%;background:var(--coral);color:#fff;border:none;padding:14px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 16px rgba(255,107,74,.3)">Browse live slots →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CANCELLATION & HOLD FEE EXPLAINER -->
+  <div style="padding:72px 36px;max-width:900px;margin:0 auto">
+    <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--coral);margin-bottom:12px">✦ Policies &amp; pricing</div>
+    <h2 style="font-family:'Nunito',sans-serif;font-size:clamp(26px,3.5vw,38px);font-weight:900;letter-spacing:-1px;margin-bottom:36px">Good to know before you book</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" class="policies-grid">
+      <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative">
+        <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,107,74,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">1</div>
+        <div style="font-size:28px;margin-bottom:12px">💳</div>
+        <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:8px">$5 hold fee</h3>
+        <p style="font-size:13px;color:var(--muted);line-height:1.65;font-weight:600">You pay $5 online to secure your slot. This confirms you're serious and protects the business from no-shows. The service fee is paid directly at the appointment.</p>
+      </div>
+      <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative">
+        <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,107,74,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">2</div>
+        <div style="font-size:28px;margin-bottom:12px">❌</div>
+        <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:8px">Cancellation policy</h3>
+        <p style="font-size:13px;color:var(--muted);line-height:1.65;font-weight:600">You can cancel any time, but the $5 hold fee is non-refundable — it goes to the business. The slot automatically gets re-listed so someone else can grab it.</p>
+      </div>
+      <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative">
+        <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,107,74,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">3</div>
+        <div style="font-size:28px;margin-bottom:12px">📅</div>
+        <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:8px">Booking window</h3>
+        <p style="font-size:13px;color:var(--muted);line-height:1.65;font-weight:600">Slots are listed up to 7 days ahead with no minimum lead time. Most deals are same-day or next-day — so check back regularly for fresh listings.</p>
+      </div>
+      <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative">
+        <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,107,74,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">4</div>
+        <div style="font-size:28px;margin-bottom:12px">🔒</div>
+        <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:8px">Secure payments</h3>
+        <p style="font-size:13px;color:var(--muted);line-height:1.65;font-weight:600">Hold fees are processed securely via Stripe. Your card details are never stored by Skorrd. The business receives payment directly at the appointment.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div style="background:#fff;border-top:1.5px solid var(--border);padding:64px 36px">
+    <div style="max-width:900px;margin:0 auto">
+      <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--coral);margin-bottom:12px">✦ Categories</div>
+      <h2 style="font-family:'Nunito',sans-serif;font-size:clamp(24px,3vw,36px);font-weight:900;letter-spacing:-1px;margin-bottom:8px">Works for any appointment-based service</h2>
+      <p style="font-size:15px;color:var(--muted);font-weight:600;margin-bottom:28px">If people book time with you, you can list on Skorrd.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <span style="border:1.5px solid var(--border);padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:var(--muted)">✂️ Barbers</span>
+        <span style="border:1.5px solid var(--border);padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:var(--muted)">💅 Nail salons</span>
+        <span style="border:1.5px solid var(--border);padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:var(--muted)">💆 Beauty &amp; wellness</span>
+        <span style="border:1.5px solid var(--border);padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:var(--muted)">🧘 Yoga &amp; fitness</span>
+        <span style="border:1.5px solid var(--border);padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:var(--muted)">🏋️ Personal training</span>
+        <span style="border:1.5px solid var(--border);padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:var(--muted)">🦷 Dental</span>
+        <span style="border:1.5px solid var(--border);padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:var(--muted)">🫁 Physiotherapy</span>
+        <span style="border:1.5px solid var(--border);padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:var(--muted)">💇 Hair salons</span>
+        <span style="border:1.5px solid var(--border);padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:var(--muted)">📚 Tutoring</span>
+        <span style="border:1.5px solid var(--border);padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:var(--muted)">🧴 Skin &amp; aesthetics</span>
+        <span style="border:1.5px solid var(--border);padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:var(--muted)">🧠 Therapy &amp; counselling</span>
+        <span style="border:1.5px solid var(--border);padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:var(--muted)">🐾 Pet grooming</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div style="padding:80px 36px;text-align:center;position:relative;overflow:hidden">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(255,107,74,.08) 0%,transparent 65%);pointer-events:none"></div>
+    <div style="font-size:48px;margin-bottom:16px">🎯</div>
+    <h2 style="font-family:'Nunito',sans-serif;font-size:clamp(28px,4vw,46px);font-weight:900;letter-spacing:-1.5px;margin-bottom:14px">Ready to find a deal?</h2>
+    <p style="font-size:16px;color:var(--muted);font-weight:600;max-width:400px;margin:0 auto 32px;line-height:1.65">New slots are listed every day. Jump in and see what's available near you right now.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button onclick="go('browse')" style="background:var(--coral);color:#fff;border:none;padding:15px 30px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,107,74,.35)">Browse slots now →</button>
+      <a href="svcbk-business.html" style="background:#fff;color:var(--ink);border:1.5px solid var(--border);padding:15px 30px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:50px;text-decoration:none">List your business</a>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <button class="footer-logo" onclick="go('browse')">sk<span>orr</span>d</button>
+    <div class="footer-links">
+      <a href="svcbk-business.html">For businesses</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-copy">© 2026 Skorrd. All rights reserved.</div>
+  </footer>
+</div>
+
+<!-- CANCEL MODAL -->
+<div class="modal-overlay" id="cancel-modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Cancel booking?</div>
+    <div class="modal-sub" id="cancel-modal-sub"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost-sm" onclick="closeCancelModal()">Keep it</button>
+      <button class="btn-danger" id="cancel-modal-confirm">Yes, cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="processing" id="processing">
+  <div class="spin"></div>
+  <div class="proc-label" id="proc-label">Loading...</div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://ahbbnagjqpfztftswber.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmJuYWdqcXBmenRmdHN3YmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyODAyNDEsImV4cCI6MjA4ODg1NjI0MX0.p9SGxDNbkIMehoPN7KNQjioqdoU2PPe35EfZosstk6Q'
+const BOOKING_FEE = 5
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+const CAT_CFG = {
+  'Barbershop':           { pill:'pill-bar',    color:'#c8eaff', dot:'#3b82f6', icon:'✂️'  },
+  'Nail Salon':           { pill:'pill-nail',   color:'#e0d4ff', dot:'#8b5cf6', icon:'💅'  },
+  'Physiotherapy':        { pill:'pill-physio', color:'#b8f0d8', dot:'#10b981', icon:'🫁'  },
+  'Beauty & Wellness':    { pill:'pill-beauty', color:'#ffe4d4', dot:'#f97316', icon:'💆'  },
+  'Personal Training':    { pill:'pill-pt',     color:'#fff0c8', dot:'#f59e0b', icon:'🏋️' },
+  'Hair Salon':           { pill:'pill-bar',    color:'#fce7f3', dot:'#ec4899', icon:'💇'  },
+  'Yoga & Fitness':       { pill:'pill-physio', color:'#dcfce7', dot:'#22c55e', icon:'🧘'  },
+  'Dental':               { pill:'pill-nail',   color:'#dbeafe', dot:'#3b82f6', icon:'🦷'  },
+  'Tutoring':             { pill:'pill-pt',     color:'#fef9c3', dot:'#eab308', icon:'📚'  },
+  'Skin & Aesthetics':    { pill:'pill-beauty', color:'#fce7f3', dot:'#db2777', icon:'🧴'  },
+  'Therapy & Counselling':{ pill:'pill-nail',   color:'#ede9fe', dot:'#7c3aed', icon:'🧠'  },
+}
+
+let state = {
+  screen:'browse', user:null, slots:[], bookings:[],
+  bookedSlotIds:new Set(), view:'list', authMode:'login',
+  currentSlot:null, drawerTab:'upcoming', focusedCard:null
+}
+let timeWindow = 'all', activeCat = ''
+let leafletMap = null, mapMarkers = []
+
+// ── ROUTING ──────────────────────────────────────────────
+function go(screen, opts={}) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'))
+  document.getElementById('screen-'+screen).classList.add('active')
+  state.screen = screen
+
+  // Back button
+  let nb = document.getElementById('nav-back-btn')
+  if (!nb) {
+    nb = document.createElement('button'); nb.id='nav-back-btn'; nb.className='nav-back'; nb.innerHTML='← Back'; nb.onclick=()=>go('browse')
+    document.querySelector('nav').insertBefore(nb, document.getElementById('nav-right'))
+  }
+  nb.style.display = (screen!=='browse' && screen!=='login') ? 'flex' : 'none'
+
+  // Chip highlight
+  const chip = document.getElementById('nav-chip-browse')
+  if (chip) chip.classList.toggle('on', screen==='browse')
+  const chipAbout = document.getElementById('nav-chip-about')
+  if (chipAbout) chipAbout.classList.toggle('on', screen==='about')
+
+  if (screen==='login') { if(opts.mode) state.authMode=opts.mode; authMode(state.authMode); setTimeout(()=>document.getElementById('auth-email').focus(),60) }
+  if (screen==='slot'    && opts.slot)  { state.currentSlot=opts.slot; renderSlotDetail(opts.slot) }
+  if (screen==='confirm' && opts.slot)  { renderConfirm(opts.slot) }
+  if (screen==='browse'  && state.view==='map') setTimeout(()=>leafletMap?.invalidateSize(),100)
+  window.scrollTo(0,0)
+}
+
+// ── NAV ──────────────────────────────────────────────────
+function updateNav() {
+  const nr = document.getElementById('nav-right')
+  if (state.user) {
+    const n = state.bookings.filter(b=>b.status==='confirmed'&&new Date(b.slot.time)>new Date()).length
+    const badge = n ? `<span class="bk-badge">${n}</span>` : ''
+    nr.innerHTML = `
+      <button class="nav-btn nav-btn-ghost" onclick="openDrawer()" style="position:relative">📋 My Bookings${badge}</button>
+      <span style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--ink)">👋 ${state.user.email.split('@')[0]}</span>
+      <button class="nav-btn nav-btn-ghost" onclick="signOut()">Sign out</button>`
+  } else {
+    nr.innerHTML = `
+      <button class="nav-btn nav-btn-ghost" onclick="go('login',{mode:'login'})">Log in</button>
+      <button class="nav-btn nav-btn-fill" onclick="go('login',{mode:'signup'})">Sign up free</button>`
+  }
+}
+
+// ── AUTH ─────────────────────────────────────────────────
+function authMode(m) {
+  state.authMode = m
+  document.getElementById('tab-login').classList.toggle('on', m==='login')
+  document.getElementById('tab-signup').classList.toggle('on', m==='signup')
+  document.getElementById('auth-submit').textContent = m==='login' ? 'Log in' : 'Create free account →'
+  document.getElementById('auth-foot').innerHTML = m==='login'
+    ? 'No account? <a onclick="authMode(\'signup\')">Sign up free</a>'
+    : 'Already have an account? <a onclick="authMode(\'login\')">Log in</a>'
+  document.getElementById('auth-pass').placeholder = m==='login' ? 'Password' : 'Create a password (8+ chars)'
+  document.getElementById('auth-pass').autocomplete = m==='login' ? 'current-password' : 'new-password'
+  clearAuthMsg()
+}
+
+async function handleAuth() {
+  const email = document.getElementById('auth-email').value.trim()
+  const pass  = document.getElementById('auth-pass').value
+  if (!email||!pass) { showAuthMsg('Please fill in both fields','err'); return }
+  if (state.authMode==='signup'&&pass.length<8) { showAuthMsg('Password needs 8+ characters','err'); return }
+  const btn = document.getElementById('auth-submit'); btn.disabled=true
+  showProcessing(state.authMode==='login'?'Logging in...':'Creating account...')
+  const { data, error } = state.authMode==='login'
+    ? await sb.auth.signInWithPassword({email,password:pass})
+    : await sb.auth.signUp({email,password:pass})
+  hideProcessing(); btn.disabled=false
+  if (error) { showAuthMsg(error.message,'err'); return }
+  state.user = data.session?.user || data.user
+  if (state.user) {
+    try { await loadBookings() } catch(e){}
+    updateNav()
+    showToast(state.authMode==='login'?'Welcome back 👋':'Account created! Welcome 🎉','ok')
+    const dest = state.currentSlot?'slot':'browse'
+    go(dest, state.currentSlot?{slot:state.currentSlot}:{})
+  }
+}
+
+function showAuthMsg(msg,type) { const el=document.getElementById('auth-msg'); el.textContent=msg; el.className=`auth-msg show ${type}` }
+function clearAuthMsg() { document.getElementById('auth-msg').className='auth-msg' }
+
+async function signOut() {
+  try { await sb.auth.signOut() } catch(e){}
+  state.user=null; state.bookings=[]; state.bookedSlotIds=new Set()
+  showToast('Signed out',''); updateNav(); go('browse')
+}
+
+// ── DATA ─────────────────────────────────────────────────
+async function loadSlots() {
+  const { data, error } = await sb
+    .from('slots')
+    .select(`id, service_name, category, original_price, discounted_price,
+             appointment_at, duration_mins, notes, status,
+             businesses ( id, name, suburb, street, state, postcode, lat, lng, logo_url )`)
+    .eq('status','available')
+    .gte('appointment_at', new Date().toISOString())
+    .order('appointment_at',{ascending:true})
+  if (error) { console.error('loadSlots:',error); return }
+  state.slots=(data||[]).map(normaliseSlot)
+}
+
+function normaliseSlot(s) {
+  const biz=s.businesses||{}
+  return {
+    id:s.id, biz:biz.name||'Unknown', cat:s.category||'', svc:s.service_name,
+    orig:parseFloat(s.original_price), disc:parseFloat(s.discounted_price),
+    time:new Date(s.appointment_at), suburb:biz.suburb||'',
+    address:[biz.street,biz.suburb,biz.state].filter(Boolean).join(', '),
+    fullAddress:[biz.street,biz.suburb,biz.state,biz.postcode].filter(Boolean).join(', '),
+    lat:biz.lat, lng:biz.lng, notes:s.notes, logoUrl:biz.logo_url||null,
+  }
+}
+
+sb.channel('public:slots').on('postgres_changes',{event:'*',schema:'public',table:'slots'},async()=>{
+  await loadSlots(); renderCards(); if(state.view==='map') renderMap()
+}).subscribe()
+
+async function loadBookings() {
+  if (!state.user) return
+  const { data, error } = await sb.from('bookings')
+    .select(`id, status, hold_fee_paid, created_at,
+             slots ( id, service_name, category, discounted_price, appointment_at,
+               businesses ( name, street, suburb, state ) )`)
+    .eq('customer_id',state.user.id).order('created_at',{ascending:false})
+  if (error) { console.error('loadBookings:',error); return }
+  state.bookings=(data||[]).map(b=>{
+    const sl=b.slots||{}; const biz=sl.businesses||{}
+    return { id:b.id, status:b.status, bookedAt:new Date(b.created_at),
+      slot:{ id:sl.id, svc:sl.service_name, cat:sl.category,
+             disc:parseFloat(sl.discounted_price||0), time:new Date(sl.appointment_at),
+             biz:biz.name, address:[biz.street,biz.suburb,biz.state].filter(Boolean).join(', ') } }
+  })
+  state.bookedSlotIds=new Set(state.bookings.filter(b=>b.status==='confirmed').map(b=>b.slot.id))
+}
+
+// ── BROWSE ───────────────────────────────────────────────
+const now=()=>new Date()
+function fmt(d)     { return d.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit',hour12:true}) }
+function fmtDate(d) { const t=now(); return d.toDateString()===t.toDateString()?'Today':d.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'}) }
+function pct(o,d)   { return Math.round((1-d/o)*100) }
+
+function setCat(el,cat) {
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on')); el.classList.add('on')
+  activeCat=cat; renderCards(); if(state.view==='map') renderMap()
+}
+function setWin(el) {
+  document.querySelectorAll('.chip[data-win]').forEach(c=>c.classList.remove('on')); el.classList.add('on')
+  timeWindow=el.dataset.win; renderCards(); if(state.view==='map') renderMap()
+}
+function filteredSlots() {
+  const sort=document.getElementById('f-sort').value
+  let slots=state.slots.filter(s=>!state.bookedSlotIds.has(s.id))
+  if (activeCat) slots=slots.filter(s=>s.cat===activeCat)
+  if (timeWindow!=='all') slots=slots.filter(s=>timeWindow==='today'?s.time.toDateString()===now().toDateString():(s.time-now())<=parseInt(timeWindow)*3600000)
+  if (sort==='disc')  slots.sort((a,b)=>pct(b.orig,b.disc)-pct(a.orig,a.disc))
+  else if (sort==='price') slots.sort((a,b)=>a.disc-b.disc)
+  else slots.sort((a,b)=>a.time-b.time)
+  return slots
+}
+
+function renderCards() {
+  const slots=filteredSlots()
+  document.getElementById('slot-count').textContent=`${slots.length} slot${slots.length===1?'':'s'} available`
+  if (!slots.length) {
+    document.getElementById('slots-grid').innerHTML=`
+      <div style="grid-column:1/-1;text-align:center;padding:80px 24px">
+        <div style="font-size:52px;margin-bottom:16px">🕐</div>
+        <div style="font-family:'Nunito',sans-serif;font-size:22px;font-weight:800;margin-bottom:10px">No slots right now</div>
+        <div style="font-size:15px;color:var(--muted);margin-bottom:24px">Try a different filter or check back soon — new slots are listed throughout the day.</div>
+        <a href="svcbk-business.html" style="display:inline-block;background:var(--coral);color:#fff;padding:12px 26px;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:14px;text-decoration:none">Own a business? List a slot →</a>
+      </div>`
+    return
+  }
+  document.getElementById('slots-grid').innerHTML=slots.map((s,i)=>{
+    const cfg=CAT_CFG[s.cat]||{pill:'pill-bar',color:'#ffe4d4',icon:'🏪'}
+    return `
+    <div class="slot-card" onclick="goSlot('${s.id}')" style="animation-delay:${i*.05}s">
+      <div class="card-stripe" style="background:${cfg.color}"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <span class="pill ${cfg.pill}">${s.cat}</span>
+          <span class="save-badge">Save ${pct(s.orig,s.disc)}%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+          ${s.logoUrl
+            ? `<img src="${s.logoUrl}" style="width:36px;height:36px;border-radius:9px;object-fit:cover;border:1.5px solid var(--border);flex-shrink:0">`
+            : `<div style="width:36px;height:36px;border-radius:9px;background:${cfg.color};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${cfg.icon}</div>`}
+          <div class="biz-name" style="margin-bottom:0">${s.biz}</div>
+        </div>
+        <div class="svc-name">${s.svc}</div>
+        <div class="card-meta">
+          <div class="meta"><div class="mlabel">When</div><div class="mval">${fmtDate(s.time)}, ${fmt(s.time)}</div></div>
+          <div class="meta"><div class="mlabel">Was</div><div class="mval strike">$${s.orig}</div></div>
+          <div class="meta"><div class="mlabel">Now</div><div class="mval coral">$${s.disc}</div></div>
+        </div>
+      </div>
+      <div class="card-foot">
+        <span class="card-loc">📍 ${s.suburb}</span>
+        <span class="card-cta">Book now →</span>
+      </div>
+    </div>`
+  }).join('')
+}
+
+function goSlot(id) { const s=state.slots.find(x=>x.id===id); if(s) go('slot',{slot:s}) }
+
+// ── MAP ──────────────────────────────────────────────────
+function setView(v) {
+  state.view=v
+  document.getElementById('vt-list').classList.toggle('on',v==='list')
+  document.getElementById('vt-map').classList.toggle('on',v==='map')
+  document.getElementById('list-view').style.display  = v==='list'?'block':'none'
+  document.getElementById('map-view').style.display   = v==='map' ?'block':'none'
+  if(v==='map') setTimeout(()=>{initMap();renderMap()},50)
+}
+function initMap() {
+  if (leafletMap) return
+  leafletMap=L.map('leaflet-map').setView([-33.875,151.205],13)
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(leafletMap)
+}
+function renderMap() {
+  if(!leafletMap) return
+  mapMarkers.forEach(m=>leafletMap.removeLayer(m)); mapMarkers=[]
+  const slots=filteredSlots().filter(s=>s.lat&&s.lng)
+  const byLoc={}
+  slots.forEach(s=>{ const k=`${s.lat},${s.lng}`; if(!byLoc[k]) byLoc[k]={lat:s.lat,lng:s.lng,slots:[]}; byLoc[k].slots.push(s) })
+  Object.values(byLoc).forEach(loc=>{
+    const s0=loc.slots[0]
+    const label=loc.slots.length>1?`${loc.slots.length} slots`:`$${s0.disc} · −${pct(s0.orig,s0.disc)}%`
+    const icon=L.divIcon({className:'',html:`<div class="map-marker">${label}</div>`,iconAnchor:[0,20]})
+    const marker=L.marker([loc.lat,loc.lng],{icon}).addTo(leafletMap)
+    const html=loc.slots.map(s=>`
+      <div class="map-popup">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          ${s.logoUrl?`<img src="${s.logoUrl}" style="width:32px;height:32px;border-radius:8px;object-fit:cover;border:1px solid #eee;flex-shrink:0">`:`<div style="width:32px;height:32px;border-radius:8px;background:#ffe4d4;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🏪</div>`}
+          <div><div class="mp-biz" style="margin-bottom:1px">${s.biz}</div><div class="mp-svc">${s.svc}</div></div>
+        </div>
+        <div class="mp-row">
+          <div class="mp-price">$${s.disc} <span style="font-size:12px;color:var(--muted);text-decoration:line-through">$${s.orig}</span></div>
+          <div class="mp-save">−${pct(s.orig,s.disc)}%</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:10px">⏰ ${fmtDate(s.time)}, ${fmt(s.time)}</div>
+        <button class="mp-btn" onclick="goSlot('${s.id}')">Book this slot →</button>
+      </div>`).join('')
+    marker.bindPopup(html,{maxWidth:260,minWidth:220})
+    marker.on('click',()=>highlightSidebar(loc.slots.map(s=>s.id)))
+    mapMarkers.push(marker)
+  })
+  renderSidebar(filteredSlots())
+  if(slots.length){const lats=slots.map(s=>s.lat),lngs=slots.map(s=>s.lng);leafletMap.fitBounds([[Math.min(...lats)-.01,Math.min(...lngs)-.01],[Math.max(...lats)+.01,Math.max(...lngs)+.01]])}
+}
+function renderSidebar(slots) {
+  document.getElementById('sidebar-title').textContent=`${slots.length} slot${slots.length===1?'':'s'} nearby`
+  document.getElementById('sidebar-slots').innerHTML=slots.map(s=>{
+    const cfg=CAT_CFG[s.cat]||{dot:'#ff6b4a'}
+    return `<div class="sidebar-card" id="sc-${s.id}" onclick="clickSidebar('${s.id}')">
+      ${s.logoUrl?`<img src="${s.logoUrl}" style="width:38px;height:38px;border-radius:9px;object-fit:cover;border:1.5px solid #eee;flex-shrink:0">`:`<div class="sc-dot" style="background:${cfg.dot}"></div>`}
+      <div class="sc-right"><div class="sc-biz">${s.biz}</div><div class="sc-svc">${s.svc}</div>
+      <div class="sc-meta"><span class="sc-price">$${s.disc}</span><span class="sc-save">−${pct(s.orig,s.disc)}%</span><span class="sc-time">${fmt(s.time)}</span></div></div></div>`
+  }).join('')
+}
+function highlightSidebar(ids) {
+  document.querySelectorAll('.sidebar-card').forEach(c=>c.classList.remove('highlighted'))
+  ids.forEach(id=>{const el=document.getElementById('sc-'+id);if(el){el.classList.add('highlighted');el.scrollIntoView({behavior:'smooth',block:'nearest'})}})
+}
+function clickSidebar(id) {
+  const s=state.slots.find(x=>x.id===id); if(!s) return
+  const m=mapMarkers.find(mk=>{const ll=mk.getLatLng();return Math.abs(ll.lat-s.lat)<.0001&&Math.abs(ll.lng-s.lng)<.0001})
+  if(m){m.openPopup();leafletMap.panTo(m.getLatLng())} highlightSidebar([id])
+}
+
+// ── SLOT DETAIL ──────────────────────────────────────────
+function renderSlotDetail(s) {
+  const cfg=CAT_CFG[s.cat]||{color:'#ffe4d4',pill:'pill-bar',icon:'🏪'}
+  const saving=(s.orig-s.disc).toFixed(0), p=pct(s.orig,s.disc)
+  const bookingPanel = state.user ? `
+    <div class="panel-title">Book this slot</div>
+    <div class="panel-sub">Pay $${BOOKING_FEE} now to secure it. Pay the rest at the appointment.</div>
+    <div class="fee-box">
+      <div class="fee-row"><span class="fl">Service (pay at appointment)</span><span class="fr">$${s.disc}</span></div>
+      <div class="fee-row total"><span class="fl">Hold fee (pay now)</span><span class="fr">$${BOOKING_FEE}</span></div>
+    </div>
+    <div class="card-field" id="card-num" onclick="focusCard('card-num')" style="display:flex;justify-content:space-between;align-items:center"><span id="card-num-txt">Card number</span><span style="font-size:18px;opacity:.4">💳</span></div>
+    <div class="card-row-2">
+      <div class="card-field" id="card-exp" onclick="focusCard('card-exp')"><span id="card-exp-txt">MM / YY</span></div>
+      <div class="card-field" id="card-cvc" onclick="focusCard('card-cvc')"><span id="card-cvc-txt">CVC</span></div>
+    </div>
+    <button class="book-btn" id="pay-btn" onclick="handlePay()">Pay $${BOOKING_FEE} &amp; confirm booking</button>
+    <p class="panel-note">🔒 Secure payment via Stripe<br>Hold fee secures your slot. Non-refundable on cancellation.</p>` : `
+    <div class="panel-title">Ready to book?</div>
+    <div class="panel-sub">Create a free account to secure this slot.</div>
+    <div class="login-nudge">
+      <p>Sign up or log in to book and pay the $${BOOKING_FEE} hold fee.</p>
+      <button class="login-nudge-btn" onclick="go('login',{mode:'signup'})">Sign up / Log in free</button>
+    </div>
+    <p class="panel-note" style="margin-top:14px">$${BOOKING_FEE} hold fee secures your slot.<br>Pay the rest at the business.</p>`
+
+  document.getElementById('slot-detail').innerHTML=`
+    <div class="slot-layout">
+      <div class="slot-info-card">
+        <div class="slot-accent-bar" style="background:${cfg.color}"></div>
+        <div class="slot-info-body">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:6px">
+            ${s.logoUrl?`<img src="${s.logoUrl}" style="width:52px;height:52px;border-radius:12px;object-fit:cover;border:1.5px solid var(--border);flex-shrink:0">`:`<div style="width:52px;height:52px;border-radius:12px;background:${cfg.color};display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">${cfg.icon}</div>`}
+            <div>
+              <span class="pill ${cfg.pill}" style="margin-bottom:4px;display:inline-block">${s.cat}</span>
+              <div class="slot-title" style="margin-top:4px">${s.svc}</div>
+            </div>
+          </div>
+          <div class="slot-biz">at ${s.biz}</div>
+          <div class="detail-grid">
+            <div class="detail-box"><div class="dlabel">📅 Date</div><div class="dval">${fmtDate(s.time)}</div></div>
+            <div class="detail-box"><div class="dlabel">⏰ Time</div><div class="dval">${fmt(s.time)}</div></div>
+            <div class="detail-box" style="grid-column:1/-1">
+              <div class="dlabel">📍 Address</div>
+              <div class="dval" style="font-size:15px;font-weight:700">${s.fullAddress||s.address||'Address not provided'}</div>
+              ${s.fullAddress?`<a href="https://maps.google.com/?q=${encodeURIComponent(s.fullAddress)}" target="_blank" style="font-size:12px;color:var(--coral);font-weight:700;text-decoration:none;margin-top:4px;display:inline-block">Open in Maps →</a>`:''}
+            </div>
+            <div class="detail-box"><div class="dlabel">🎉 You save</div><div class="dval accent">$${saving} (${p}% off)</div></div>
+          </div>
+          ${s.notes?`<div class="notes-box"><strong>📝 Note from the business</strong>${s.notes}</div>`:''}
+          <div class="price-row">
+            <div><div class="price-was">Was $${s.orig}</div><div class="price-now">$${s.disc}</div></div>
+            <div class="saving-chip">Save $${saving} today 🎉</div>
+          </div>
+        </div>
+      </div>
+      <div class="book-panel">${bookingPanel}</div>
+    </div>`
+
+  if (state.user) setupCardInput()
+}
+
+function setupCardInput() {
+  let cv='',ev='',ccv=''
+  function upd(id,ph,v){const e=document.getElementById(id+'-txt');if(e)e.textContent=v||ph}
+  function handler(e) {
+    if(state.screen!=='slot'){document.removeEventListener('keydown',handler);return}
+    const a=state.focusedCard; if(!a) return
+    if(e.key==='Backspace'){
+      if(a==='card-num'){cv=cv.slice(0,-1);upd('card-num','Card number',cv||null)}
+      if(a==='card-exp'){ev=ev.slice(0,-1);upd('card-exp','MM / YY',ev||null)}
+      if(a==='card-cvc'){ccv=ccv.slice(0,-1);upd('card-cvc','CVC',ccv||null)}
+    } else if(e.key.length===1&&/[\d\/]/.test(e.key)){
+      if(a==='card-num'&&cv.replace(/\s/g,'').length<16){cv+=e.key;upd('card-num','Card number',cv.replace(/\s/g,'').replace(/(.{4})/g,'$1 ').trim());if(cv.replace(/\s/g,'').length>=16)focusCard('card-exp')}
+      if(a==='card-exp'&&ev.replace('/','').length<4){ev+=e.key;let f=ev.replace(/\//g,'');if(f.length>2)f=f.slice(0,2)+'/'+f.slice(2);upd('card-exp','MM / YY',f);if(ev.replace('/','').length>=4)focusCard('card-cvc')}
+      if(a==='card-cvc'&&ccv.length<3){ccv+=e.key;upd('card-cvc','CVC',ccv)}
+    }
+  }
+  document.addEventListener('keydown',handler)
+}
+function focusCard(id){document.querySelectorAll('.card-field').forEach(f=>f.classList.remove('active'));const el=document.getElementById(id);if(el)el.classList.add('active');state.focusedCard=id}
+
+async function handlePay() {
+  const btn=document.getElementById('pay-btn'); if(!btn) return
+  const s=state.currentSlot; if(!s) return
+  btn.disabled=true; btn.textContent='Processing...'
+  showProcessing('Confirming booking...')
+  try {
+    const sessionResult=await Promise.race([sb.auth.getSession(),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),5000))])
+    let token=sessionResult?.data?.session?.access_token
+    if (!token) {
+      // Try refreshing the session
+      const { data: refreshed } = await sb.auth.refreshSession()
+      token = refreshed?.session?.access_token
+    }
+    if (!token) { showToast('Please log in to book','err'); btn.disabled=false; btn.textContent=`Pay $${BOOKING_FEE} & confirm booking`; go('login',{mode:'login'}); return }
+    const res=await fetch(`${SUPABASE_URL}/functions/v1/create-booking`,{
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({slot_id:s.id,hold_fee:BOOKING_FEE})
+    })
+    const result=await res.json()
+    hideProcessing()
+    if (!res.ok){showToast(result.error||'Booking failed — please try again','err');btn.disabled=false;btn.textContent=`Pay $${BOOKING_FEE} & confirm booking`;return}
+    await loadBookings(); await loadSlots(); renderCards(); renderMap(); updateNav(); go('confirm',{slot:s})
+  } catch(e){hideProcessing();showToast('Network error — please try again','err');btn.disabled=false;btn.textContent=`Pay $${BOOKING_FEE} & confirm booking`}
+}
+
+function renderConfirm(s) {
+  document.getElementById('confirm-card').innerHTML=`
+    <span class="confirm-emoji">🎉</span>
+    <div class="confirm-title">You're booked!</div>
+    <p class="confirm-sub">Slot confirmed and $${BOOKING_FEE} hold fee charged.<br>See you at ${s.biz}!</p>
+    <div class="summary-box">
+      <div class="sum-row"><span class="sum-l">Service</span><span class="sum-r">${s.svc}</span></div>
+      <div class="sum-row"><span class="sum-l">Business</span><span class="sum-r">${s.biz}</span></div>
+      <div class="sum-row"><span class="sum-l">Address</span><span class="sum-r">${s.address}</span></div>
+      <div class="sum-row"><span class="sum-l">Date &amp; time</span><span class="sum-r">${fmtDate(s.time)}, ${fmt(s.time)}</span></div>
+      <div class="sum-row"><span class="sum-l">Pay at appointment</span><span class="sum-r" style="color:var(--coral)">$${s.disc}</span></div>
+      <div class="sum-row"><span class="sum-l">Hold fee charged</span><span class="sum-r">$${BOOKING_FEE} ✓</span></div>
+    </div>
+    <div class="confirm-actions">
+      <button class="btn-pri" onclick="go('browse')">Browse more slots</button>
+      <button class="btn-sec" onclick="openDrawer()">📋 View my bookings</button>
+      <button class="btn-sec" onclick="downloadCal('${s.id}')">📅 Add to calendar</button>
+    </div>`
+}
+
+function openDrawer(){document.getElementById('drawer-overlay').classList.add('open');document.getElementById('bookings-drawer').classList.add('open');document.body.style.overflow='hidden';renderDrawer()}
+function closeDrawer(){document.getElementById('drawer-overlay').classList.remove('open');document.getElementById('bookings-drawer').classList.remove('open');document.body.style.overflow=''}
+function setDrawerTab(t){state.drawerTab=t;document.getElementById('dtab-upcoming').classList.toggle('on',t==='upcoming');document.getElementById('dtab-past').classList.toggle('on',t==='past');renderDrawer()}
+function renderDrawer() {
+  const body=document.getElementById('drawer-body')
+  if (!state.user){body.innerHTML=`<div class="drawer-empty"><div class="drawer-empty-icon">🔒</div><div class="drawer-empty-title">Not logged in</div><div class="drawer-empty-sub">Sign in to see your bookings.</div><button class="drawer-empty-btn" onclick="closeDrawer();go('login',{mode:'login'})">Log in</button></div>`;return}
+  const t=state.drawerTab
+  const upcoming=state.bookings.filter(b=>b.status==='confirmed'&&new Date(b.slot.time)>new Date())
+  const past=state.bookings.filter(b=>b.status!=='confirmed'||new Date(b.slot.time)<=new Date())
+  const list=t==='upcoming'?upcoming:past
+  if (!list.length){body.innerHTML=`<div class="drawer-empty"><div class="drawer-empty-icon">${t==='upcoming'?'📅':'🕐'}</div><div class="drawer-empty-title">${t==='upcoming'?'No upcoming bookings':'No past bookings'}</div><div class="drawer-empty-sub">${t==='upcoming'?'Find a discounted slot and book it in seconds.':'Completed and cancelled bookings appear here.'}</div>${t==='upcoming'?`<button class="drawer-empty-btn" onclick="closeDrawer()">Browse slots →</button>`:''}</div>`;return}
+  body.innerHTML=list.map((b,i)=>{
+    const s=b.slot; const cfg=CAT_CFG[s.cat]||{color:'#ffe4d4'}
+    return `<div class="bk-card ${b.status}" style="animation-delay:${i*.05}s">
+      <div class="bk-stripe" style="background:${cfg.color}"></div>
+      <div class="bk-body">
+        <div class="bk-top"><div><div class="bk-svc">${s.svc}</div><div class="bk-biz">${s.biz}</div></div><span class="bk-status ${b.status}">${b.status}</span></div>
+        <div class="bk-details">
+          <div class="bk-detail-row">📅 <strong>${fmtDate(s.time)}, ${fmt(s.time)}</strong></div>
+          <div class="bk-detail-row">📍 ${s.address}</div>
+        </div>
+        <div class="bk-actions">
+          <button class="bk-btn-cal" onclick="downloadCal('${b.id}')">📅 Add to calendar</button>
+          ${b.status==='confirmed'?`<button class="bk-btn-cancel" onclick="confirmCancel('${b.id}')">Cancel</button>`:''}
+        </div>
+      </div></div>`
+  }).join('')
+}
+
+function confirmCancel(bookingId){
+  const b=state.bookings.find(x=>x.id===bookingId); if(!b) return
+  document.getElementById('cancel-modal-sub').textContent=`Cancelling "${b.slot.svc}" at ${b.slot.biz}. Your $${BOOKING_FEE} holding fee will not be refunded — it goes to the business. The slot will be automatically re-listed.`
+  document.getElementById('cancel-modal-confirm').onclick=()=>executeCancel(bookingId)
+  document.getElementById('cancel-modal-overlay').classList.add('show')
+}
+function closeCancelModal(){document.getElementById('cancel-modal-overlay').classList.remove('show')}
+
+async function executeCancel(bookingId) {
+  closeCancelModal(); showProcessing('Cancelling...')
+  const {error}=await sb.from('bookings').update({status:'cancelled',cancelled_at:new Date().toISOString()}).eq('id',bookingId).eq('customer_id',state.user.id)
+  hideProcessing()
+  if(error){showToast('Could not cancel — please try again','err');return}
+  await loadBookings(); await loadSlots(); renderCards(); if(state.view==='map') renderMap(); updateNav(); renderDrawer()
+  showToast('Booking cancelled — slot re-listed for others','')
+}
+
+function downloadCal(id){
+  const b=state.bookings.find(x=>x.id===id); const s=b?b.slot:state.currentSlot; if(!s) return
+  const end=new Date(s.time.getTime()+3600000)
+  const f=d=>d.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z'
+  const ics=['BEGIN:VCALENDAR','VERSION:2.0','BEGIN:VEVENT',`DTSTART:${f(s.time)}`,`DTEND:${f(end)}`,`SUMMARY:${s.svc} at ${s.biz}`,`LOCATION:${s.address||''}`,`DESCRIPTION:Booked via Skorrd. Pay $${s.disc} at appointment.`,'END:VEVENT','END:VCALENDAR'].join('\r\n')
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='skorrd-booking.ics';a.click()
+  showToast('Calendar file downloaded 📅','ok')
+}
+
+function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type||'');requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));setTimeout(()=>t.classList.remove('show'),3200)}
+function showProcessing(l){document.getElementById('proc-label').textContent=l;document.getElementById('processing').classList.add('show')}
+function hideProcessing(){document.getElementById('processing').classList.remove('show')}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();closeCancelModal()}})
+document.getElementById('auth-pass').addEventListener('keydown',e=>{if(e.key==='Enter')handleAuth()})
+document.getElementById('auth-email').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('auth-pass').focus()})
+
+// INIT
+;(async()=>{
+  const safetyTimer=setTimeout(()=>{hideProcessing();renderCards()},8000)
+  showProcessing('Loading slots...')
+  try {
+    const r=await Promise.race([sb.auth.getSession(),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),4000))])
+    const session=r?.data?.session
+    if(session?.user){state.user=session.user;try{await loadBookings()}catch(e){console.warn('loadBookings:',e.message)};updateNav()}
+  } catch(e){console.warn('session:',e.message)}
+  try{await loadSlots()}catch(e){console.warn('loadSlots:',e.message)}
+  clearTimeout(safetyTimer); hideProcessing(); renderCards()
+})()
+</script>
+</body>
+</html>

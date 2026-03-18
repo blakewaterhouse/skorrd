@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@900&display=swap');
+      .logo { font-family: 'Arial Black', Arial, sans-serif; font-weight: 900; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="500" fill="#f5f0e8"/>
+
+  <!-- Label: Light version -->
+  <text x="40" y="30" font-family="Arial" font-size="11" fill="#8a7a65" font-weight="600" letter-spacing="2">LIGHT VERSION</text>
+
+  <!-- Light bg wordmark -->
+  <rect x="30" y="40" width="340" height="120" rx="16" fill="#fffbf5"/>
+  <text x="60" y="120" class="logo" font-size="72" letter-spacing="-2" fill="#1a1207">sk</text>
+  <text x="168" y="120" class="logo" font-size="72" letter-spacing="-2" fill="#ff6b4a">orr</text>
+  <text x="306" y="120" class="logo" font-size="72" letter-spacing="-2" fill="#1a1207">d</text>
+  <text x="60" y="148" font-family="Arial" font-size="12" font-weight="700" letter-spacing="2.5" fill="#8a7a65">LAST-MINUTE APPOINTMENTS</text>
+
+  <!-- Label: Dark version -->
+  <text x="420" y="30" font-family="Arial" font-size="11" fill="#8a7a65" font-weight="600" letter-spacing="2">DARK VERSION</text>
+
+  <!-- Dark bg wordmark -->
+  <rect x="410" y="40" width="360" height="120" rx="16" fill="#1a1207"/>
+  <text x="440" y="120" class="logo" font-size="72" letter-spacing="-2" fill="#fffbf5">sk</text>
+  <text x="548" y="120" class="logo" font-size="72" letter-spacing="-2" fill="#ff6b4a">orr</text>
+  <text x="686" y="120" class="logo" font-size="72" letter-spacing="-2" fill="#fffbf5">d</text>
+  <text x="440" y="148" font-family="Arial" font-size="12" font-weight="700" letter-spacing="2.5" fill="rgba(255,251,245,0.4)">LAST-MINUTE APPOINTMENTS</text>
+
+  <!-- Icon marks row -->
+  <text x="40" y="200" font-family="Arial" font-size="11" fill="#8a7a65" font-weight="600" letter-spacing="2">ICON MARKS</text>
+
+  <!-- Coral icon -->
+  <rect x="30" y="210" width="90" height="90" rx="18" fill="#ff6b4a"/>
+  <text x="75" y="277" class="logo" font-size="56" fill="#fffbf5" text-anchor="middle">S</text>
+
+  <!-- Dark icon -->
+  <rect x="140" y="210" width="90" height="90" rx="18" fill="#1a1207"/>
+  <text x="185" y="277" class="logo" font-size="56" fill="#ff6b4a" text-anchor="middle">S</text>
+
+  <!-- Cream icon -->
+  <rect x="250" y="210" width="90" height="90" rx="18" fill="#fffbf5" stroke="#ede8df" stroke-width="1.5"/>
+  <text x="295" y="277" class="logo" font-size="56" fill="#1a1207" text-anchor="middle">S</text>
+
+  <!-- White icon -->
+  <rect x="360" y="210" width="90" height="90" rx="18" fill="#ffffff" stroke="#ede8df" stroke-width="1.5"/>
+  <text x="405" y="277" class="logo" font-size="56" fill="#ff6b4a" text-anchor="middle">S</text>
+
+  <!-- Icon labels -->
+  <text x="75" y="320" font-family="Arial" font-size="10" fill="#8a7a65" text-anchor="middle">Coral</text>
+  <text x="185" y="320" font-family="Arial" font-size="10" fill="#8a7a65" text-anchor="middle">Dark</text>
+  <text x="295" y="320" font-family="Arial" font-size="10" fill="#8a7a65" text-anchor="middle">Cream</text>
+  <text x="405" y="320" font-family="Arial" font-size="10" fill="#8a7a65" text-anchor="middle">White</text>
+
+  <!-- Compact nav wordmark -->
+  <text x="530" y="200" font-family="Arial" font-size="11" fill="#8a7a65" font-weight="600" letter-spacing="2">NAV / COMPACT</text>
+  <rect x="520" y="210" width="250" height="60" rx="10" fill="#fffbf5" stroke="#ede8df" stroke-width="1.5"/>
+  <text x="520" y="253" class="logo" font-size="38" letter-spacing="-1" fill="#1a1207">sk</text>
+  <text x="588" y="253" class="logo" font-size="38" letter-spacing="-1" fill="#ff6b4a">orr</text>
+  <text x="654" y="253" class="logo" font-size="38" letter-spacing="-1" fill="#1a1207">d</text>
+
+  <!-- Colour palette -->
+  <text x="40" y="360" font-family="Arial" font-size="11" fill="#8a7a65" font-weight="600" letter-spacing="2">BRAND COLOURS</text>
+
+  <rect x="30" y="370" width="80" height="50" rx="8" fill="#ff6b4a"/>
+  <text x="70" y="440" font-family="Arial" font-size="10" fill="#8a7a65" text-anchor="middle">#FF6B4A</text>
+  <text x="70" y="453" font-family="Arial" font-size="9" fill="#8a7a65" text-anchor="middle">Coral</text>
+
+  <rect x="130" y="370" width="80" height="50" rx="8" fill="#1a1207"/>
+  <text x="170" y="440" font-family="Arial" font-size="10" fill="#8a7a65" text-anchor="middle">#1A1207</text>
+  <text x="170" y="453" font-family="Arial" font-size="9" fill="#8a7a65" text-anchor="middle">Ink</text>
+
+  <rect x="230" y="370" width="80" height="50" rx="8" fill="#fffbf5" stroke="#ede8df" stroke-width="1"/>
+  <text x="270" y="440" font-family="Arial" font-size="10" fill="#8a7a65" text-anchor="middle">#FFFBF5</text>
+  <text x="270" y="453" font-family="Arial" font-size="9" fill="#8a7a65" text-anchor="middle">Cream</text>
+
+  <rect x="330" y="370" width="80" height="50" rx="8" fill="#ede8df"/>
+  <text x="370" y="440" font-family="Arial" font-size="10" fill="#8a7a65" text-anchor="middle">#EDE8DF</text>
+  <text x="370" y="453" font-family="Arial" font-size="9" fill="#8a7a65" text-anchor="middle">Border</text>
+
+  <rect x="430" y="370" width="80" height="50" rx="8" fill="#8a7a65"/>
+  <text x="470" y="440" font-family="Arial" font-size="10" fill="#8a7a65" text-anchor="middle">#8A7A65</text>
+  <text x="470" y="453" font-family="Arial" font-size="9" fill="#8a7a65" text-anchor="middle">Muted</text>
+
+  <!-- Font note -->
+  <text x="550" y="390" font-family="Arial" font-size="11" fill="#8a7a65" font-weight="600" letter-spacing="2">TYPEFACE</text>
+  <text x="550" y="415" font-family="Arial Black" font-size="22" fill="#1a1207">Nunito Black 900</text>
+  <text x="550" y="438" font-family="Arial" font-size="13" fill="#8a7a65">Nunito Sans 400/600</text>
+  <text x="550" y="458" font-family="Arial" font-size="11" fill="#ede8df" fill-opacity="0">body text</text>
+</svg>
