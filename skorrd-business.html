@@ -1104,7 +1104,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
 const CONFIG = { BOOKING_FEE: 5 }
 const SUPABASE_URL = 'https://ahbbnagjqpfztftswber.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmJuYWdqcXBmenRmdHN3YmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyODAyNDEsImV4cCI6MjA4ODg1NjI0MX0.p9SGxDNbkIMehoPN7KNQjioqdoU2PPe35EfZosstk6Q'
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'skorrd-biz-auth' } })
 
 // ════════════════════════════════════════════
 // DATA
