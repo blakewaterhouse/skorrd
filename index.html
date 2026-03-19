@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Skorrd — Last-minute appointments, better prices</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600;700&family=Racing+Sans+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600;700&family=Raleway:wght@700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -51,7 +51,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--border);border-radius:50px;padding:7px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:24px}
 .live-dot{width:7px;height:7px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite;flex-shrink:0}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
-.hero-title{font-family:'Racing Sans One',sans-serif;font-size:clamp(38px,6vw,70px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:20px}
+.hero-title{font-family:'Raleway',sans-serif;font-size:clamp(38px,6vw,70px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:20px}
 .hero-title em{font-style:normal;color:var(--coral)}
 .hero-title .hl{position:relative;white-space:nowrap;display:inline-block}
 .hero-title .hl::after{content:'';position:absolute;left:0;right:0;bottom:2px;height:6px;background:var(--yellow);border-radius:3px;z-index:-1;opacity:.8}
@@ -132,7 +132,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .slot-layout{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
 .slot-info-card{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);overflow:hidden}
 .slot-accent-bar{height:6px}.slot-info-body{padding:28px}
-.slot-title{font-family:'Racing Sans One',sans-serif;font-size:24px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px;margin-top:10px}
+.slot-title{font-family:'Raleway',sans-serif;font-size:24px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px;margin-top:10px}
 .slot-biz{font-size:15px;color:var(--muted);font-weight:600;margin-bottom:24px}
 .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
 .detail-box{background:var(--bg);border-radius:var(--rsm);padding:14px;border:1.5px solid var(--border)}
@@ -144,7 +144,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .price-was{font-size:13px;color:var(--muted);text-decoration:line-through}.price-now{font-family:'Nunito',sans-serif;font-size:30px;font-weight:900}
 .saving-chip{background:var(--mint);color:#1a6a4a;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;padding:7px 14px;border-radius:50px}
 .book-panel{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:sticky;top:88px}
-.panel-title{font-family:'Racing Sans One',sans-serif;font-size:17px;font-weight:900;margin-bottom:5px}
+.panel-title{font-family:'Raleway',sans-serif;font-size:17px;font-weight:900;margin-bottom:5px}
 .panel-sub{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:20px;line-height:1.5}
 .fee-box{background:var(--bg);border-radius:var(--rsm);padding:14px;border:1.5px solid var(--border);margin-bottom:18px}
 .fee-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0}
@@ -192,7 +192,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 @keyframes popIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
 .confirm-emoji{font-size:58px;margin-bottom:16px;display:block;animation:wiggle 2s ease-in-out infinite}
 @keyframes wiggle{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
-.confirm-title{font-family:'Racing Sans One',sans-serif;font-size:28px;font-weight:900;letter-spacing:-.5px;margin-bottom:8px}
+.confirm-title{font-family:'Raleway',sans-serif;font-size:28px;font-weight:900;letter-spacing:-.5px;margin-bottom:8px}
 .confirm-sub{font-size:15px;color:var(--muted);font-weight:600;line-height:1.6;margin-bottom:28px}
 .summary-box{background:var(--bg);border-radius:var(--rsm);border:1.5px solid var(--border);padding:20px;text-align:left;margin-bottom:24px}
 .sum-row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;font-size:13px}
@@ -209,7 +209,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:100vw;background:var(--bg);z-index:801;transform:translateX(100%);transition:transform .35s cubic-bezier(0.32,0.72,0,1);display:flex;flex-direction:column;box-shadow:-12px 0 48px rgba(0,0,0,.12)}
 .drawer.open{transform:translateX(0)}
 .drawer-header{padding:20px 24px 16px;background:#fff;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.drawer-title{font-family:'Racing Sans One',sans-serif;font-size:20px;font-weight:900}
+.drawer-title{font-family:'Raleway',sans-serif;font-size:20px;font-weight:900}
 .drawer-close{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted)}
 .drawer-close:hover{background:var(--peach);border-color:var(--coral);color:var(--coral)}
 .drawer-tabs{display:flex;padding:12px 24px 0;gap:4px;background:#fff;border-bottom:1.5px solid var(--border);flex-shrink:0}
@@ -243,7 +243,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .modal-overlay{position:fixed;inset:0;background:rgba(26,18,7,.45);backdrop-filter:blur(4px);z-index:8000;display:none;align-items:center;justify-content:center;padding:24px}
 .modal-overlay.show{display:flex}
 .modal{background:#fff;border-radius:var(--r);padding:32px;width:100%;max-width:380px;box-shadow:0 24px 60px rgba(0,0,0,.15);animation:popIn .3s cubic-bezier(0.34,1.56,0.64,1)}
-.modal-title{font-family:'Racing Sans One',sans-serif;font-size:20px;font-weight:900;margin-bottom:8px}
+.modal-title{font-family:'Raleway',sans-serif;font-size:20px;font-weight:900;margin-bottom:8px}
 .modal-sub{font-size:14px;color:var(--muted);font-weight:600;line-height:1.6;margin-bottom:24px}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 .btn-ghost-sm{background:#fff;color:var(--ink);border:1.5px solid var(--border);padding:10px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:50px}
@@ -500,7 +500,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
     <div style="position:absolute;top:-80px;right:-80px;width:300px;height:300px;background:var(--peach);border-radius:50%;opacity:.5;pointer-events:none"></div>
     <div style="position:absolute;bottom:-60px;left:-60px;width:240px;height:240px;background:var(--sky);border-radius:50%;opacity:.5;pointer-events:none"></div>
     <div style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:rgba(26,18,7,.55);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px">How Skorrd works</div>
-    <h1 style="font-family:'Racing Sans One',sans-serif;font-size:clamp(32px,5vw,54px);font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px;position:relative">Last-minute slots.<br>Win-win for everyone.</h1>
+    <h1 style="font-family:'Raleway',sans-serif;font-size:clamp(32px,5vw,54px);font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px;position:relative">Last-minute slots.<br>Win-win for everyone.</h1>
     <p style="font-size:16px;color:rgba(26,18,7,.65);font-weight:600;max-width:500px;margin:0 auto;line-height:1.65;position:relative">Service businesses have spare time they can't sell at full price. Customers want great local services at a discount. Skorrd connects both sides instantly.</p>
   </div>
 
@@ -523,7 +523,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
   <!-- HOW IT WORKS STEPS -->
   <div style="padding:72px 36px;max-width:900px;margin:0 auto">
     <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--coral);margin-bottom:12px">✦ Simple on both sides</div>
-    <h2 style="font-family:'Racing Sans One',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:900;letter-spacing:-1px;margin-bottom:48px">Three steps, that's it.</h2>
+    <h2 style="font-family:'Raleway',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:900;letter-spacing:-1px;margin-bottom:48px">Three steps, that's it.</h2>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px" class="about-steps">
       <div style="background:#fff;padding:36px 28px;border-radius:var(--r) 0 0 var(--r);border:1.5px solid var(--border)">
         <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,143,126,.12);line-height:1;margin-bottom:16px">01</div>
@@ -551,7 +551,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
     <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center" class="about-two-col">
       <div>
         <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--coral);margin-bottom:12px">✦ For customers</div>
-        <h2 style="font-family:'Racing Sans One',sans-serif;font-size:clamp(26px,3.5vw,38px);font-weight:900;letter-spacing:-1px;line-height:1.1;margin-bottom:20px">Great services.<br>Better prices.</h2>
+        <h2 style="font-family:'Raleway',sans-serif;font-size:clamp(26px,3.5vw,38px);font-weight:900;letter-spacing:-1px;line-height:1.1;margin-bottom:20px">Great services.<br>Better prices.</h2>
         <p style="font-size:15px;color:var(--muted);line-height:1.7;font-weight:600;margin-bottom:28px">Discover real last-minute appointments at businesses near you — not fake "deals". These are genuine spare slots that would otherwise go empty, offered at a real discount.</p>
         <ul style="list-style:none;display:flex;flex-direction:column;gap:12px">
           <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:var(--coral);flex-shrink:0;font-size:13px;margin-top:2px">→</span>Browse by service type, time of day, or discount size</li>
@@ -603,7 +603,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
   <!-- CANCELLATION & HOLD FEE EXPLAINER -->
   <div style="padding:72px 36px;max-width:900px;margin:0 auto">
     <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--coral);margin-bottom:12px">✦ Policies &amp; pricing</div>
-    <h2 style="font-family:'Racing Sans One',sans-serif;font-size:clamp(26px,3.5vw,38px);font-weight:900;letter-spacing:-1px;margin-bottom:36px">Good to know before you book</h2>
+    <h2 style="font-family:'Raleway',sans-serif;font-size:clamp(26px,3.5vw,38px);font-weight:900;letter-spacing:-1px;margin-bottom:36px">Good to know before you book</h2>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" class="policies-grid">
       <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative">
         <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,143,126,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">1</div>
@@ -636,7 +636,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
   <div style="background:#fff;border-top:1.5px solid var(--border);padding:64px 36px">
     <div style="max-width:900px;margin:0 auto">
       <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--coral);margin-bottom:12px">✦ Categories</div>
-      <h2 style="font-family:'Racing Sans One',sans-serif;font-size:clamp(24px,3vw,36px);font-weight:900;letter-spacing:-1px;margin-bottom:8px">Works for any appointment-based service</h2>
+      <h2 style="font-family:'Raleway',sans-serif;font-size:clamp(24px,3vw,36px);font-weight:900;letter-spacing:-1px;margin-bottom:8px">Works for any appointment-based service</h2>
       <p style="font-size:15px;color:var(--muted);font-weight:600;margin-bottom:28px">If people book time with you, you can list on Skorrd.</p>
       <div style="display:flex;flex-wrap:wrap;gap:10px">
         <span style="border:1.5px solid var(--border);padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:var(--muted)">✂️ Barbers</span>
@@ -659,7 +659,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
   <div style="padding:80px 36px;text-align:center;position:relative;overflow:hidden">
     <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(255,143,126,.08) 0%,transparent 65%);pointer-events:none"></div>
     <div style="font-size:48px;margin-bottom:16px">🎯</div>
-    <h2 style="font-family:'Racing Sans One',sans-serif;font-size:clamp(28px,4vw,46px);font-weight:900;letter-spacing:-1.5px;margin-bottom:14px">Ready to find a deal?</h2>
+    <h2 style="font-family:'Raleway',sans-serif;font-size:clamp(28px,4vw,46px);font-weight:900;letter-spacing:-1.5px;margin-bottom:14px">Ready to find a deal?</h2>
     <p style="font-size:16px;color:var(--muted);font-weight:600;max-width:400px;margin:0 auto 32px;line-height:1.65">New slots are listed every day. Jump in and see what's available near you right now.</p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
       <button onclick="go('browse')" style="background:var(--coral);color:#fff;border:none;padding:15px 30px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,143,126,.35)">Browse slots now →</button>
