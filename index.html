@@ -2,17 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0iI0ZGNkI0QSIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMyIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLCBBcmlhbCIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlM8L3RleHQ+Cjwvc3ZnPg==">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ff6b4a">
+<meta name="theme-color" content="#ff8f7e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Skorrd">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Skorrd — Last-minute appointments, better prices</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600;700&family=Racing+Sans+One&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -20,7 +21,7 @@
 <style>
 :root{
   --bg:#fffbf5;--ink:#1a1207;--muted:#8a7a65;
-  --coral:#ff6b4a;--yellow:#ffd84d;--sky:#c8eaff;
+  --coral:#ff8f7e;--yellow:#ffc952;--sky:#c8eaff;
   --mint:#b8f0d8;--lavender:#e0d4ff;--peach:#ffe4d4;
   --border:#ede8df;--r:18px;--rsm:12px;
 }
@@ -30,15 +31,15 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
 
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content:space-between;align-items:center;padding:14px 36px;background:rgba(255,251,245,.94);backdrop-filter:blur(16px);border-bottom:1.5px solid var(--border)}
-.nav-logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:22px;color:var(--ink);letter-spacing:-1px;text-decoration:none;cursor:pointer;background:none;border:none}
-.nav-logo span{color:var(--coral)}
+.nav-logo{cursor:pointer;background:none;border:none;padding:0;display:flex;align-items:center}
+.nav-logo img{height:26px;width:auto;display:block}
 .nav-mid{display:flex;gap:8px}
 .nav-chip{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:6px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
 .nav-chip:hover,.nav-chip.on{background:var(--peach);border-color:var(--coral);color:var(--coral)}
 .nav-right{display:flex;gap:10px;align-items:center}
 .nav-btn{font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;border-radius:50px;cursor:pointer;border:none;transition:all .2s}
 .nav-btn-ghost{background:none;color:var(--muted);border:1.5px solid var(--border)}.nav-btn-ghost:hover{color:var(--ink);border-color:var(--ink)}
-.nav-btn-fill{background:var(--coral);color:#fff;box-shadow:0 4px 12px rgba(255,107,74,.3)}.nav-btn-fill:hover{transform:translateY(-1px)}
+.nav-btn-fill{background:var(--coral);color:#fff;box-shadow:0 4px 12px rgba(255,143,126,.3)}.nav-btn-fill:hover{transform:translateY(-1px)}
 .nav-back{display:none;align-items:center;gap:6px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;background:none;border:none}.nav-back:hover{color:var(--ink)}
 
 /* SCREENS */
@@ -57,7 +58,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .hero-sub{font-size:17px;color:var(--muted);font-weight:600;max-width:500px;margin:0 auto 32px;line-height:1.65}
 .hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:40px}
 .btn-hero{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;padding:15px 30px;border-radius:50px;border:none;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
-.btn-hero-fill{background:var(--coral);color:#fff;box-shadow:0 6px 20px rgba(255,107,74,.35)}.btn-hero-fill:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,107,74,.45)}
+.btn-hero-fill{background:var(--coral);color:#fff;box-shadow:0 6px 20px rgba(255,143,126,.35)}.btn-hero-fill:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,143,126,.45)}
 .btn-hero-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--border)}.btn-hero-ghost:hover{border-color:var(--ink)}
 
 /* CATEGORY PILLS */
@@ -124,7 +125,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .mp-btn{display:block;width:100%;background:var(--coral);color:#fff;border:none;padding:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;border-radius:50px}
 .mp-btn:hover{opacity:.9}
 .leaflet-popup-tip-container{display:none}
-.map-marker{background:var(--coral);color:#fff;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;padding:5px 10px;border-radius:50px;white-space:nowrap;box-shadow:0 3px 10px rgba(255,107,74,.4);border:2px solid #fff;cursor:pointer}
+.map-marker{background:var(--coral);color:#fff;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;padding:5px 10px;border-radius:50px;white-space:nowrap;box-shadow:0 3px 10px rgba(255,143,126,.4);border:2px solid #fff;cursor:pointer}
 
 /* SLOT DETAIL */
 .slot-wrap{max-width:880px;margin:0 auto;padding:36px 32px 80px}
@@ -151,11 +152,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .fee-row.total{border-top:1.5px solid var(--border);margin-top:6px;padding-top:10px}
 .fee-row.total .fr{color:var(--coral);font-size:16px}
 #stripe-card-element{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rsm);padding:13px 14px;margin-bottom:14px;transition:border-color .2s}
-#stripe-card-element.StripeElement--focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,107,74,.1)}
+#stripe-card-element.StripeElement--focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,143,126,.1)}
 #stripe-card-element.StripeElement--invalid{border-color:#e53e3e}
 .stripe-error{color:#c0392b;font-size:12px;font-weight:600;margin-bottom:12px;display:none}
 .stripe-error.show{display:block}
-.book-btn{width:100%;background:var(--coral);color:#fff;border:none;padding:15px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,107,74,.3);transition:transform .15s}
+.book-btn{width:100%;background:var(--coral);color:#fff;border:none;padding:15px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,143,126,.3);transition:transform .15s}
 .book-btn:hover{transform:translateY(-2px)}.book-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .panel-note{margin-top:12px;text-align:center;font-size:11px;color:var(--muted);font-weight:600;line-height:1.5}
 .login-nudge{background:var(--peach);border-radius:var(--rsm);padding:18px;text-align:center;border:1.5px solid #ffcca8}
@@ -174,9 +175,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .fgroup{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
 .fgroup label{font-family:'Nunito',sans-serif;font-size:12px;font-weight:800}
 .fgroup input{background:#fff;border:1.5px solid var(--border);border-radius:var(--rsm);padding:11px 14px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .2s;width:100%}
-.fgroup input:focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,107,74,.1)}
+.fgroup input:focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,143,126,.1)}
 .fgroup input::placeholder{color:#c4b9aa}
-.auth-submit{width:100%;background:var(--coral);color:#fff;border:none;padding:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 18px rgba(255,107,74,.3);margin-top:6px;transition:transform .15s}
+.auth-submit{width:100%;background:var(--coral);color:#fff;border:none;padding:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 18px rgba(255,143,126,.3);margin-top:6px;transition:transform .15s}
 .auth-submit:hover{transform:translateY(-2px)}
 .auth-foot{text-align:center;font-size:13px;color:var(--muted);font-weight:600;margin-top:18px}
 .auth-foot a{color:var(--coral);font-weight:800;cursor:pointer}
@@ -252,8 +253,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 
 /* FOOTER */
 .site-footer{padding:40px 36px;border-top:1.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
-.footer-logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:20px;color:var(--ink);text-decoration:none;cursor:pointer;background:none;border:none}
-.footer-logo span{color:var(--coral)}
+.footer-logo{cursor:pointer;background:none;border:none;padding:0;display:flex;align-items:center}
+.footer-logo img{height:22px;width:auto;display:block}
 .footer-links{display:flex;gap:20px;flex-wrap:wrap}
 .footer-links a{font-size:13px;color:var(--muted);font-weight:600;text-decoration:none;transition:color .2s}
 .footer-links a:hover{color:var(--ink)}
@@ -338,7 +339,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 
 <!-- NAV -->
 <nav>
-  <button class="nav-logo" onclick="go('browse')">sk<span>orr</span>d</button>
+  <button class="nav-logo" onclick="go('browse')"><img src="brand/logo-black.png" alt="Skorrd"></button>
   <div class="nav-mid">
     <span class="nav-chip on" id="nav-chip-browse" onclick="go('browse')" style="cursor:pointer">🔍 Browse slots</span>
     <span class="nav-chip" id="nav-chip-about" onclick="go('about')" style="cursor:pointer">💡 How it works</span>
@@ -425,7 +426,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
   </div>
 
   <footer class="site-footer">
-    <button class="footer-logo" onclick="go('browse')">sk<span>orr</span>d</button>
+    <button class="footer-logo" onclick="go('browse')"><img src="brand/logo-black.png" alt="Skorrd"></button>
     <div class="footer-links">
       <a href="/skorrd-business">For businesses</a>
       <a href="#">Privacy</a>
@@ -525,19 +526,19 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
     <h2 style="font-family:'Nunito',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:900;letter-spacing:-1px;margin-bottom:48px">Three steps, that's it.</h2>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px" class="about-steps">
       <div style="background:#fff;padding:36px 28px;border-radius:var(--r) 0 0 var(--r);border:1.5px solid var(--border)">
-        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,107,74,.12);line-height:1;margin-bottom:16px">01</div>
+        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,143,126,.12);line-height:1;margin-bottom:16px">01</div>
         <div style="font-size:22px;margin-bottom:10px">📋</div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px">Business lists a slot</h3>
         <p style="font-size:14px;color:var(--muted);line-height:1.7;font-weight:600">Takes under 60 seconds. Pick a service, set the time, choose your own discount. It goes live immediately for nearby customers to discover.</p>
       </div>
       <div style="background:#fff;padding:36px 28px;border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border)">
-        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,107,74,.12);line-height:1;margin-bottom:16px">02</div>
+        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,143,126,.12);line-height:1;margin-bottom:16px">02</div>
         <div style="font-size:22px;margin-bottom:10px">🔍</div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px">Customer discovers &amp; books</h3>
         <p style="font-size:14px;color:var(--muted);line-height:1.7;font-weight:600">Nearby customers browse by category, time, or saving size. They book instantly with a small $5 hold fee — no phone calls, no back-and-forth.</p>
       </div>
       <div style="background:#fff;padding:36px 28px;border-radius:0 var(--r) var(--r) 0;border:1.5px solid var(--border)">
-        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,107,74,.12);line-height:1;margin-bottom:16px">03</div>
+        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,143,126,.12);line-height:1;margin-bottom:16px">03</div>
         <div style="font-size:22px;margin-bottom:10px">🎉</div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px">Both sides confirmed</h3>
         <p style="font-size:14px;color:var(--muted);line-height:1.7;font-weight:600">Instant notification for the business and customer. The slot is locked. Customer pays the full service fee at the appointment — you keep control of your money.</p>
@@ -594,7 +595,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
             </div>
           </div>
         </div>
-        <button onclick="go('browse')" style="width:100%;background:var(--coral);color:#fff;border:none;padding:14px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 16px rgba(255,107,74,.3)">Browse live slots →</button>
+        <button onclick="go('browse')" style="width:100%;background:var(--coral);color:#fff;border:none;padding:14px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 16px rgba(255,143,126,.3)">Browse live slots →</button>
       </div>
     </div>
   </div>
@@ -605,25 +606,25 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
     <h2 style="font-family:'Nunito',sans-serif;font-size:clamp(26px,3.5vw,38px);font-weight:900;letter-spacing:-1px;margin-bottom:36px">Good to know before you book</h2>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" class="policies-grid">
       <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative">
-        <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,107,74,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">1</div>
+        <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,143,126,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">1</div>
         <div style="font-size:28px;margin-bottom:12px">💳</div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:8px">$5 hold fee</h3>
         <p style="font-size:13px;color:var(--muted);line-height:1.65;font-weight:600">You pay $5 online to secure your slot. This confirms you're serious and protects the business from no-shows. The service fee is paid directly at the appointment.</p>
       </div>
       <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative">
-        <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,107,74,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">2</div>
+        <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,143,126,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">2</div>
         <div style="font-size:28px;margin-bottom:12px">❌</div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:8px">Cancellation policy</h3>
         <p style="font-size:13px;color:var(--muted);line-height:1.65;font-weight:600">You can cancel any time, but the $5 hold fee is non-refundable — it goes to the business. The slot automatically gets re-listed so someone else can grab it.</p>
       </div>
       <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative">
-        <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,107,74,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">3</div>
+        <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,143,126,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">3</div>
         <div style="font-size:28px;margin-bottom:12px">📅</div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:8px">Booking window</h3>
         <p style="font-size:13px;color:var(--muted);line-height:1.65;font-weight:600">Slots are listed up to 7 days ahead with no minimum lead time. Most deals are same-day or next-day — so check back regularly for fresh listings.</p>
       </div>
       <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative">
-        <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,107,74,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">4</div>
+        <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,143,126,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">4</div>
         <div style="font-size:28px;margin-bottom:12px">🔒</div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:8px">Secure payments</h3>
         <p style="font-size:13px;color:var(--muted);line-height:1.65;font-weight:600">Hold fees are processed securely via Stripe. Your card details are never stored by Skorrd. The business receives payment directly at the appointment.</p>
@@ -656,18 +657,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 
   <!-- CTA -->
   <div style="padding:80px 36px;text-align:center;position:relative;overflow:hidden">
-    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(255,107,74,.08) 0%,transparent 65%);pointer-events:none"></div>
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(255,143,126,.08) 0%,transparent 65%);pointer-events:none"></div>
     <div style="font-size:48px;margin-bottom:16px">🎯</div>
     <h2 style="font-family:'Nunito',sans-serif;font-size:clamp(28px,4vw,46px);font-weight:900;letter-spacing:-1.5px;margin-bottom:14px">Ready to find a deal?</h2>
     <p style="font-size:16px;color:var(--muted);font-weight:600;max-width:400px;margin:0 auto 32px;line-height:1.65">New slots are listed every day. Jump in and see what's available near you right now.</p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-      <button onclick="go('browse')" style="background:var(--coral);color:#fff;border:none;padding:15px 30px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,107,74,.35)">Browse slots now →</button>
+      <button onclick="go('browse')" style="background:var(--coral);color:#fff;border:none;padding:15px 30px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,143,126,.35)">Browse slots now →</button>
       <a href="/skorrd-business" style="background:#fff;color:var(--ink);border:1.5px solid var(--border);padding:15px 30px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:50px;text-decoration:none">List your business</a>
     </div>
   </div>
 
   <footer class="site-footer">
-    <button class="footer-logo" onclick="go('browse')">sk<span>orr</span>d</button>
+    <button class="footer-logo" onclick="go('browse')"><img src="brand/logo-black.png" alt="Skorrd"></button>
     <div class="footer-links">
       <a href="/skorrd-business">For businesses</a>
       <a href="#">Privacy</a>
@@ -992,7 +993,7 @@ function renderMap() {
 function renderSidebar(slots) {
   document.getElementById('sidebar-title').textContent=`${slots.length} slot${slots.length===1?'':'s'} nearby`
   document.getElementById('sidebar-slots').innerHTML=slots.map(s=>{
-    const cfg=CAT_CFG[s.cat]||{dot:'#ff6b4a'}
+    const cfg=CAT_CFG[s.cat]||{dot:'#ff8f7e'}
     return `<div class="sidebar-card" id="sc-${s.id}" onclick="clickSidebar('${s.id}')">
       ${s.logoUrl?`<img src="${s.logoUrl}" style="width:38px;height:38px;border-radius:9px;object-fit:cover;border:1.5px solid #eee;flex-shrink:0">`:`<div class="sc-dot" style="background:${cfg.dot}"></div>`}
       <div class="sc-right"><div class="sc-biz">${s.biz}</div><div class="sc-svc">${s.svc}</div>

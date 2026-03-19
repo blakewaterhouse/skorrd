@@ -2,17 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0iI0ZGNkI0QSIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMyIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLCBBcmlhbCIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlM8L3RleHQ+Cjwvc3ZnPg==">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ff6b4a">
+<meta name="theme-color" content="#ff8f7e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Skorrd — Business">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Skorrd — Business Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600;700&family=Racing+Sans+One&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #f7f4f0;
@@ -20,7 +21,7 @@
   --muted: #8a7a65;
   --border: #e4ddd4;
   --white: #ffffff;
-  --coral: #ff6b4a;
+  --coral: #ff8f7e;
   --yellow: #ffd84d;
   --mint: #b8f0d8;
   --sky: #c8eaff;
@@ -53,7 +54,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
 .login-left::before{
   content:'';position:absolute;top:-120px;right:-120px;
   width:400px;height:400px;border-radius:50%;
-  background:rgba(255,107,74,.12);pointer-events:none;
+  background:rgba(255,143,126,.12);pointer-events:none;
 }
 .login-left::after{
   content:'';position:absolute;bottom:-80px;left:-80px;
@@ -79,7 +80,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
 .login-form-card{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,.06);overflow:hidden}
 .lf-header{padding:28px 40px 24px;border-bottom:1.5px solid var(--border)}
 .lf-header.mode-login{background:var(--ink)}
-.lf-header.mode-signup{background:linear-gradient(135deg,#ff6b4a,#ff9a2e)}
+.lf-header.mode-signup{background:linear-gradient(135deg,#ff8f7e,#ff9a2e)}
 .lf-header.mode-details{background:linear-gradient(135deg,#4ade80,#06b6d4)}
 .lf-body{padding:32px 40px 40px}
 .lf-logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:16px;color:rgba(255,255,255,.6);margin-bottom:10px}
@@ -90,10 +91,10 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
 .fgroup{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
 .fgroup label{font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:var(--ink);letter-spacing:.2px}
 .fgroup input,.fgroup select{background:#fff;border:1.5px solid var(--border);border-radius:var(--rsm);padding:11px 14px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;width:100%}
-.fgroup input:focus,.fgroup select:focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,107,74,.1)}
+.fgroup input:focus,.fgroup select:focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,143,126,.1)}
 .fgroup input::placeholder{color:#c4b9aa}
-.login-submit{width:100%;background:var(--coral);color:#fff;border:none;padding:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 18px rgba(255,107,74,.3);transition:transform .15s,box-shadow .15s;margin-top:6px}
-.login-submit:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(255,107,74,.4)}
+.login-submit{width:100%;background:var(--coral);color:#fff;border:none;padding:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 18px rgba(255,143,126,.3);transition:transform .15s,box-shadow .15s;margin-top:6px}
+.login-submit:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(255,143,126,.4)}
 .login-switch{text-align:center;font-size:13px;color:var(--muted);font-weight:600;margin-top:20px}
 .login-switch a{color:var(--coral);font-weight:800;text-decoration:none;cursor:pointer}
 .lf-divider{text-align:center;font-size:12px;color:var(--muted);margin:16px 0;position:relative}
@@ -129,7 +130,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
   border:none;background:none;width:100%;text-align:left;
 }
 .sb-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85)}
-.sb-item.active{background:rgba(255,107,74,.18);color:#fff}
+.sb-item.active{background:rgba(255,143,126,.18);color:#fff}
 .sb-item.active .sb-icon{color:var(--coral)}
 .sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
 .sb-badge{margin-left:auto;background:var(--coral);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:50px;min-width:20px;text-align:center}
@@ -156,8 +157,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
 .panel-sub{font-size:14px;color:var(--muted);font-weight:600}
 
 /* ── BUTTONS ── */
-.btn-coral{background:var(--coral);color:#fff;border:none;padding:12px 22px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 4px 14px rgba(255,107,74,.3);transition:transform .15s,box-shadow .15s;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
-.btn-coral:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(255,107,74,.4)}
+.btn-coral{background:var(--coral);color:#fff;border:none;padding:12px 22px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 4px 14px rgba(255,143,126,.3);transition:transform .15s,box-shadow .15s;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.btn-coral:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(255,143,126,.4)}
 .btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--border);padding:10px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:50px;transition:border-color .2s,transform .15s;display:inline-flex;align-items:center;gap:7px}
 .btn-ghost:hover{border-color:var(--ink);transform:translateY(-1px)}
 .btn-danger{background:#fff;color:var(--red);border:1.5px solid #fecaca;padding:8px 14px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border-radius:50px;transition:all .2s}
@@ -257,7 +258,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .form-row.three{grid-template-columns:1fr 1fr 1fr}
 .fgroup textarea{background:#fff;border:1.5px solid var(--border);border-radius:var(--rsm);padding:11px 14px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;width:100%;resize:vertical;min-height:80px}
-.fgroup textarea:focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,107,74,.1)}
+.fgroup textarea:focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,143,126,.1)}
 .fgroup textarea::placeholder{color:#c4b9aa}
 
 /* Preview card */
@@ -282,7 +283,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
 /* Discount slider */
 .discount-display{font-family:'Nunito',sans-serif;font-size:28px;font-weight:900;color:var(--coral);margin:4px 0 8px}
 .range-input{-webkit-appearance:none;width:100%;height:6px;border-radius:6px;background:var(--border);outline:none;cursor:pointer}
-.range-input::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--coral);cursor:pointer;box-shadow:0 2px 8px rgba(255,107,74,.4);border:2px solid #fff;transition:transform .15s}
+.range-input::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--coral);cursor:pointer;box-shadow:0 2px 8px rgba(255,143,126,.4);border:2px solid #fff;transition:transform .15s}
 .range-input::-webkit-slider-thumb:hover{transform:scale(1.2)}
 
 /* ══════════════════
@@ -406,22 +407,22 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
 
   <!-- NAV -->
   <nav style="position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:14px 36px;background:rgba(255,251,245,.94);backdrop-filter:blur(16px);border-bottom:1.5px solid #ede8df">
-    <div onclick="window.location='./'" style="font-family:'Nunito',sans-serif;font-weight:900;font-size:22px;color:#1a1207;letter-spacing:-1px;cursor:pointer;user-select:none">sk<span style="color:#ff6b4a">orr</span>d</div>
+    <div onclick="window.location='./'" style="cursor:pointer"><img src="brand/logo-black.png" alt="Skorrd" style="height:26px;width:auto;display:block"></div>
     <div style="display:flex;gap:10px;align-items:center">
-      <button onclick="window.location='./'" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:#8a7a65;padding:8px 16px;border-radius:50px;border:1.5px solid #ede8df;background:#fffbf5;transition:all .2s;cursor:pointer" onmouseover="this.style.borderColor='#ff6b4a';this.style.color='#ff6b4a'" onmouseout="this.style.borderColor='#ede8df';this.style.color='#8a7a65'">Browse slots</button>
-      <button onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('login-screen').style.display='flex'" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;padding:8px 20px;border-radius:50px;border:none;cursor:pointer;background:#ff6b4a;color:#fff;box-shadow:0 4px 12px rgba(255,107,74,.3)">Log in / Sign up →</button>
+      <button onclick="window.location='./'" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:#8a7a65;padding:8px 16px;border-radius:50px;border:1.5px solid #ede8df;background:#fffbf5;transition:all .2s;cursor:pointer" onmouseover="this.style.borderColor='#ff8f7e';this.style.color='#ff8f7e'" onmouseout="this.style.borderColor='#ede8df';this.style.color='#8a7a65'">Browse slots</button>
+      <button onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('login-screen').style.display='flex'" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;padding:8px 20px;border-radius:50px;border:none;cursor:pointer;background:#ff8f7e;color:#fff;box-shadow:0 4px 12px rgba(255,143,126,.3)">Log in / Sign up →</button>
     </div>
   </nav>
 
   <!-- HERO -->
   <div style="background:#1a1207;padding:80px 36px 72px;text-align:center;position:relative;overflow:hidden">
-    <div style="position:absolute;top:-150px;right:-100px;width:500px;height:500px;border-radius:50%;background:rgba(255,107,74,.1);pointer-events:none"></div>
+    <div style="position:absolute;top:-150px;right:-100px;width:500px;height:500px;border-radius:50%;background:rgba(255,143,126,.1);pointer-events:none"></div>
     <div style="position:absolute;bottom:-100px;left:-80px;width:400px;height:400px;border-radius:50%;background:rgba(255,216,77,.06);pointer-events:none"></div>
     <div style="font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:16px;position:relative">For businesses</div>
-    <h1 style="font-family:'Nunito',sans-serif;font-size:clamp(36px,6vw,68px);font-weight:900;color:#fff;letter-spacing:-2px;line-height:1.05;margin-bottom:20px;position:relative">Stop letting empty slots<br><span style="color:#ff6b4a">cost you.</span></h1>
+    <h1 style="font-family:'Nunito',sans-serif;font-size:clamp(36px,6vw,68px);font-weight:900;color:#fff;letter-spacing:-2px;line-height:1.05;margin-bottom:20px;position:relative">Stop letting empty slots<br><span style="color:#ff8f7e">cost you.</span></h1>
     <p style="font-size:17px;color:rgba(255,255,255,.6);font-weight:600;max-width:520px;margin:0 auto 36px;line-height:1.65;position:relative">Skorrd connects your spare appointment capacity with nearby customers who want a deal. Fill your chair. Book your slot. Zero empty seats.</p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative">
-      <button onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('login-screen').style.display='flex'" style="background:#ff6b4a;color:#fff;border:none;padding:15px 30px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,107,74,.4)">List your slots free →</button>
+      <button onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('login-screen').style.display='flex'" style="background:#ff8f7e;color:#fff;border:none;padding:15px 30px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,143,126,.4)">List your slots free →</button>
       <a href="./" style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,.4);padding:15px 30px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;text-decoration:none;display:inline-block;transition:background .2s,border-color .2s" onmouseover="this.style.background='rgba(255,255,255,.1)';this.style.borderColor='rgba(255,255,255,.7)'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(255,255,255,.4)'">Find deals as a customer</a>
     </div>
   </div>
@@ -429,38 +430,38 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
   <!-- STATS STRIP -->
   <div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1.5px solid #ede8df;background:#fff">
     <div style="padding:40px 36px;border-right:1.5px solid #ede8df">
-      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:#ff6b4a;line-height:1;margin-bottom:6px">30%</div>
+      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:#ff8f7e;line-height:1;margin-bottom:6px">30%</div>
       <div style="font-size:14px;color:#8a7a65;font-weight:600;line-height:1.5">Average unused appointment<br>capacity per week</div>
     </div>
     <div style="padding:40px 36px;border-right:1.5px solid #ede8df">
-      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:#ff6b4a;line-height:1;margin-bottom:6px">$0</div>
+      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:#ff8f7e;line-height:1;margin-bottom:6px">$0</div>
       <div style="font-size:14px;color:#8a7a65;font-weight:600;line-height:1.5">Revenue earned from<br>your empty slots today</div>
     </div>
     <div style="padding:40px 36px">
-      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:#ff6b4a;line-height:1;margin-bottom:6px">60s</div>
+      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:#ff8f7e;line-height:1;margin-bottom:6px">60s</div>
       <div style="font-size:14px;color:#8a7a65;font-weight:600;line-height:1.5">To list a slot and go<br>live to customers nearby</div>
     </div>
   </div>
 
   <!-- HOW IT WORKS -->
   <div style="padding:72px 36px;max-width:960px;margin:0 auto">
-    <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#ff6b4a;margin-bottom:12px">✦ How it works</div>
+    <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#ff8f7e;margin-bottom:12px">✦ How it works</div>
     <h2 style="font-family:'Nunito',sans-serif;font-size:clamp(26px,4vw,42px);font-weight:900;letter-spacing:-1px;margin-bottom:48px">Simple on both sides</h2>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px">
       <div style="background:#fff;padding:36px 28px;border-radius:16px 0 0 16px;border:1.5px solid #ede8df">
-        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,107,74,.12);line-height:1;margin-bottom:16px">01</div>
+        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,143,126,.12);line-height:1;margin-bottom:16px">01</div>
         <div style="font-size:22px;margin-bottom:10px">📋</div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px">List a slot</h3>
         <p style="font-size:14px;color:#8a7a65;line-height:1.7;font-weight:600">Post an available appointment time in seconds — service type, time, and your own discount. It goes live immediately for customers nearby.</p>
       </div>
       <div style="background:#fff;padding:36px 28px;border-top:1.5px solid #ede8df;border-bottom:1.5px solid #ede8df">
-        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,107,74,.12);line-height:1;margin-bottom:16px">02</div>
+        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,143,126,.12);line-height:1;margin-bottom:16px">02</div>
         <div style="font-size:22px;margin-bottom:10px">📱</div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px">Customer books</h3>
         <p style="font-size:14px;color:#8a7a65;line-height:1.7;font-weight:600">Nearby customers find the slot, confirm the details, and pay a small $5 hold fee through Stripe to secure the appointment. No phone calls needed.</p>
       </div>
       <div style="background:#fff;padding:36px 28px;border-radius:0 16px 16px 0;border:1.5px solid #ede8df">
-        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,107,74,.12);line-height:1;margin-bottom:16px">03</div>
+        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,143,126,.12);line-height:1;margin-bottom:16px">03</div>
         <div style="font-size:22px;margin-bottom:10px">🎉</div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px">Both get notified</h3>
         <p style="font-size:14px;color:#8a7a65;line-height:1.7;font-weight:600">Instant confirmation for you and the customer. Slot is locked. Customer pays for the service at the appointment — you keep full control of your money.</p>
@@ -472,18 +473,18 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
   <div style="background:#fff;border-top:1.5px solid #ede8df;border-bottom:1.5px solid #ede8df;padding:72px 36px">
     <div style="max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start">
       <div>
-        <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#ff6b4a;margin-bottom:12px">✦ For businesses</div>
+        <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#ff8f7e;margin-bottom:12px">✦ For businesses</div>
         <h2 style="font-family:'Nunito',sans-serif;font-size:clamp(24px,3.5vw,36px);font-weight:900;letter-spacing:-1px;line-height:1.1;margin-bottom:20px">Turn dead time<br>into real revenue</h2>
         <p style="font-size:15px;color:#8a7a65;line-height:1.7;font-weight:600;margin-bottom:28px">Every empty slot that passes is revenue you'll never recover. Skorrd gives you a fast, free way to fill those gaps with real customers who are actively looking for a deal right now.</p>
         <ul style="list-style:none;display:flex;flex-direction:column;gap:14px;margin-bottom:32px">
-          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:#ff6b4a;flex-shrink:0;font-size:13px;margin-top:2px">→</span>List any appointment slot in under 60 seconds</li>
-          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:#ff6b4a;flex-shrink:0;font-size:13px;margin-top:2px">→</span>Set your own discount — you stay in full control</li>
-          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:#ff6b4a;flex-shrink:0;font-size:13px;margin-top:2px">→</span>Attract new customers who'd never have found you</li>
-          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:#ff6b4a;flex-shrink:0;font-size:13px;margin-top:2px">→</span>Manage all your slots from a simple dashboard</li>
-          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:#ff6b4a;flex-shrink:0;font-size:13px;margin-top:2px">→</span>Calendar sync to auto-detect gaps (coming soon)</li>
-          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:#ff6b4a;flex-shrink:0;font-size:13px;margin-top:2px">→</span>Free to list — we only earn a small fee when you book</li>
+          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:#ff8f7e;flex-shrink:0;font-size:13px;margin-top:2px">→</span>List any appointment slot in under 60 seconds</li>
+          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:#ff8f7e;flex-shrink:0;font-size:13px;margin-top:2px">→</span>Set your own discount — you stay in full control</li>
+          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:#ff8f7e;flex-shrink:0;font-size:13px;margin-top:2px">→</span>Attract new customers who'd never have found you</li>
+          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:#ff8f7e;flex-shrink:0;font-size:13px;margin-top:2px">→</span>Manage all your slots from a simple dashboard</li>
+          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:#ff8f7e;flex-shrink:0;font-size:13px;margin-top:2px">→</span>Calendar sync to auto-detect gaps (coming soon)</li>
+          <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:#ff8f7e;flex-shrink:0;font-size:13px;margin-top:2px">→</span>Free to list — we only earn a small fee when you book</li>
         </ul>
-        <button onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('login-screen').style.display='flex'" style="background:#ff6b4a;color:#fff;border:none;padding:15px 28px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,107,74,.35)">Get started free →</button>
+        <button onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('login-screen').style.display='flex'" style="background:#ff8f7e;color:#fff;border:none;padding:15px 28px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,143,126,.35)">Get started free →</button>
       </div>
       <div style="display:flex;flex-direction:column;gap:14px">
         <!-- MINI DASHBOARD MOCKUP -->
@@ -501,7 +502,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
               </div>
               <div style="background:#fff;border-radius:10px;border:1.5px solid #e4ddd4;padding:12px">
                 <div style="font-size:9px;color:#8a7a65;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Slots filled</div>
-                <div style="font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;color:#ff6b4a">8</div>
+                <div style="font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;color:#ff8f7e">8</div>
                 <div style="font-size:11px;color:#8a7a65;font-weight:600">this month</div>
               </div>
               <div style="background:#fff;border-radius:10px;border:1.5px solid #e4ddd4;padding:12px">
@@ -533,7 +534,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
 
   <!-- CATEGORIES -->
   <div style="padding:64px 36px;max-width:960px;margin:0 auto">
-    <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#ff6b4a;margin-bottom:12px">✦ Categories</div>
+    <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#ff8f7e;margin-bottom:12px">✦ Categories</div>
     <h2 style="font-family:'Nunito',sans-serif;font-size:clamp(24px,3vw,36px);font-weight:900;letter-spacing:-1px;margin-bottom:8px">Built for any appointment-based service</h2>
     <p style="font-size:15px;color:#8a7a65;font-weight:600;margin-bottom:28px">If people book time with you, you can list on Skorrd.</p>
     <div style="display:flex;flex-wrap:wrap;gap:10px">
@@ -555,7 +556,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
   <!-- TESTIMONIALS -->
   <div style="background:#fff;border-top:1.5px solid #ede8df;padding:72px 36px">
     <div style="max-width:960px;margin:0 auto">
-      <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#ff6b4a;margin-bottom:12px">✦ Early feedback</div>
+      <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#ff8f7e;margin-bottom:12px">✦ Early feedback</div>
       <h2 style="font-family:'Nunito',sans-serif;font-size:clamp(24px,3.5vw,38px);font-weight:900;letter-spacing:-1px;margin-bottom:40px">Businesses are already excited</h2>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
         <div style="background:#fffbf5;border-radius:16px;border:1.5px solid #ede8df;padding:24px">
@@ -588,15 +589,15 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
 
   <!-- CTA FINAL -->
   <div style="background:#1a1207;padding:80px 36px;text-align:center;position:relative;overflow:hidden">
-    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(255,107,74,.15) 0%,transparent 60%);pointer-events:none"></div>
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(255,143,126,.15) 0%,transparent 60%);pointer-events:none"></div>
     <h2 style="font-family:'Nunito',sans-serif;font-size:clamp(28px,5vw,52px);font-weight:900;color:#fff;letter-spacing:-1.5px;margin-bottom:14px;position:relative">Ready to fill every slot?</h2>
     <p style="font-size:16px;color:rgba(255,255,255,.55);font-weight:600;max-width:420px;margin:0 auto 32px;line-height:1.65;position:relative">Join free. No commitment. List your first slot in under 60 seconds.</p>
-    <button onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('login-screen').style.display='flex'" style="background:#ff6b4a;color:#fff;border:none;padding:16px 32px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 8px 28px rgba(255,107,74,.4);position:relative">Create free business account →</button>
+    <button onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('login-screen').style.display='flex'" style="background:#ff8f7e;color:#fff;border:none;padding:16px 32px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 8px 28px rgba(255,143,126,.4);position:relative">Create free business account →</button>
   </div>
 
   <!-- FOOTER -->
   <div style="padding:36px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;border-top:1.5px solid #ede8df;background:#fffbf5">
-    <a href="./" style="font-family:'Nunito',sans-serif;font-weight:900;font-size:20px;color:#1a1207;text-decoration:none">sk<span style="color:#ff6b4a">orr</span>d</a>
+    <a href="./" style="font-family:'Nunito',sans-serif;font-weight:900;font-size:20px;color:#1a1207;text-decoration:none">sk<span style="color:#ff8f7e">orr</span>d</a>
     <div style="display:flex;gap:20px;flex-wrap:wrap">
       <a href="./" style="font-size:13px;color:#8a7a65;font-weight:600;text-decoration:none">Browse slots</a>
       <a href="#" style="font-size:13px;color:#8a7a65;font-weight:600;text-decoration:none">Privacy</a>
@@ -612,7 +613,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
 ══════════════════════════════════════ -->
 <div id="login-screen" style="display:none">
   <div class="login-left">
-    <div class="ll-logo">sk<span>orr</span>d</div>
+    <div class="ll-logo"><img src="brand/logo-white.png" alt="Skorrd" style="height:32px;width:auto"></div>
     <div class="ll-tag">Business portal</div>
     <button onclick="document.getElementById('login-screen').style.display='none';document.getElementById('biz-info-screen').style.display='block'" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:50px;cursor:pointer;margin-bottom:40px;transition:all .2s" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,.4)'" onmouseout="this.style.color='rgba(255,255,255,.6)';this.style.borderColor='rgba(255,255,255,.15)'">← How it works</button>
     <div class="ll-heading">Your empty slots are <em>costing you.</em></div>
@@ -636,7 +637,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
     <div class="login-form-card" id="login-form-card">
       <div class="lf-header mode-login" id="lf-header">
         <div class="lf-mode-badge" id="lf-mode-badge">Log in</div>
-        <div class="lf-logo">sk<span>orr</span>d</div>
+        <div class="lf-logo"><img src="brand/logo-white.png" alt="Skorrd" style="height:28px;width:auto"></div>
         <div class="lf-title" id="lf-title">Welcome back</div>
         <div class="lf-sub" id="lf-sub">Log in to your business account</div>
       </div>
@@ -656,7 +657,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
     <!-- SIDEBAR -->
     <div class="sidebar">
       <div class="sb-header">
-        <a href="./" class="sb-logo" style="text-decoration:none;display:block">sk<span>orr</span>d</a>
+        <a href="./" class="sb-logo" style="text-decoration:none;display:block"><img src="brand/logo-white.png" alt="Skorrd" style="height:24px;width:auto"></a>
         <div class="sb-biz" id="sb-biz-name">Sharp &amp; Co.</div>
       </div>
       <div class="sb-nav">
@@ -1576,7 +1577,7 @@ function renderUpcoming() {
           <div class="ui-svc">${s.svc}</div>
           <div class="ui-who">$${s.disc} · Save ${pct(s.orig,s.disc)}%</div>
         </div>
-        <div class="ui-dot" style="background:${CAT_DOTS[s.cat]||'#ff6b4a'}"></div>
+        <div class="ui-dot" style="background:${CAT_DOTS[s.cat]||'#ff8f7e'}"></div>
       </div>`).join('')
     : `<div style="text-align:center;padding:24px;color:var(--muted);font-size:14px;font-weight:600">No upcoming slots<br><a onclick="showPanel('add')" style="color:var(--coral);cursor:pointer;font-weight:700">List one now →</a></div>`
 }
