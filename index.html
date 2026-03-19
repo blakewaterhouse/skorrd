@@ -830,8 +830,9 @@ async function loadSlots() {
     .from('slots')
     .select(`id, service_name, category, original_price, discounted_price,
              appointment_at, duration_mins, notes, status,
-             businesses ( id, name, suburb, street, state, postcode, lat, lng, logo_url )`)
+             businesses!inner ( id, name, suburb, street, state, postcode, lat, lng, logo_url, is_demo )`)
     .eq('status','available')
+    .eq('businesses.is_demo', false)
     .gte('appointment_at', new Date().toISOString())
     .order('appointment_at',{ascending:true})
   if (error) { console.error('loadSlots:',error); return }

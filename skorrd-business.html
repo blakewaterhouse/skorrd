@@ -845,7 +845,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
                 <div class="fgroup">
                   <label>Discount</label>
                   <div class="discount-display" id="disc-display">20%</div>
-                  <input type="range" class="range-input" id="f-disc" min="5" max="60" value="20" oninput="updatePreview()">
+                  <input type="range" class="range-input" id="f-disc" min="5" max="100" value="20" oninput="updatePreview()">
                   <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-weight:600;margin-top:4px"><span>5%</span><span>60%</span></div>
                 </div>
               </div>
@@ -1366,7 +1366,7 @@ async function demoLogin() {
 async function loadDashboard(session) {
   showProcessing('Loading your dashboard...')
   // Load business record for this owner
-  const { data: bizData } = await sb.from('businesses').select('*').eq('owner_id', session.user.id).maybeSingle()
+  const { data: bizData } = await sb.from('businesses').select('*, is_demo').eq('owner_id', session.user.id).maybeSingle()
 
   if (!bizData) {
     // New user with no business yet — send them to profile setup
@@ -1391,6 +1391,7 @@ async function loadDashboard(session) {
     lat:      bizData.lat,
     lng:      bizData.lng,
     logoUrl:  bizData.logo_url || null,
+    isDemo:   bizData.is_demo || false,
   }
 
   await loadSlots()
@@ -1509,6 +1510,29 @@ function computeStats() {
 }
 
 function renderActivityFeed() {
+  // Demo account gets sample data
+  if (BIZ?.isDemo) {
+    const demoItems = [
+      { type:'booked',    icon:'✅', title:'Classic fade + hot towel booked', sub:'Tomorrow, 10:00 AM', time:'2 min ago',   amount:'Hold fee taken' },
+      { type:'booked',    icon:'✅', title:'Beard trim booked',                sub:'In 2 days, 2:00 PM', time:'1 hr ago',   amount:'Hold fee taken' },
+      { type:'listed',    icon:'📋', title:'New slot listed',                  sub:'Hot towel shave · Today 4 PM',          time:'3 hrs ago', amount:null },
+      { type:'booked',    icon:'✅', title:'Classic fade completed',           sub:'Customer attended',                     time:'Yesterday', amount:null },
+      { type:'cancelled', icon:'❌', title:'Kids cut slot cancelled',          sub:'Customer cancelled',                    time:'2 days ago', amount:null },
+    ]
+    document.getElementById('activity-count').textContent = demoItems.length + ' recent'
+    document.getElementById('activity-feed').innerHTML = demoItems.map((it,i) => `
+      <div class="activity-item" style="animation-delay:${i*.07}s">
+        <div class="ai-icon ${it.type}"><span>${it.icon}</span></div>
+        <div class="ai-body">
+          <div class="ai-title">${it.title}</div>
+          <div class="ai-sub">${it.sub}</div>
+        </div>
+        <div class="ai-time">${it.time}</div>
+        ${it.amount ? `<div class="ai-amount">${it.amount}</div>` : ''}
+      </div>`).join('')
+    return
+  }
+
   if (BOOKINGS.length === 0) {
     document.getElementById('activity-count').textContent = ''
     document.getElementById('activity-feed').innerHTML = `<div style="text-align:center;padding:24px;color:var(--muted);font-size:14px;font-weight:600">No activity yet — bookings will appear here</div>`
