@@ -1303,9 +1303,16 @@ function closeCancelModal(){document.getElementById('cancel-modal-overlay').clas
 
 async function executeCancel(bookingId) {
   closeCancelModal(); showProcessing('Cancelling...')
-  const {error}=await sb.from('bookings').update({status:'cancelled',cancelled_at:new Date().toISOString()}).eq('id',bookingId).eq('customer_id',state.user.id)
+  const { data: fresh } = await sb.auth.refreshSession()
+  const token = fresh?.session?.access_token || (await sb.auth.getSession()).data?.session?.access_token
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/cancel-booking`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify({ booking_id: bookingId })
+  })
+  const data = await res.json()
   hideProcessing()
-  if(error){showToast('Could not cancel — please try again','err');return}
+  if (!res.ok) { showToast(data.error || 'Could not cancel — please try again', 'err'); return }
   await loadBookings(); await loadSlots(); renderCards(); if(state.view==='map') renderMap(); updateNav(); renderDrawer()
   showToast('Booking cancelled — slot re-listed for others','')
 }
