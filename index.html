@@ -1159,12 +1159,12 @@ async function handlePay() {
   if (errEl) { errEl.textContent = ''; errEl.classList.remove('show') }
 
   try {
-    // Get auth token
-    const sessionResult = await Promise.race([sb.auth.getSession(), new Promise((_,r) => setTimeout(() => r(new Error('timeout')), 5000))])
-    let token = sessionResult?.data?.session?.access_token
+    // Always refresh to guarantee a valid token (getSession can return expired tokens)
+    const { data: refreshed } = await sb.auth.refreshSession()
+    let token = refreshed?.session?.access_token
     if (!token) {
-      const { data: refreshed } = await sb.auth.refreshSession()
-      token = refreshed?.session?.access_token
+      const { data: cur } = await sb.auth.getSession()
+      token = cur?.session?.access_token
     }
     if (!token) {
       showToast('Please log in to book','err')
