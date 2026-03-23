@@ -801,7 +801,9 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
                     <option value="Barbershop">✂️ Barbershop</option>
                     <option value="Nail Salon">💅 Nail Salon</option>
                     <option value="Physiotherapy">🫁 Physiotherapy</option>
-                    <option value="Beauty & Wellness">💆 Beauty & Wellness</option>
+                    <option value="Beauty">💆 Beauty</option>
+                    <option value="Wellness">🧖 Wellness</option>
+                    <option value="Chiropractic">🦴 Chiropractic</option>
                     <option value="Personal Training">🏋️ Personal Training</option>
                     <option value="Hair Salon">💇 Hair Salon</option>
                     <option value="Yoga & Fitness">🧘 Yoga & Fitness</option>
@@ -997,7 +999,9 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
                     <option value="Barbershop">✂️ Barbershop</option>
                     <option value="Nail Salon">💅 Nail Salon</option>
                     <option value="Physiotherapy">🫁 Physiotherapy</option>
-                    <option value="Beauty & Wellness">💆 Beauty & Wellness</option>
+                    <option value="Beauty">💆 Beauty</option>
+                    <option value="Wellness">🧖 Wellness</option>
+                    <option value="Chiropractic">🦴 Chiropractic</option>
                     <option value="Personal Training">🏋️ Personal Training</option>
                     <option value="Hair Salon">💇 Hair Salon</option>
                     <option value="Yoga & Fitness">🧘 Yoga & Fitness</option>
@@ -1457,7 +1461,7 @@ function enterDashboard(biz, email) {
   document.getElementById('overview-sub').textContent = `${biz.name}${biz.suburb ? ' · '+biz.suburb : ''}`
 
   const today = new Date().toISOString().split('T')[0]
-  const maxDate = new Date(); maxDate.setDate(maxDate.getDate() + 7)
+  const maxDate = new Date(); maxDate.setDate(maxDate.getDate() + 30)
   const maxDateStr = maxDate.toISOString().split('T')[0]
   const dateEl = document.getElementById('f-date')
   dateEl.value = today
@@ -1718,13 +1722,18 @@ function toggleRepeatEnd() {
   const wrap = document.getElementById('repeat-end-wrap')
   wrap.style.display = repeat === 'none' ? 'none' : 'block'
 
-  // Set a sensible default end date (4 weeks out)
-  if (repeat !== 'none' && !document.getElementById('f-repeat-end').value) {
+  const endInput = document.getElementById('f-repeat-end')
+  const max30 = new Date(); max30.setDate(max30.getDate() + 30)
+  const max30Str = max30.toISOString().split('T')[0]
+  endInput.max = max30Str
+
+  // Set a sensible default end date (4 weeks out, capped at 30 days)
+  if (repeat !== 'none' && !endInput.value) {
     const def = new Date(); def.setDate(def.getDate() + 28)
-    document.getElementById('f-repeat-end').value = def.toISOString().split('T')[0]
+    endInput.value = def.toISOString().split('T')[0] <= max30Str ? def.toISOString().split('T')[0] : max30Str
   }
   updateRepeatPreview()
-  document.getElementById('f-repeat-end').onchange = updateRepeatPreview
+  endInput.onchange = updateRepeatPreview
 }
 
 function updateRepeatPreview() {

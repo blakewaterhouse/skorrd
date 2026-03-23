@@ -334,6 +334,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
   div[style*="padding:80px 36px"]{padding:48px 16px !important}
   div[style*="max-width:900px"]{max-width:100% !important}
 }
+/* Launch banner */
+.launch-banner{background:var(--coral);color:#fff;text-align:center;padding:10px 20px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;letter-spacing:.01em;position:sticky;top:0;z-index:201}
+/* Keyword search */
+.search-input{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--bg);color:var(--ink);outline:none;min-width:160px}
+.search-input::placeholder{color:var(--muted);font-weight:700}
+.search-input:focus{border-color:var(--coral)}
+/* Early adopter badge */
+.early-badge{display:inline-block;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;padding:2px 8px;border-radius:50px;background:#fef9c3;color:#a16207;border:1.5px solid #fde68a;margin-left:6px;vertical-align:middle;white-space:nowrap}
+/* Date chip input */
+.chip-date{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;outline:none}
+.chip-date:focus{border-color:var(--coral)}
 </style>
 </head>
 <body>
@@ -356,6 +367,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
      BROWSE
 ════════════════════════════════ -->
 <div class="screen active" id="screen-browse" style="padding-top:63px;min-height:100vh">
+
+  <div class="launch-banner">🎉 $0 booking fees to celebrate the launch of Skorrd — book any slot for free!</div>
 
   <div class="hero">
     <div class="hero-eyebrow">
@@ -380,7 +393,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
     <button class="cat-btn" onclick="setCat(this,'Barbershop')">✂️ Barbers</button>
     <button class="cat-btn" onclick="setCat(this,'Nail Salon')">💅 Nail salons</button>
     <button class="cat-btn" onclick="setCat(this,'Physiotherapy')">🫁 Physio</button>
-    <button class="cat-btn" onclick="setCat(this,'Beauty & Wellness')">💆 Beauty &amp; Wellness</button>
+    <button class="cat-btn" onclick="setCat(this,'Beauty')">💆 Beauty</button>
+    <button class="cat-btn" onclick="setCat(this,'Wellness')">🧖 Wellness</button>
+    <button class="cat-btn" onclick="setCat(this,'Chiropractic')">🦴 Chiropractic</button>
     <button class="cat-btn" onclick="setCat(this,'Hair Salon')">💇 Hair salons</button>
     <button class="cat-btn" onclick="setCat(this,'Personal Training')">🏋️ Personal training</button>
     <button class="cat-btn" onclick="setCat(this,'Yoga & Fitness')">🧘 Yoga &amp; fitness</button>
@@ -395,12 +410,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
     <span class="slot-count" id="slot-count">Loading...</span>
     <div class="chip on" data-win="all" onclick="setWin(this)">All times</div>
     <div class="chip" data-win="today" onclick="setWin(this)">Today</div>
+    <div class="chip" data-win="tomorrow" onclick="setWin(this)">Tomorrow</div>
+    <input type="date" class="chip-date" id="f-date-filter" onchange="setDateFilter(this.value)" title="Filter by date">
 
     <select class="chip-select" id="f-sort" onchange="renderCards()">
       <option value="time">Soonest first</option>
       <option value="disc">Biggest saving</option>
       <option value="price">Lowest price</option>
     </select>
+    <input type="search" class="search-input" id="f-search" placeholder="🔍 Search..." oninput="searchTerm=this.value.trim().toLowerCase();renderCards();if(state.view==='map')renderMap()">
     <div class="view-toggle">
       <button class="vtbtn on" id="vt-list" onclick="setView('list')">☰ List</button>
       <button class="vtbtn" id="vt-map" onclick="setView('map')">🗺 Map</button>
@@ -701,14 +719,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 <script>
 const SUPABASE_URL = 'https://ahbbnagjqpfztftswber.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmJuYWdqcXBmenRmdHN3YmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyODAyNDEsImV4cCI6MjA4ODg1NjI0MX0.p9SGxDNbkIMehoPN7KNQjioqdoU2PPe35EfZosstk6Q'
-const BOOKING_FEE = 5
+const BOOKING_FEE = 0
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'skorrd-customer-auth' } })
 
 const CAT_CFG = {
   'Barbershop':           { pill:'pill-bar',    color:'#c8eaff', dot:'#3b82f6', icon:'✂️'  },
   'Nail Salon':           { pill:'pill-nail',   color:'#e0d4ff', dot:'#8b5cf6', icon:'💅'  },
   'Physiotherapy':        { pill:'pill-physio', color:'#b8f0d8', dot:'#10b981', icon:'🫁'  },
-  'Beauty & Wellness':    { pill:'pill-beauty', color:'#ffe4d4', dot:'#f97316', icon:'💆'  },
+  'Beauty':               { pill:'pill-beauty', color:'#ffe4d4', dot:'#f97316', icon:'💆'  },
+  'Wellness':             { pill:'pill-beauty', color:'#d1fae5', dot:'#059669', icon:'🧖'  },
+  'Chiropractic':         { pill:'pill-physio', color:'#bfdbfe', dot:'#2563eb', icon:'🦴'  },
   'Personal Training':    { pill:'pill-pt',     color:'#fff0c8', dot:'#f59e0b', icon:'🏋️' },
   'Hair Salon':           { pill:'pill-bar',    color:'#fce7f3', dot:'#ec4899', icon:'💇'  },
   'Yoga & Fitness':       { pill:'pill-physio', color:'#dcfce7', dot:'#22c55e', icon:'🧘'  },
@@ -721,9 +741,10 @@ const CAT_CFG = {
 let state = {
   screen:'browse', user:null, slots:[], bookings:[],
   bookedSlotIds:new Set(), view:'list', authMode:'login',
-  currentSlot:null, drawerTab:'upcoming', focusedCard:null
+  currentSlot:null, drawerTab:'upcoming', focusedCard:null,
+  earlyAdopterBizIds:new Set()
 }
-let timeWindow = 'all', activeCat = ''
+let timeWindow = 'all', activeCat = '', searchTerm = '', dateFilter = ''
 let leafletMap = null, mapMarkers = []
 
 // ── ROUTING ──────────────────────────────────────────────
@@ -844,13 +865,18 @@ async function loadSlots() {
 function normaliseSlot(s) {
   const biz=s.businesses||{}
   return {
-    id:s.id, biz:biz.name||'Unknown', cat:s.category||'', svc:s.service_name,
+    id:s.id, bizId:biz.id||null, biz:biz.name||'Unknown', cat:s.category||'', svc:s.service_name,
     orig:parseFloat(s.original_price), disc:parseFloat(s.discounted_price),
     time:new Date(s.appointment_at), suburb:biz.suburb||'',
     address:[biz.street,biz.suburb,biz.state].filter(Boolean).join(', '),
     fullAddress:[biz.street,biz.suburb,biz.state,biz.postcode].filter(Boolean).join(', '),
     lat:biz.lat, lng:biz.lng, notes:s.notes, logoUrl:biz.logo_url||null,
   }
+}
+
+async function loadEarlyAdopters() {
+  const { data } = await sb.from('businesses').select('id').eq('is_demo',false).order('created_at',{ascending:true}).limit(30)
+  if (data) state.earlyAdopterBizIds = new Set(data.map(b=>b.id))
 }
 
 sb.channel('public:slots').on('postgres_changes',{event:'*',schema:'public',table:'slots'},async()=>{
@@ -887,13 +913,32 @@ function setCat(el,cat) {
 }
 function setWin(el) {
   document.querySelectorAll('.chip[data-win]').forEach(c=>c.classList.remove('on')); el.classList.add('on')
-  timeWindow=el.dataset.win; renderCards(); if(state.view==='map') renderMap()
+  timeWindow=el.dataset.win
+  // Clear date filter when switching time chips
+  dateFilter=''; const df=document.getElementById('f-date-filter'); if(df) df.value=''
+  renderCards(); if(state.view==='map') renderMap()
+}
+function setDateFilter(val) {
+  dateFilter=val
+  // Clear time window chips when a date is selected
+  if (val) { document.querySelectorAll('.chip[data-win]').forEach(c=>c.classList.remove('on')); timeWindow='all' }
+  renderCards(); if(state.view==='map') renderMap()
 }
 function filteredSlots() {
   const sort=document.getElementById('f-sort').value
+  const tomorrow=new Date(now()); tomorrow.setDate(tomorrow.getDate()+1)
   let slots=state.slots.filter(s=>!state.bookedSlotIds.has(s.id))
   if (activeCat) slots=slots.filter(s=>s.cat===activeCat)
-  if (timeWindow!=='all') slots=slots.filter(s=>timeWindow==='today'?s.time.toDateString()===now().toDateString():(s.time-now())<=parseInt(timeWindow)*3600000)
+  if (dateFilter) {
+    slots=slots.filter(s=>s.time.toISOString().split('T')[0]===dateFilter)
+  } else if (timeWindow==='today') {
+    slots=slots.filter(s=>s.time.toDateString()===now().toDateString())
+  } else if (timeWindow==='tomorrow') {
+    slots=slots.filter(s=>s.time.toDateString()===tomorrow.toDateString())
+  } else if (timeWindow!=='all') {
+    slots=slots.filter(s=>(s.time-now())<=parseInt(timeWindow)*3600000)
+  }
+  if (searchTerm) slots=slots.filter(s=>s.svc.toLowerCase().includes(searchTerm)||s.biz.toLowerCase().includes(searchTerm)||s.cat.toLowerCase().includes(searchTerm))
   if (sort==='disc')  slots.sort((a,b)=>pct(b.orig,b.disc)-pct(a.orig,a.disc))
   else if (sort==='price') slots.sort((a,b)=>a.disc-b.disc)
   else slots.sort((a,b)=>a.time-b.time)
@@ -927,7 +972,10 @@ function renderCards() {
           ${s.logoUrl
             ? `<img src="${s.logoUrl}" style="width:36px;height:36px;border-radius:9px;object-fit:cover;border:1.5px solid var(--border);flex-shrink:0">`
             : `<div style="width:36px;height:36px;border-radius:9px;background:${cfg.color};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${cfg.icon}</div>`}
-          <div class="biz-name" style="margin-bottom:0">${s.biz}</div>
+          <div>
+            <div class="biz-name" style="margin-bottom:0">${s.biz}</div>
+            ${s.bizId && state.earlyAdopterBizIds.has(s.bizId) ? `<span class="early-badge">⭐ Early adopter</span>` : ''}
+          </div>
         </div>
         <div class="svc-name">${s.svc}</div>
         <div class="card-meta">
@@ -1015,7 +1063,16 @@ function clickSidebar(id) {
 function renderSlotDetail(s) {
   const cfg=CAT_CFG[s.cat]||{color:'#ffe4d4',pill:'pill-bar',icon:'🏪'}
   const saving=(s.orig-s.disc).toFixed(0), p=pct(s.orig,s.disc)
-  const bookingPanel = state.user ? `
+  const bookingPanel = state.user ? (BOOKING_FEE === 0 ? `
+    <div class="panel-title">Book this slot — free!</div>
+    <div class="panel-sub">🎉 No booking fee during our launch. Just confirm and it's yours.</div>
+    <div class="fee-box">
+      <div class="fee-row"><span class="fl">Service (pay at appointment)</span><span class="fr">$${s.disc}</span></div>
+      <div class="fee-row total"><span class="fl">Booking fee</span><span class="fr" style="color:var(--coral)">FREE 🎉</span></div>
+    </div>
+    <div class="stripe-error" id="stripe-error"></div>
+    <button class="book-btn" id="pay-btn" onclick="handlePay()">Book free →</button>
+    <p class="panel-note">No payment required — just show up!</p>` : `
     <div class="panel-title">Book this slot</div>
     <div class="panel-sub">Pay $${BOOKING_FEE} now to secure it. Pay the rest at the appointment.</div>
     <div class="fee-box">
@@ -1025,14 +1082,14 @@ function renderSlotDetail(s) {
     <div id="stripe-card-element"></div>
     <div class="stripe-error" id="stripe-error"></div>
     <button class="book-btn" id="pay-btn" onclick="handlePay()">Pay $${BOOKING_FEE} &amp; confirm booking</button>
-    <p class="panel-note">🔒 Secure payment via Stripe<br>Hold fee secures your slot. Non-refundable on cancellation.</p>` : `
+    <p class="panel-note">🔒 Secure payment via Stripe<br>Hold fee secures your slot. Non-refundable on cancellation.</p>`) : `
     <div class="panel-title">Ready to book?</div>
     <div class="panel-sub">Create a free account to secure this slot.</div>
     <div class="login-nudge">
-      <p>Sign up or log in to book and pay the $${BOOKING_FEE} hold fee.</p>
+      <p>Sign up or log in to book — ${BOOKING_FEE === 0 ? 'completely free during our launch!' : `and pay the $${BOOKING_FEE} hold fee.`}</p>
       <button class="login-nudge-btn" onclick="go('login',{mode:'signup'})">Sign up / Log in free</button>
     </div>
-    <p class="panel-note" style="margin-top:14px">$${BOOKING_FEE} hold fee secures your slot.<br>Pay the rest at the business.</p>`
+    <p class="panel-note" style="margin-top:14px">${BOOKING_FEE === 0 ? '🎉 No booking fee right now.<br>Pay the service price at the business.' : `$${BOOKING_FEE} hold fee secures your slot.<br>Pay the rest at the business.`}</p>`
 
   document.getElementById('slot-detail').innerHTML=`
     <div class="slot-layout">
@@ -1067,7 +1124,7 @@ function renderSlotDetail(s) {
       <div class="book-panel">${bookingPanel}</div>
     </div>`
 
-  if (state.user) setupStripeCard()
+  if (state.user && BOOKING_FEE > 0) setupStripeCard()
 }
 
 const STRIPE_PK = 'pk_test_51TA16GEjUdtxg8QL98jcBaovfsvE494iSxBnIkGR9utfZBmlhfjmKBWj5hc4B65W9WdRzWhlLk867uRqA8J6s6v30083gdnRFR'
@@ -1098,10 +1155,6 @@ async function handlePay() {
   const s = state.currentSlot; if (!s) return
   const errEl = document.getElementById('stripe-error')
 
-  if (!stripeInstance || !stripeCardElement) {
-    showToast('Payment not ready — please refresh','err'); return
-  }
-
   btn.disabled = true; btn.textContent = 'Processing...'
   if (errEl) { errEl.textContent = ''; errEl.classList.remove('show') }
 
@@ -1115,48 +1168,69 @@ async function handlePay() {
     }
     if (!token) {
       showToast('Please log in to book','err')
-      btn.disabled = false; btn.textContent = `Pay $${BOOKING_FEE} & confirm booking`
+      btn.disabled = false; btn.textContent = BOOKING_FEE === 0 ? 'Book free →' : `Pay $${BOOKING_FEE} & confirm booking`
       go('login', {mode:'login'}); return
     }
 
-    // Step 1: Create PaymentIntent on server
-    showProcessing('Preparing payment...')
-    const intentRes = await fetch(`${SUPABASE_URL}/functions/v1/create-payment-intent`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ slot_id: s.id })
-    })
-    const intentData = await intentRes.json()
-    hideProcessing()
-    if (!intentRes.ok) {
-      if (errEl) { errEl.textContent = intentData.error || 'Could not start payment'; errEl.classList.add('show') }
-      btn.disabled = false; btn.textContent = `Pay $${BOOKING_FEE} & confirm booking`; return
-    }
+    if (BOOKING_FEE === 0) {
+      // Free booking — skip Stripe entirely
+      showProcessing('Confirming booking...')
+      const confirmRes = await fetch(`${SUPABASE_URL}/functions/v1/confirm-booking`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ free_booking: true, slot_id: s.id })
+      })
+      const confirmData = await confirmRes.json()
+      hideProcessing()
+      if (!confirmRes.ok) {
+        if (errEl) { errEl.textContent = confirmData.error || 'Booking failed — please try again'; errEl.classList.add('show') }
+        btn.disabled = false; btn.textContent = 'Book free →'; return
+      }
+    } else {
+      if (!stripeInstance || !stripeCardElement) {
+        showToast('Payment not ready — please refresh','err')
+        btn.disabled = false; btn.textContent = `Pay $${BOOKING_FEE} & confirm booking`; return
+      }
 
-    // Step 2: Confirm card payment with Stripe.js
-    showProcessing('Confirming payment...')
-    const { paymentIntent, error: stripeError } = await stripeInstance.confirmCardPayment(
-      intentData.client_secret,
-      { payment_method: { card: stripeCardElement } }
-    )
-    hideProcessing()
-    if (stripeError) {
-      if (errEl) { errEl.textContent = stripeError.message; errEl.classList.add('show') }
-      btn.disabled = false; btn.textContent = `Pay $${BOOKING_FEE} & confirm booking`; return
-    }
+      // Step 1: Create PaymentIntent on server
+      showProcessing('Preparing payment...')
+      const intentRes = await fetch(`${SUPABASE_URL}/functions/v1/create-payment-intent`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ slot_id: s.id })
+      })
+      const intentData = await intentRes.json()
+      hideProcessing()
+      if (!intentRes.ok) {
+        if (errEl) { errEl.textContent = intentData.error || 'Could not start payment'; errEl.classList.add('show') }
+        btn.disabled = false; btn.textContent = `Pay $${BOOKING_FEE} & confirm booking`; return
+      }
 
-    // Step 3: Confirm booking on server now that payment succeeded
-    showProcessing('Confirming booking...')
-    const confirmRes = await fetch(`${SUPABASE_URL}/functions/v1/confirm-booking`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ payment_intent_id: paymentIntent.id })
-    })
-    const confirmData = await confirmRes.json()
-    hideProcessing()
-    if (!confirmRes.ok) {
-      showToast(confirmData.error || 'Booking failed — please contact support', 'err')
-      btn.disabled = false; btn.textContent = `Pay $${BOOKING_FEE} & confirm booking`; return
+      // Step 2: Confirm card payment with Stripe.js
+      showProcessing('Confirming payment...')
+      const { paymentIntent, error: stripeError } = await stripeInstance.confirmCardPayment(
+        intentData.client_secret,
+        { payment_method: { card: stripeCardElement } }
+      )
+      hideProcessing()
+      if (stripeError) {
+        if (errEl) { errEl.textContent = stripeError.message; errEl.classList.add('show') }
+        btn.disabled = false; btn.textContent = `Pay $${BOOKING_FEE} & confirm booking`; return
+      }
+
+      // Step 3: Confirm booking on server
+      showProcessing('Confirming booking...')
+      const confirmRes = await fetch(`${SUPABASE_URL}/functions/v1/confirm-booking`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ payment_intent_id: paymentIntent.id })
+      })
+      const confirmData = await confirmRes.json()
+      hideProcessing()
+      if (!confirmRes.ok) {
+        showToast(confirmData.error || 'Booking failed — please contact support', 'err')
+        btn.disabled = false; btn.textContent = `Pay $${BOOKING_FEE} & confirm booking`; return
+      }
     }
 
     await loadBookings(); await loadSlots(); renderCards(); renderMap(); updateNav()
@@ -1164,22 +1238,22 @@ async function handlePay() {
   } catch(e) {
     hideProcessing()
     showToast('Network error — please try again', 'err')
-    btn.disabled = false; btn.textContent = `Pay $${BOOKING_FEE} & confirm booking`
+    btn.disabled = false; btn.textContent = BOOKING_FEE === 0 ? 'Book free →' : `Pay $${BOOKING_FEE} & confirm booking`
   }
 }
 
 function renderConfirm(s) {
   document.getElementById('confirm-card').innerHTML=`
     <span class="confirm-emoji">🎉</span>
-    <div class="confirm-title">You're booked!</div>
-    <p class="confirm-sub">Slot confirmed and $${BOOKING_FEE} hold fee charged.<br>See you at ${s.biz}!</p>
+    <div class="confirm-title">You've Skorrd yourself a deal!</div>
+    <p class="confirm-sub">Booking confirmed — see you at ${s.biz}!</p>
     <div class="summary-box">
       <div class="sum-row"><span class="sum-l">Service</span><span class="sum-r">${s.svc}</span></div>
       <div class="sum-row"><span class="sum-l">Business</span><span class="sum-r">${s.biz}</span></div>
       <div class="sum-row"><span class="sum-l">Address</span><span class="sum-r">${s.address}</span></div>
       <div class="sum-row"><span class="sum-l">Date &amp; time</span><span class="sum-r">${fmtDate(s.time)}, ${fmt(s.time)}</span></div>
       <div class="sum-row"><span class="sum-l">Pay at appointment</span><span class="sum-r" style="color:var(--coral)">$${s.disc}</span></div>
-      <div class="sum-row"><span class="sum-l">Hold fee charged</span><span class="sum-r">$${BOOKING_FEE} ✓</span></div>
+      ${BOOKING_FEE > 0 ? `<div class="sum-row"><span class="sum-l">Hold fee charged</span><span class="sum-r">$${BOOKING_FEE} ✓</span></div>` : ''}
     </div>
     <div class="confirm-actions">
       <button class="btn-pri" onclick="go('browse')">Browse more slots</button>
@@ -1219,7 +1293,7 @@ function renderDrawer() {
 
 function confirmCancel(bookingId){
   const b=state.bookings.find(x=>x.id===bookingId); if(!b) return
-  document.getElementById('cancel-modal-sub').textContent=`Cancelling "${b.slot.svc}" at ${b.slot.biz}. Your $${BOOKING_FEE} holding fee will not be refunded — it goes to the business. The slot will be automatically re-listed.`
+  document.getElementById('cancel-modal-sub').textContent=`Cancelling "${b.slot.svc}" at ${b.slot.biz}. The slot will be automatically re-listed.`
   document.getElementById('cancel-modal-confirm').onclick=()=>executeCancel(bookingId)
   document.getElementById('cancel-modal-overlay').classList.add('show')
 }
@@ -1260,7 +1334,7 @@ document.getElementById('auth-email').addEventListener('keydown',e=>{if(e.key===
     const session=r?.data?.session
     if(session?.user){state.user=session.user;try{await loadBookings()}catch(e){console.warn('loadBookings:',e.message)};updateNav()}
   } catch(e){console.warn('session:',e.message)}
-  try{await loadSlots()}catch(e){console.warn('loadSlots:',e.message)}
+  try{await Promise.all([loadSlots(), loadEarlyAdopters()])}catch(e){console.warn('loadSlots:',e.message)}
   clearTimeout(safetyTimer); hideProcessing(); renderCards()
   // Restore screen from URL on direct navigation
   if (location.pathname === '/how-it-works') go('about', {}, false)
