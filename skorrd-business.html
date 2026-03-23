@@ -1259,15 +1259,22 @@ async function handleLogin() {
 
   if (loginMode === 'signup') {
     if (pass.length < 8) { showLoginMsg('Password needs 8+ characters','err'); return }
-    // Move to step 2 — save credentials temporarily
     const btn = document.getElementById('login-submit-btn'); btn.disabled = true
     showProcessing('Creating account...')
-    const { data, error } = await sb.auth.signUp({ email, password: pass })
+    // Use edge function to create confirmed user (bypasses unreliable email confirmation)
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/register-business`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pass })
+    })
+    const result = await res.json()
     hideProcessing(); btn.disabled = false
-    if (error) { showLoginMsg(error.message,'err'); return }
-    // Store creds so we can sign in properly after business record is saved
+    if (!res.ok && !result.exists) { showLoginMsg(result.error || 'Could not create account — please try again', 'err'); return }
+    // Sign in immediately (user is already confirmed)
+    const { data: signInData, error: signInError } = await sb.auth.signInWithPassword({ email, password: pass })
+    if (signInError) { showLoginMsg(signInError.message, 'err'); return }
     pendingCreds = { email, password: pass }
-    signupStep = 'confirm-email'
+    signupStep = 'details'
     renderLoginForm()
     return
   }
