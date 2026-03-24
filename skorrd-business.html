@@ -396,6 +396,10 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
   .fgroup label{font-size:12px}
   .form-row{grid-template-columns:1fr !important}
 }
+.addr-dropdown{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.10);z-index:999;display:none;overflow:hidden;margin-top:4px}
+.addr-option{padding:11px 14px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;border-bottom:1px solid var(--border);line-height:1.4}
+.addr-option:last-child{border-bottom:none}
+.addr-option:hover{background:var(--bg)}
 </style>
 </head>
 <body>
@@ -1238,7 +1242,7 @@ function renderLoginForm() {
       </div>
       <button class="login-submit" id="login-submit-btn" onclick="handleSignupDetails()">Create my account →</button>
       <div class="login-switch" style="margin-top:12px"><a onclick="signupStep='credentials';renderLoginForm()" style="color:var(--muted)">← Back</a></div>`
-    setTimeout(() => document.getElementById('s-bizname')?.focus(), 60)
+    setTimeout(() => { document.getElementById('s-bizname')?.focus(); setupAddressAutocomplete('s-street', 's-') }, 60)
   }
 }
 
@@ -2061,6 +2065,69 @@ function toggleClosed(day) {
   renderHoursGrid()
 }
 
+// ════════════════════════════════════════════
+// ADDRESS AUTOCOMPLETE (Photon / OpenStreetMap)
+// ════════════════════════════════════════════
+const STATE_MAP = {'New South Wales':'NSW','Victoria':'VIC','Queensland':'QLD','Western Australia':'WA','South Australia':'SA','Tasmania':'TAS','Australian Capital Territory':'ACT','Northern Territory':'NT'}
+let _addrTimer = null
+
+function setupAddressAutocomplete(streetId, prefix) {
+  const input = document.getElementById(streetId)
+  if (!input || input._acSetup) return
+  input._acSetup = true
+
+  const wrap = input.parentNode
+  wrap.style.position = 'relative'
+  const drop = document.createElement('div')
+  drop.id = streetId + '-ac'
+  drop.className = 'addr-dropdown'
+  wrap.appendChild(drop)
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim()
+    clearTimeout(_addrTimer)
+    if (q.length < 3) { drop.style.display = 'none'; return }
+    _addrTimer = setTimeout(() => _fetchAddr(q, streetId, prefix), 350)
+  })
+
+  document.addEventListener('click', e => {
+    if (!wrap.contains(e.target)) drop.style.display = 'none'
+  }, true)
+}
+
+async function _fetchAddr(q, streetId, prefix) {
+  const drop = document.getElementById(streetId + '-ac')
+  if (!drop) return
+  try {
+    const r = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&countrycode=au&limit=6`)
+    const data = await r.json()
+    const features = (data.features || []).filter(f => f.properties.country === 'Australia' && (f.properties.street || f.properties.name))
+    if (!features.length) { drop.style.display = 'none'; return }
+    drop.innerHTML = features.map(f => {
+      const p = f.properties
+      const street = [p.housenumber, p.street || p.name].filter(Boolean).join(' ')
+      const suburb = p.city || p.suburb || p.district || ''
+      const state  = STATE_MAP[p.state] || p.state || ''
+      const pc     = p.postcode || ''
+      const label  = [street, suburb, state, pc].filter(Boolean).join(', ')
+      const payload = JSON.stringify({street, suburb, state, pc})
+      return `<div class="addr-option" onclick="_fillAddr('${streetId}','${prefix}',${payload})">${esc(label)}</div>`
+    }).join('')
+    drop.style.display = 'block'
+  } catch(e) { drop.style.display = 'none' }
+}
+
+function _fillAddr(streetId, prefix, d) {
+  const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val }
+  set(prefix + 'street',   d.street)
+  set(prefix + 'suburb',   d.suburb)
+  set(prefix + 'postcode', d.pc)
+  if (d.state) set(prefix + 'state', d.state)
+  const drop = document.getElementById(streetId + '-ac')
+  if (drop) drop.style.display = 'none'
+  if (prefix === 'p-') updateProfileMap()
+}
+
 function updateProfileMap() {
   const street   = document.getElementById('p-street')?.value?.trim()
   const suburb   = document.getElementById('p-suburb')?.value?.trim()
@@ -2205,6 +2272,8 @@ async function saveProfile() {
     renderLoginForm()
   }
   // No session: biz-info-screen is visible by default, login-screen starts hidden
+  // Wire up address autocomplete for the profile panel (always in DOM)
+  setupAddressAutocomplete('p-street', 'p-')
 })()
 </script>
 <script>if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js")</script>
