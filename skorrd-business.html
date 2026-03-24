@@ -1388,15 +1388,25 @@ async function loadDashboard(session) {
   const { data: bizData } = await sb.from('businesses').select('*, is_demo').eq('owner_id', session.user.id).maybeSingle()
 
   if (!bizData) {
-    // No business record yet — show Step 2 details form
-    hideProcessing()
-    pendingSession = session
-    loginMode = 'signup'; signupStep = 'details'
-    document.getElementById('login-screen').style.display = 'flex'
-    document.getElementById('dashboard').style.display = 'none'
-    document.getElementById('biz-info-screen').style.display = 'none'
-    renderLoginForm()
-    setTimeout(() => { document.getElementById('s-bizname')?.focus(); setupAddressAutocomplete('s-street', 's-') }, 60)
+    const isSetupFlow = !!new URLSearchParams(window.location.search).get('setup')
+    if (isSetupFlow) {
+      // Came from welcome email link — show Step 2 business details form
+      hideProcessing()
+      pendingSession = session
+      loginMode = 'signup'; signupStep = 'details'
+      document.getElementById('login-screen').style.display = 'flex'
+      document.getElementById('dashboard').style.display = 'none'
+      document.getElementById('biz-info-screen').style.display = 'none'
+      renderLoginForm()
+      setTimeout(() => { document.getElementById('s-bizname')?.focus(); setupAddressAutocomplete('s-street', 's-') }, 60)
+    } else {
+      // Normal login — no business yet, show dashboard with profile prompt
+      hideProcessing()
+      BIZ = { name: session.user.email.split('@')[0], cat: '', suburb: '' }
+      enterDashboard(BIZ, session.user.email)
+      showPanel('profile')
+      showToast('Welcome! Start by completing your Business Profile 👇', 'ok')
+    }
     return
   }
 
@@ -1446,10 +1456,10 @@ async function loadBookings() {
   if (!BIZ?.id || SLOTS.length === 0) return
   const slotIds = SLOTS.map(s => s.id)
   const { data, error } = await sb.from('bookings')
-    .select('id, slot_id, status, created_at')
+    .select('id, slot_id, status, created_at, customer_email')
     .in('slot_id', slotIds)
     .order('created_at', { ascending: false })
-    .limit(20)
+    .limit(50)
   if (error) { console.error('loadBookings:', error); return }
   BOOKINGS = data || []
 }
@@ -1557,34 +1567,40 @@ function renderActivityFeed() {
 
   if (BOOKINGS.length === 0) {
     document.getElementById('activity-count').textContent = ''
-    document.getElementById('activity-feed').innerHTML = `<div style="text-align:center;padding:24px;color:var(--muted);font-size:14px;font-weight:600">No activity yet — bookings will appear here</div>`
+    document.getElementById('activity-feed').innerHTML = `<div style="text-align:center;padding:24px;color:var(--muted);font-size:14px;font-weight:600">No bookings yet — they'll appear here when customers book your slots</div>`
     return
   }
-  const items = BOOKINGS.slice(0, 8).map(b => {
+
+  const confirmed = BOOKINGS.filter(b => b.status === 'confirmed')
+  const cancelled = BOOKINGS.filter(b => b.status !== 'confirmed')
+  document.getElementById('activity-count').textContent = `${confirmed.length} confirmed · ${cancelled.length} cancelled`
+
+  document.getElementById('activity-feed').innerHTML = BOOKINGS.map((b, i) => {
     const slot = SLOTS.find(s => s.id === b.slot_id)
-    const svcName = slot?.svc || 'Appointment'
-    const slotTime = slot ? slot.time.toLocaleDateString('en-AU', { weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : ''
-    const confirmed = b.status === 'confirmed'
-    return {
-      type:   confirmed ? 'booked' : 'cancelled',
-      icon:   confirmed ? '✅' : '❌',
-      title:  confirmed ? `${esc(svcName)} booked` : `${esc(svcName)} booking cancelled`,
-      sub:    slotTime,
-      time:   timeAgo(b.created_at),
-      amount: confirmed ? 'Hold fee taken' : null,
-    }
-  })
-  document.getElementById('activity-count').textContent = items.length + ' recent'
-  document.getElementById('activity-feed').innerHTML = items.map((it,i) => `
-    <div class="activity-item" style="animation-delay:${i*.07}s">
-      <div class="ai-icon ${it.type}"><span>${it.icon}</span></div>
-      <div class="ai-body">
-        <div class="ai-title">${it.title}</div>
-        <div class="ai-sub">${it.sub}</div>
+    const svc  = slot ? esc(slot.svc) : 'Appointment'
+    const isConfirmed = b.status === 'confirmed'
+    const dateStr = slot ? slot.time.toLocaleDateString('en-AU', { weekday:'short', day:'numeric', month:'short', year:'numeric' }) : ''
+    const timeStr = slot ? slot.time.toLocaleTimeString('en-AU', { hour:'numeric', minute:'2-digit', hour12:true }) : ''
+    const priceStr = slot ? `$${slot.disc > 0 ? slot.disc.toFixed(0) : slot.orig.toFixed(0)}` : ''
+    const customer = b.customer_email ? esc(b.customer_email) : 'Customer'
+
+    return `<div class="activity-item" style="animation-delay:${i*.06}s;flex-direction:column;align-items:stretch;gap:10px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="ai-icon ${isConfirmed ? 'booked' : 'cancelled'}"><span>${isConfirmed ? '✅' : '❌'}</span></div>
+        <div class="ai-body" style="flex:1;min-width:0">
+          <div class="ai-title">${svc}</div>
+          <div class="ai-sub">${isConfirmed ? 'Confirmed' : 'Cancelled'} · ${timeAgo(b.created_at)}</div>
+        </div>
+        ${isConfirmed && priceStr ? `<div class="ai-amount">${priceStr}</div>` : ''}
       </div>
-      <div class="ai-time">${it.time}</div>
-      ${it.amount ? `<div class="ai-amount">${it.amount}</div>` : ''}
-    </div>`).join('')
+      ${slot || b.customer_email ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px 12px;background:var(--bg);border-radius:10px;margin-left:54px">
+        ${dateStr ? `<div><div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Date</div><div style="font-size:13px;font-weight:700;color:var(--ink);margin-top:2px">${dateStr}</div></div>` : ''}
+        ${timeStr ? `<div><div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Time</div><div style="font-size:13px;font-weight:700;color:var(--ink);margin-top:2px">${timeStr}</div></div>` : ''}
+        <div><div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Customer</div><div style="font-size:13px;font-weight:700;color:var(--ink);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${customer}</div></div>
+        ${slot?.dur ? `<div><div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Duration</div><div style="font-size:13px;font-weight:700;color:var(--ink);margin-top:2px">${slot.dur} min</div></div>` : ''}
+      </div>` : ''}
+    </div>`
+  }).join('')
 }
 
 function renderUpcoming() {
