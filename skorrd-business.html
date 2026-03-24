@@ -2197,6 +2197,12 @@ async function saveProfile() {
   const { data: { session } } = await sb.auth.getSession()
   if (session) {
     await loadDashboard(session)
+  } else if (new URLSearchParams(window.location.search).get('setup')) {
+    // Email link — jump straight to signup form
+    loginMode = 'signup'; signupStep = 'credentials'
+    document.getElementById('login-screen').style.display = 'flex'
+    document.getElementById('biz-info-screen').style.display = 'none'
+    renderLoginForm()
   }
   // No session: biz-info-screen is visible by default, login-screen starts hidden
 })()
