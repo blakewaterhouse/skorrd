@@ -2085,7 +2085,7 @@ function toggleClosed(day) {
 }
 
 // ════════════════════════════════════════════
-// ADDRESS AUTOCOMPLETE (Nominatim / OpenStreetMap)
+// ADDRESS AUTOCOMPLETE (Photon / OpenStreetMap)
 // ════════════════════════════════════════════
 const STATE_MAP = {'New South Wales':'NSW','Victoria':'VIC','Queensland':'QLD','Western Australia':'WA','South Australia':'SA','Tasmania':'TAS','Australian Capital Territory':'ACT','Northern Territory':'NT'}
 let _addrTimer = null
@@ -2107,7 +2107,7 @@ function setupAddressAutocomplete(streetId, prefix) {
     const q = input.value.trim()
     clearTimeout(_addrTimer)
     if (q.length < 3) { drop.style.display = 'none'; return }
-    _addrTimer = setTimeout(() => _fetchAddr(q, streetId, prefix), 400)
+    _addrTimer = setTimeout(() => _fetchAddr(q, streetId, prefix), 220)
   })
 
   document.addEventListener('click', e => {
@@ -2119,21 +2119,28 @@ async function _fetchAddr(q, streetId, prefix) {
   const drop = document.getElementById(streetId + '-ac')
   if (!drop) return
   try {
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&addressdetails=1&countrycodes=au&limit=6`
-    const r = await fetch(url, { headers: { 'Accept-Language': 'en-AU', 'User-Agent': 'Skorrd/1.0' } })
+    const r = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&countrycode=au&limit=5`)
     const data = await r.json()
-    if (!data.length) { drop.style.display = 'none'; return }
+    const features = (data.features || []).filter(f =>
+      f.properties.countrycode === 'au' && (f.properties.street || f.properties.name)
+    )
+    if (!features.length) { drop.style.display = 'none'; return }
 
-    _addrCache[streetId] = data.map(item => {
-      const a = item.address || {}
-      const street = [a.house_number, a.road].filter(Boolean).join(' ')
-      const suburb = a.suburb || a.city_district || a.neighbourhood || a.city || a.town || a.village || ''
-      const state  = STATE_MAP[a.state] || a.state || ''
-      const pc     = a.postcode || ''
-      return { street, suburb, state, pc }
-    }).filter(s => s.street || s.suburb)
+    // If query starts with a number, keep it as fallback house number when API doesn't return one
+    const numMatch = q.match(/^(\d+[a-zA-Z]?)\s+/)
+    const queryNum = numMatch ? numMatch[1] : ''
 
-    if (!_addrCache[streetId].length) { drop.style.display = 'none'; return }
+    _addrCache[streetId] = features.map(f => {
+      const p = f.properties
+      const houseNum = p.housenumber || queryNum
+      const road = p.street || p.name || ''
+      return {
+        street: [houseNum, road].filter(Boolean).join(' '),
+        suburb: p.city || p.suburb || p.locality || p.district || '',
+        state:  STATE_MAP[p.state] || p.state || '',
+        pc:     p.postcode || ''
+      }
+    })
 
     drop.innerHTML = ''
     _addrCache[streetId].forEach((s, i) => {
