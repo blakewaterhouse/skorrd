@@ -418,7 +418,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
       <option value="disc">Biggest saving</option>
       <option value="price">Lowest price</option>
     </select>
-    <input type="search" class="search-input" id="f-search" placeholder="🔍 Search..." autocomplete="off" oninput="searchTerm=this.value.trim().toLowerCase();renderCards();if(state.view==='map')renderMap()">
+    <input type="search" class="search-input" id="f-search" placeholder="🔍 Search..." autocomplete="nope" oninput="searchTerm=this.value.trim().toLowerCase();renderCards();if(state.view==='map')renderMap()">
     <div class="view-toggle">
       <button class="vtbtn on" id="vt-list" onclick="setView('list')">☰ List</button>
       <button class="vtbtn" id="vt-map" onclick="setView('map')">🗺 Map</button>
@@ -745,6 +745,8 @@ let state = {
   earlyAdopterBizIds:new Set()
 }
 let timeWindow = 'all', activeCat = '', searchTerm = '', dateFilter = ''
+// Prevent browser autofill from prefilling the search bar
+document.getElementById('f-search').value = ''
 let leafletMap = null, mapMarkers = []
 
 // ── ROUTING ──────────────────────────────────────────────

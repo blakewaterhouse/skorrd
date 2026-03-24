@@ -1126,12 +1126,6 @@ let BIZ = null   // { id, name, cat, suburb, street, state, postcode, lat, lng }
 let SLOTS = []   // loaded from Supabase
 let BOOKINGS = [] // loaded from Supabase
 
-// Earnings and notifications stay as mock for now (no DB table yet)
-const EARNINGS_DATA = [
-  { week:"21 Jan", amount:0 },{ week:"28 Jan", amount:25 },{ week:"4 Feb", amount:47 },
-  { week:"11 Feb", amount:68 },{ week:"18 Feb", amount:52 },{ week:"25 Feb", amount:96 },
-  { week:"4 Mar",  amount:113 },{ week:"11 Mar", amount:134 },
-]
 let NOTIFICATIONS = []
 
 const CAT_COLORS = {
@@ -1867,18 +1861,31 @@ async function submitSlot() {
 // EARNINGS
 // ════════════════════════════════════════════
 function renderEarnings() {
-  const totalEarned = EARNINGS_DATA.reduce((s, w) => s + w.amount, 0)
-  const bookedRevenue = SLOTS.filter(s=>s.status==='booked').reduce((s,x)=>s+x.disc,0)
-  const avgPerSlot = SLOTS.filter(s=>s.status==='booked').length
-    ? Math.round(bookedRevenue / SLOTS.filter(s=>s.status==='booked').length) : 0
+  const bookedSlots = SLOTS.filter(s => s.status === 'booked')
+  const totalEarned = bookedSlots.reduce((sum, s) => sum + (s.disc || s.orig || 0), 0)
+  const avgPerSlot = bookedSlots.length ? Math.round(totalEarned / bookedSlots.length) : 0
 
   document.getElementById('earnings-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-accent" style="background:var(--green)"></div><div class="stat-icon">💵</div><div class="stat-val">$${totalEarned}</div><div class="stat-label">Total earned</div><div class="stat-change up">↑ all time</div></div>
-    <div class="stat-card"><div class="stat-accent" style="background:var(--coral)"></div><div class="stat-icon">📋</div><div class="stat-val">${SLOTS.filter(s=>s.status==='booked').length}</div><div class="stat-label">Slots filled</div><div class="stat-change up">↑ this month</div></div>
+    <div class="stat-card"><div class="stat-accent" style="background:var(--green)"></div><div class="stat-icon">💵</div><div class="stat-val">$${totalEarned.toFixed(0)}</div><div class="stat-label">Total earned</div><div class="stat-change up">↑ all time</div></div>
+    <div class="stat-card"><div class="stat-accent" style="background:var(--coral)"></div><div class="stat-icon">📋</div><div class="stat-val">${bookedSlots.length}</div><div class="stat-label">Slots filled</div><div class="stat-change up">↑ this month</div></div>
     <div class="stat-card"><div class="stat-accent" style="background:var(--sky)"></div><div class="stat-icon">⭐</div><div class="stat-val">$${avgPerSlot}</div><div class="stat-label">Avg per slot</div><div class="stat-change neutral">average</div></div>`
 
-  const maxAmt = Math.max(...EARNINGS_DATA.map(w => w.amount), 1)
-  document.getElementById('big-bars').innerHTML = EARNINGS_DATA.map(w => `
+  // Build weekly earnings from real booked slots
+  const weeklyMap = new Map()
+  bookedSlots.forEach(s => {
+    const d = s.time
+    const sunday = new Date(d)
+    sunday.setDate(d.getDate() - d.getDay())
+    sunday.setHours(0,0,0,0)
+    const key = sunday.toLocaleDateString('en-AU', { day:'numeric', month:'short' })
+    weeklyMap.set(key, (weeklyMap.get(key) || 0) + (s.disc || s.orig || 0))
+  })
+  const earningsChartData = weeklyMap.size > 0
+    ? Array.from(weeklyMap, ([week, amount]) => ({ week, amount }))
+    : [{ week: 'No bookings', amount: 0 }]
+
+  const maxAmt = Math.max(...earningsChartData.map(w => w.amount), 1)
+  document.getElementById('big-bars').innerHTML = earningsChartData.map(w => `
     <div class="big-bar-wrap">
       <div class="big-bar" style="height:${Math.max(w.amount/maxAmt*130, w.amount?8:4)}px;background:${w.amount?'var(--coral)':'var(--border)'}">
         ${w.amount ? `<div class="bar-tooltip">$${w.amount}</div>` : ''}
@@ -1945,7 +1952,7 @@ function renderNotifications() {
   const emojiMap = { booking:'✅', cancel:'❌', reminder:'⏰', tip:'💡' }
 
   document.getElementById('notif-list').innerHTML = NOTIFICATIONS.map((n,i) => `
-    <div class="notif-item ${n.read?'':'unread'}" style="animation-delay:${i*.05}s" onclick="readNotif(${n.id})">
+    <div class="notif-item ${n.read?'':'unread'}" style="animation-delay:${i*.05}s" onclick="readNotif('${n.id}')">
       ${!n.read ? '<div class="notif-dot"></div>' : '<div style="width:8px;flex-shrink:0"></div>'}
       <div class="ni-icon ${iconMap[n.type]||'reminder'}">${emojiMap[n.type]||'🔔'}</div>
       <div class="ni-body">
@@ -2312,20 +2319,21 @@ async function saveProfile() {
 ;(async () => {
   renderLoginForm()
 
-  // Handle magic link redirect — Supabase puts tokens in the URL hash
+  // Restore session on load (INITIAL_SESSION) and handle magic link redirects
   sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'INITIAL_SESSION' && session && !window.location.hash.includes('access_token')) {
+      await loadDashboard(session)
+      return
+    }
     if (event === 'SIGNED_IN' && session && window.location.hash.includes('access_token')) {
       history.replaceState(null, '', window.location.pathname + window.location.search)
       await loadDashboard(session)
     }
   })
 
-  // Don't call loadDashboard here if the magic link hash is present — onAuthStateChange handles it
+  // If magic link hash is present, onAuthStateChange handles it; otherwise fall through to setup check
   const hasAccessToken = window.location.hash.includes('access_token')
-  const { data: { session } } = await sb.auth.getSession()
-  if (session && !hasAccessToken) {
-    await loadDashboard(session)
-  } else if (!hasAccessToken && new URLSearchParams(window.location.search).get('setup')) {
+  if (!hasAccessToken && new URLSearchParams(window.location.search).get('setup')) {
     // setup=1 but no session — show login, loadDashboard will handle the rest after sign in
     loginMode = 'login'
     document.getElementById('login-screen').style.display = 'flex'
