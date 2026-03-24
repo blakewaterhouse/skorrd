@@ -2198,8 +2198,8 @@ async function saveProfile() {
   if (session) {
     await loadDashboard(session)
   } else if (new URLSearchParams(window.location.search).get('setup')) {
-    // Email link — jump straight to signup form
-    loginMode = 'signup'; signupStep = 'credentials'
+    // Email link — show login form (already registered, just needs to sign in)
+    loginMode = 'login'
     document.getElementById('login-screen').style.display = 'flex'
     document.getElementById('biz-info-screen').style.display = 'none'
     renderLoginForm()
