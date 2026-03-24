@@ -1278,7 +1278,7 @@ async function handleLogin() {
     const { data: signInData, error: signInError } = await sb.auth.signInWithPassword({ email, password: pass })
     if (signInError) { showLoginMsg(signInError.message, 'err'); return }
     pendingCreds = { email, password: pass }
-    signupStep = 'details'
+    signupStep = 'confirm-email'
     renderLoginForm()
     return
   }
@@ -1388,12 +1388,15 @@ async function loadDashboard(session) {
   const { data: bizData } = await sb.from('businesses').select('*, is_demo').eq('owner_id', session.user.id).maybeSingle()
 
   if (!bizData) {
-    // New user with no business yet — send them to profile setup
+    // No business record yet — show Step 2 details form
     hideProcessing()
-    BIZ = { name: session.user.email.split('@')[0], cat:'', suburb:'' }
-    enterDashboard(BIZ, session.user.email)
-    showPanel('profile')
-    showToast('Welcome! Start by completing your Business Profile 👇','ok')
+    pendingSession = session
+    loginMode = 'signup'; signupStep = 'details'
+    document.getElementById('login-screen').style.display = 'flex'
+    document.getElementById('dashboard').style.display = 'none'
+    document.getElementById('biz-info-screen').style.display = 'none'
+    renderLoginForm()
+    setTimeout(() => { document.getElementById('s-bizname')?.focus(); setupAddressAutocomplete('s-street', 's-') }, 60)
     return
   }
 
