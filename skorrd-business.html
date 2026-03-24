@@ -1893,13 +1893,12 @@ function renderEarnings() {
       <div class="big-bar-label">${w.week.split(' ')[0]}</div>
     </div>`).join('')
 
-  const bookedSlots = (SLOTS||[]).filter(s=>s.status==='booked')
-  document.getElementById('earnings-table-rows').innerHTML = bookedSlots.length ? bookedSlots.map(b => `
+  document.getElementById('earnings-table-rows').innerHTML = bookedSlots.length ? bookedSlots.map(s => `
     <div class="et-row">
-      <div class="et-svc">${b.service_name||'Service'}</div>
+      <div class="et-svc">${s.svc||'Service'}</div>
       <div class="et-biz" style="font-size:12px">${BIZ?.name||'Business'}</div>
-      <div class="et-date">${new Date(b.appointment_at).toLocaleDateString('en-AU',{day:'numeric',month:'short'})}</div>
-      <div class="et-amount">$${b.discounted_price||0}</div>
+      <div class="et-date">${s.time.toLocaleDateString('en-AU',{day:'numeric',month:'short'})}</div>
+      <div class="et-amount">$${s.disc||s.orig||0}</div>
       <div class="et-status"><span class="status-pill status-booked">booked</span></div>
     </div>`).join('') : '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">No bookings yet</div>'
 }
