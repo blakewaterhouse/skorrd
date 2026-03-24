@@ -2070,6 +2070,7 @@ function toggleClosed(day) {
 // ════════════════════════════════════════════
 const STATE_MAP = {'New South Wales':'NSW','Victoria':'VIC','Queensland':'QLD','Western Australia':'WA','South Australia':'SA','Tasmania':'TAS','Australian Capital Territory':'ACT','Northern Territory':'NT'}
 let _addrTimer = null
+const _addrCache = {}  // streetId → [{street,suburb,state,pc}]
 
 function setupAddressAutocomplete(streetId, prefix) {
   const input = document.getElementById(streetId)
@@ -2103,26 +2104,38 @@ async function _fetchAddr(q, streetId, prefix) {
     const data = await r.json()
     const features = (data.features || []).filter(f => f.properties.country === 'Australia' && (f.properties.street || f.properties.name))
     if (!features.length) { drop.style.display = 'none'; return }
-    drop.innerHTML = features.map(f => {
+
+    _addrCache[streetId] = features.map(f => {
       const p = f.properties
-      const street = [p.housenumber, p.street || p.name].filter(Boolean).join(' ')
-      const suburb = p.city || p.suburb || p.district || ''
-      const state  = STATE_MAP[p.state] || p.state || ''
-      const pc     = p.postcode || ''
-      const label  = [street, suburb, state, pc].filter(Boolean).join(', ')
-      const payload = JSON.stringify({street, suburb, state, pc})
-      return `<div class="addr-option" onclick="_fillAddr('${streetId}','${prefix}',${payload})">${esc(label)}</div>`
-    }).join('')
+      return {
+        street: [p.housenumber, p.street || p.name].filter(Boolean).join(' '),
+        suburb: p.city || p.suburb || p.district || '',
+        state:  STATE_MAP[p.state] || p.state || '',
+        pc:     p.postcode || ''
+      }
+    })
+
+    drop.innerHTML = ''
+    _addrCache[streetId].forEach((s, i) => {
+      const label = [s.street, s.suburb, s.state, s.pc].filter(Boolean).join(', ')
+      const el = document.createElement('div')
+      el.className = 'addr-option'
+      el.textContent = label
+      el.addEventListener('click', () => _fillAddr(streetId, prefix, i))
+      drop.appendChild(el)
+    })
     drop.style.display = 'block'
   } catch(e) { drop.style.display = 'none' }
 }
 
-function _fillAddr(streetId, prefix, d) {
-  const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val }
-  set(prefix + 'street',   d.street)
-  set(prefix + 'suburb',   d.suburb)
-  set(prefix + 'postcode', d.pc)
-  if (d.state) set(prefix + 'state', d.state)
+function _fillAddr(streetId, prefix, idx) {
+  const s = (_addrCache[streetId] || [])[idx]
+  if (!s) return
+  const set = (id, val) => { const el = document.getElementById(id); if (el !== null) el.value = val }
+  set(prefix + 'street',   s.street)
+  set(prefix + 'suburb',   s.suburb)
+  set(prefix + 'postcode', s.pc)
+  if (s.state) set(prefix + 'state', s.state)
   const drop = document.getElementById(streetId + '-ac')
   if (drop) drop.style.display = 'none'
   if (prefix === 'p-') updateProfileMap()
