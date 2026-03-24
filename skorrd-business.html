@@ -1132,10 +1132,7 @@ const EARNINGS_DATA = [
   { week:"11 Feb", amount:68 },{ week:"18 Feb", amount:52 },{ week:"25 Feb", amount:96 },
   { week:"4 Mar",  amount:113 },{ week:"11 Mar", amount:134 },
 ]
-let NOTIFICATIONS = [
-  { id:1, type:"booking", title:"New booking notifications will appear here", desc:"When a customer books one of your slots, you'll see it here.", time:"", read:false },
-  { id:2, type:"tip", title:"💡 Complete your Business Profile", desc:"Add your address so customers can find you on the map.", time:"", read:false },
-]
+let NOTIFICATIONS = []
 
 const CAT_COLORS = {
   "Barbershop":"#c8eaff","Nail Salon":"#e0d4ff","Physiotherapy":"#b8f0d8",
@@ -1499,6 +1496,7 @@ function enterDashboard(biz, email) {
   renderUpcoming()
   renderSlotsList('all')
   renderEarnings()
+  buildNotifications()
   renderNotifications()
   showToast(`Welcome, ${biz.name}! 👋`, 'ok')
 }
@@ -1902,6 +1900,41 @@ function renderEarnings() {
 // ════════════════════════════════════════════
 // NOTIFICATIONS
 // ════════════════════════════════════════════
+function buildNotifications() {
+  const readIds = new Set(NOTIFICATIONS.filter(n => n.read).map(n => n.id))
+  NOTIFICATIONS = []
+
+  // One notification per booking, newest first
+  BOOKINGS.forEach(b => {
+    const slot = SLOTS.find(s => s.id === b.slot_id)
+    const svc  = slot?.svc || 'Appointment'
+    const dateStr = slot ? slot.time.toLocaleDateString('en-AU', { weekday:'short', day:'numeric', month:'short' }) : ''
+    const timeStr = slot ? slot.time.toLocaleTimeString('en-AU', { hour:'numeric', minute:'2-digit', hour12:true }) : ''
+    const customer = b.customer_email || 'A customer'
+    const confirmed = b.status === 'confirmed'
+    NOTIFICATIONS.push({
+      id:    b.id,
+      type:  confirmed ? 'booking' : 'cancel',
+      title: confirmed ? `${svc} booked` : `${svc} booking cancelled`,
+      desc:  confirmed
+        ? `${customer} booked ${dateStr}${timeStr ? ' at ' + timeStr : ''}`
+        : `${customer} cancelled their booking${dateStr ? ' for ' + dateStr : ''}`,
+      time:  b.created_at,
+      read:  readIds.has(b.id),
+    })
+  })
+
+  // Tip: show profile completion prompt if address is missing
+  if (!BIZ?.street) {
+    NOTIFICATIONS.push({ id:'tip-profile', type:'tip', title:'💡 Complete your Business Profile', desc:'Add your address so customers can find you on the map.', time:'', read: readIds.has('tip-profile') })
+  }
+
+  // Fallback if no bookings yet
+  if (NOTIFICATIONS.length === 0) {
+    NOTIFICATIONS.push({ id:'tip-empty', type:'booking', title:'New booking notifications will appear here', desc:"When a customer books one of your slots, you'll see it here.", time:'', read: false })
+  }
+}
+
 function renderNotifications() {
   const unread = NOTIFICATIONS.filter(n => !n.read).length
   document.getElementById('sb-badge-notif').textContent = unread || ''
