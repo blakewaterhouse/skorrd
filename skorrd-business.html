@@ -2069,7 +2069,7 @@ function toggleClosed(day) {
 }
 
 // ════════════════════════════════════════════
-// ADDRESS AUTOCOMPLETE (Photon / OpenStreetMap)
+// ADDRESS AUTOCOMPLETE (Nominatim / OpenStreetMap)
 // ════════════════════════════════════════════
 const STATE_MAP = {'New South Wales':'NSW','Victoria':'VIC','Queensland':'QLD','Western Australia':'WA','South Australia':'SA','Tasmania':'TAS','Australian Capital Territory':'ACT','Northern Territory':'NT'}
 let _addrTimer = null
@@ -2091,32 +2091,33 @@ function setupAddressAutocomplete(streetId, prefix) {
     const q = input.value.trim()
     clearTimeout(_addrTimer)
     if (q.length < 3) { drop.style.display = 'none'; return }
-    _addrTimer = setTimeout(() => _fetchAddr(q, streetId, prefix), 350)
+    _addrTimer = setTimeout(() => _fetchAddr(q, streetId, prefix), 400)
   })
 
   document.addEventListener('click', e => {
     if (!wrap.contains(e.target)) drop.style.display = 'none'
-  }, true)
+  })
 }
 
 async function _fetchAddr(q, streetId, prefix) {
   const drop = document.getElementById(streetId + '-ac')
   if (!drop) return
   try {
-    const r = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&countrycode=au&limit=6`)
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&addressdetails=1&countrycodes=au&limit=6`
+    const r = await fetch(url, { headers: { 'Accept-Language': 'en-AU', 'User-Agent': 'Skorrd/1.0' } })
     const data = await r.json()
-    const features = (data.features || []).filter(f => f.properties.country === 'Australia' && (f.properties.street || f.properties.name))
-    if (!features.length) { drop.style.display = 'none'; return }
+    if (!data.length) { drop.style.display = 'none'; return }
 
-    _addrCache[streetId] = features.map(f => {
-      const p = f.properties
-      return {
-        street: [p.housenumber, p.street || p.name].filter(Boolean).join(' '),
-        suburb: p.city || p.suburb || p.district || '',
-        state:  STATE_MAP[p.state] || p.state || '',
-        pc:     p.postcode || ''
-      }
-    })
+    _addrCache[streetId] = data.map(item => {
+      const a = item.address || {}
+      const street = [a.house_number, a.road].filter(Boolean).join(' ')
+      const suburb = a.suburb || a.city_district || a.neighbourhood || a.city || a.town || a.village || ''
+      const state  = STATE_MAP[a.state] || a.state || ''
+      const pc     = a.postcode || ''
+      return { street, suburb, state, pc }
+    }).filter(s => s.street || s.suburb)
+
+    if (!_addrCache[streetId].length) { drop.style.display = 'none'; return }
 
     drop.innerHTML = ''
     _addrCache[streetId].forEach((s, i) => {
@@ -2124,7 +2125,7 @@ async function _fetchAddr(q, streetId, prefix) {
       const el = document.createElement('div')
       el.className = 'addr-option'
       el.textContent = label
-      el.addEventListener('click', () => _fillAddr(streetId, prefix, i))
+      el.addEventListener('mousedown', e => { e.preventDefault(); _fillAddr(streetId, prefix, i) })
       drop.appendChild(el)
     })
     drop.style.display = 'block'
