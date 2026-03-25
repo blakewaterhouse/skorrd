@@ -1503,11 +1503,11 @@ document.getElementById('auth-email').addEventListener('keydown',e=>{if(e.key===
   if (location.pathname === '/how-it-works') go('about', {}, false)
 })()
 </script>
-<nav class="bottom-nav" id="bottom-nav">
+<div class="bottom-nav" id="bottom-nav">
   <button class="bnav-item on" id="bnav-browse" onclick="go('browse')"><span class="bnav-icon">🔍</span><span>Browse</span></button>
   <button class="bnav-item" id="bnav-about" onclick="go('about')"><span class="bnav-icon">💡</span><span>How it works</span></button>
   <a class="bnav-item" href="/skorrd-business"><span class="bnav-icon">💼</span><span>For business</span></a>
-</nav>
+</div>
 <script>if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js")</script>
 </body>
 </html>
