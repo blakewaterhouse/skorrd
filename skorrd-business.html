@@ -2318,14 +2318,20 @@ async function saveProfile() {
 ;(async () => {
   renderLoginForm()
 
-  // Restore session on load (INITIAL_SESSION) and handle magic link redirects
+  // Restore session on load and handle magic link redirects
+  let sessionLoaded = false
   sb.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'INITIAL_SESSION' && session && !window.location.hash.includes('access_token')) {
+    const hasMagicLink = window.location.hash.includes('access_token')
+    if (hasMagicLink && event === 'SIGNED_IN' && session) {
+      history.replaceState(null, '', window.location.pathname + window.location.search)
+      sessionLoaded = true
       await loadDashboard(session)
       return
     }
-    if (event === 'SIGNED_IN' && session && window.location.hash.includes('access_token')) {
-      history.replaceState(null, '', window.location.pathname + window.location.search)
+    // Handle session restore on page load (INITIAL_SESSION) and token refresh
+    if (!hasMagicLink && !sessionLoaded && session &&
+        (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN')) {
+      sessionLoaded = true
       await loadDashboard(session)
     }
   })
