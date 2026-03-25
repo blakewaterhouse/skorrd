@@ -177,6 +177,19 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .fgroup input{background:#fff;border:1.5px solid var(--border);border-radius:var(--rsm);padding:11px 14px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .2s;width:100%}
 .fgroup input:focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,143,126,.1)}
 .fgroup input::placeholder{color:#c4b9aa}
+/* ACCOUNT */
+.acct-card{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:40px 36px;width:100%;max-width:440px;box-shadow:0 8px 40px rgba(0,0,0,.08);position:relative;z-index:2}
+.acct-title{font-family:'Nunito',sans-serif;font-size:22px;font-weight:800;color:var(--ink);margin:0 0 6px}
+.acct-sub{font-size:13px;color:var(--muted);font-weight:600;margin:0 0 28px;line-height:1.5}
+.acct-section{font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--coral);margin:24px 0 12px}
+.acct-msg{font-size:13px;font-weight:700;padding:10px 14px;border-radius:var(--rsm);margin-bottom:16px;display:none}
+.acct-msg.show{display:block}
+.acct-msg.ok{background:#e6f9ed;color:#1a6e3a}
+.acct-msg.err{background:#ffeaea;color:#c0392b}
+.acct-save{width:100%;background:var(--coral);color:#fff;border:none;padding:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 18px rgba(255,143,126,.3);margin-top:6px;transition:transform .15s}
+.acct-save:hover{transform:translateY(-2px)}
+.acct-save:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.acct-divider{border:none;border-top:1.5px solid var(--border);margin:24px 0}
 .auth-submit{width:100%;background:var(--coral);color:#fff;border:none;padding:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 18px rgba(255,143,126,.3);margin-top:6px;transition:transform .15s}
 .auth-submit:hover{transform:translateY(-2px)}
 .auth-foot{text-align:center;font-size:13px;color:var(--muted);font-weight:600;margin-top:18px}
@@ -485,6 +498,37 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 </div>
 
 <!-- ════════════════════════════════
+     MY ACCOUNT
+════════════════════════════════ -->
+<div class="screen" id="screen-account" style="padding-top:63px">
+  <div class="auth-wrap">
+    <div class="auth-blob auth-blob-1" style="background:var(--peach)"></div>
+    <div class="auth-blob auth-blob-2" style="background:var(--yellow)"></div>
+    <div class="acct-card">
+      <h1 class="acct-title">My Account</h1>
+      <p class="acct-sub">Update your details — they'll pre-fill when you book.</p>
+      <div class="acct-msg" id="acct-msg"></div>
+
+      <div class="acct-section">Personal details</div>
+      <div class="fgroup"><label>Full name</label><input id="acct-name" type="text" placeholder="Jane Smith" autocomplete="name"></div>
+      <div class="fgroup"><label>Phone number</label><input id="acct-phone" type="tel" placeholder="0400 000 000" autocomplete="tel"></div>
+      <button class="acct-save" id="acct-save-details" onclick="saveAccountDetails()">Save details</button>
+
+      <hr class="acct-divider">
+      <div class="acct-section">Email address</div>
+      <div class="fgroup"><label>Email</label><input id="acct-email" type="email" placeholder="you@email.com" autocomplete="email"></div>
+      <button class="acct-save" id="acct-save-email" onclick="saveAccountEmail()">Update email</button>
+
+      <hr class="acct-divider">
+      <div class="acct-section">Change password</div>
+      <div class="fgroup"><label>New password</label><input id="acct-pass" type="password" placeholder="New password (8+ chars)" autocomplete="new-password"></div>
+      <div class="fgroup"><label>Confirm password</label><input id="acct-pass2" type="password" placeholder="Confirm new password" autocomplete="new-password"></div>
+      <button class="acct-save" id="acct-save-pass" onclick="saveAccountPassword()">Change password</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
      CONFIRM
 ════════════════════════════════ -->
 <div class="screen" id="screen-confirm" style="padding-top:63px">
@@ -777,6 +821,7 @@ function go(screen, opts={}, pushUrl=true) {
   if (screen==='slot'    && opts.slot)  { state.currentSlot=opts.slot; renderSlotDetail(opts.slot) }
   if (screen==='confirm' && opts.slot)  { renderConfirm(opts.slot) }
   if (screen==='browse'  && state.view==='map') setTimeout(()=>leafletMap?.invalidateSize(),100)
+  if (screen==='account') loadAccountForm()
   window.scrollTo(0,0)
 }
 
@@ -793,7 +838,7 @@ function updateNav() {
     const badge = n ? `<span class="bk-badge">${n}</span>` : ''
     nr.innerHTML = `
       <button class="nav-btn nav-btn-ghost" onclick="openDrawer()" style="position:relative">📋 My Bookings${badge}</button>
-      <span style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--ink)">👋 ${state.user.email.split('@')[0]}</span>
+      <button class="nav-btn nav-btn-ghost" onclick="go('account')">👤 My Account</button>
       <button class="nav-btn nav-btn-ghost" onclick="signOut()">Sign out</button>`
   } else {
     nr.innerHTML = `
@@ -840,6 +885,65 @@ async function handleAuth() {
 
 function showAuthMsg(msg,type) { const el=document.getElementById('auth-msg'); el.textContent=msg; el.className=`auth-msg show ${type}` }
 function clearAuthMsg() { document.getElementById('auth-msg').className='auth-msg' }
+
+// ── MY ACCOUNT ───────────────────────────────────────────
+function loadAccountForm() {
+  if (!state.user) { go('login',{mode:'login'}); return }
+  const meta = state.user.user_metadata || {}
+  const el = (id) => document.getElementById(id)
+  el('acct-name').value  = meta.full_name || meta.name || ''
+  el('acct-phone').value = meta.phone || ''
+  el('acct-email').value = state.user.email || ''
+  el('acct-pass').value  = ''
+  el('acct-pass2').value = ''
+  showAcctMsg('', '')
+}
+
+function showAcctMsg(msg, type) {
+  const el = document.getElementById('acct-msg')
+  el.textContent = msg; el.className = 'acct-msg' + (msg ? ' show ' + type : '')
+}
+
+async function saveAccountDetails() {
+  const btn = document.getElementById('acct-save-details')
+  const name  = document.getElementById('acct-name').value.trim()
+  const phone = document.getElementById('acct-phone').value.trim()
+  if (!name) { showAcctMsg('Please enter your name.','err'); return }
+  btn.disabled = true
+  const { data, error } = await sb.auth.updateUser({ data: { full_name: name, phone } })
+  btn.disabled = false
+  if (error) { showAcctMsg(error.message, 'err'); return }
+  state.user = data.user
+  showAcctMsg('Details saved!', 'ok')
+  showToast('Details updated ✓', 'ok')
+}
+
+async function saveAccountEmail() {
+  const btn = document.getElementById('acct-save-email')
+  const email = document.getElementById('acct-email').value.trim()
+  if (!email) { showAcctMsg('Please enter an email address.','err'); return }
+  btn.disabled = true
+  const { error } = await sb.auth.updateUser({ email })
+  btn.disabled = false
+  if (error) { showAcctMsg(error.message, 'err'); return }
+  showAcctMsg('Check your new email address for a confirmation link.', 'ok')
+}
+
+async function saveAccountPassword() {
+  const btn = document.getElementById('acct-save-pass')
+  const pass  = document.getElementById('acct-pass').value
+  const pass2 = document.getElementById('acct-pass2').value
+  if (pass.length < 8) { showAcctMsg('Password must be at least 8 characters.','err'); return }
+  if (pass !== pass2) { showAcctMsg('Passwords don\'t match.','err'); return }
+  btn.disabled = true
+  const { error } = await sb.auth.updateUser({ password: pass })
+  btn.disabled = false
+  if (error) { showAcctMsg(error.message, 'err'); return }
+  document.getElementById('acct-pass').value = ''
+  document.getElementById('acct-pass2').value = ''
+  showAcctMsg('Password changed!', 'ok')
+  showToast('Password updated ✓', 'ok')
+}
 
 async function signOut() {
   try { await sb.auth.signOut() } catch(e){}
@@ -1134,6 +1238,14 @@ function renderSlotDetail(s) {
     </div>`
 
   if (state.user && BOOKING_FEE > 0) setupStripeCard()
+  // Pre-fill name/phone from saved account details
+  if (state.user) {
+    const meta = state.user.user_metadata || {}
+    const nameEl = document.getElementById('bk-name')
+    const phoneEl = document.getElementById('bk-phone')
+    if (nameEl && meta.full_name) nameEl.value = meta.full_name
+    if (phoneEl && meta.phone) phoneEl.value = meta.phone
+  }
 }
 
 const STRIPE_PK = 'pk_test_51TA16GEjUdtxg8QL98jcBaovfsvE494iSxBnIkGR9utfZBmlhfjmKBWj5hc4B65W9WdRzWhlLk867uRqA8J6s6v30083gdnRFR'

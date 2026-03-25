@@ -1375,52 +1375,55 @@ async function demoLogin() {
 
 async function loadDashboard(session) {
   showProcessing('Loading your dashboard...')
-  // Load business record for this owner
-  const { data: bizData } = await sb.from('businesses').select('*, is_demo').eq('owner_id', session.user.id).maybeSingle()
+  try {
+    // Load business record for this owner
+    const { data: bizData } = await sb.from('businesses').select('*, is_demo').eq('owner_id', session.user.id).maybeSingle()
 
-  if (!bizData) {
-    const isSetupFlow = !!new URLSearchParams(window.location.search).get('setup')
-    if (isSetupFlow) {
-      // Came from welcome email link — show Step 2 business details form
-      hideProcessing()
-      pendingSession = session
-      loginMode = 'signup'; signupStep = 'details'
-      document.getElementById('login-screen').style.display = 'flex'
-      document.getElementById('dashboard').style.display = 'none'
-      document.getElementById('biz-info-screen').style.display = 'none'
-      renderLoginForm()
-      setTimeout(() => { document.getElementById('s-bizname')?.focus(); setupAddressAutocomplete('s-street', 's-') }, 60)
-    } else {
-      // Normal login — no business yet, show dashboard with profile prompt
-      hideProcessing()
-      BIZ = { name: session.user.email.split('@')[0], cat: '', suburb: '' }
-      enterDashboard(BIZ, session.user.email)
-      showPanel('profile')
-      showToast('Welcome! Start by completing your Business Profile 👇', 'ok')
+    if (!bizData) {
+      const isSetupFlow = !!new URLSearchParams(window.location.search).get('setup')
+      if (isSetupFlow) {
+        // Came from welcome email link — show Step 2 business details form
+        pendingSession = session
+        loginMode = 'signup'; signupStep = 'details'
+        document.getElementById('login-screen').style.display = 'flex'
+        document.getElementById('dashboard').style.display = 'none'
+        document.getElementById('biz-info-screen').style.display = 'none'
+        renderLoginForm()
+        setTimeout(() => { document.getElementById('s-bizname')?.focus(); setupAddressAutocomplete('s-street', 's-') }, 60)
+      } else {
+        // Normal login — no business yet, show dashboard with profile prompt
+        BIZ = { name: session.user.email.split('@')[0], cat: '', suburb: '' }
+        enterDashboard(BIZ, session.user.email)
+        showPanel('profile')
+        showToast('Welcome! Start by completing your Business Profile 👇', 'ok')
+      }
+      return
     }
-    return
-  }
 
-  BIZ = {
-    id:       bizData.id,
-    name:     bizData.name,
-    cat:      bizData.category,
-    phone:    bizData.phone,
-    desc:     bizData.description,
-    suburb:   bizData.suburb,
-    street:   bizData.street,
-    state:    bizData.state,
-    postcode: bizData.postcode,
-    lat:      bizData.lat,
-    lng:      bizData.lng,
-    logoUrl:  bizData.logo_url || null,
-    isDemo:   bizData.is_demo || false,
-  }
+    BIZ = {
+      id:       bizData.id,
+      name:     bizData.name,
+      cat:      bizData.category,
+      phone:    bizData.phone,
+      desc:     bizData.description,
+      suburb:   bizData.suburb,
+      street:   bizData.street,
+      state:    bizData.state,
+      postcode: bizData.postcode,
+      lat:      bizData.lat,
+      lng:      bizData.lng,
+      logoUrl:  bizData.logo_url || null,
+      isDemo:   bizData.is_demo || false,
+    }
 
-  await loadSlots()
-  await loadBookings()
-  hideProcessing()
-  enterDashboard(BIZ, session.user.email)
+    await loadSlots()
+    await loadBookings()
+    enterDashboard(BIZ, session.user.email)
+  } catch (e) {
+    console.error('loadDashboard error:', e)
+  } finally {
+    hideProcessing()
+  }
 }
 
 async function loadSlots() {
@@ -2324,13 +2327,13 @@ async function saveProfile() {
     const hasMagicLink = window.location.hash.includes('access_token')
     if (hasMagicLink && event === 'SIGNED_IN' && session) {
       history.replaceState(null, '', window.location.pathname + window.location.search)
-      if (!sessionLoaded) { sessionLoaded = true; await loadDashboard(session) }
+      if (!sessionLoaded) { sessionLoaded = true; loadDashboard(session) }
       return
     }
     if (!hasMagicLink && !sessionLoaded && session &&
         (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN')) {
       sessionLoaded = true
-      await loadDashboard(session)
+      loadDashboard(session)
     }
   })
 
@@ -2340,7 +2343,7 @@ async function saveProfile() {
     const { data: { session } } = await sb.auth.getSession()
     if (session && !sessionLoaded) {
       sessionLoaded = true
-      await loadDashboard(session)
+      loadDashboard(session)
     }
   }
   if (!hasAccessToken && new URLSearchParams(window.location.search).get('setup')) {
