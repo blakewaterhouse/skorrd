@@ -287,10 +287,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .proc-label{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800}
 
 @media(max-width:700px){
-  nav{flex-wrap:wrap;padding:8px 16px 0;gap:4px}
-  .nav-mid{display:flex;width:calc(100% + 32px);margin:4px -16px 0;padding:6px 16px;gap:8px;overflow-x:auto;scrollbar-width:none;border-top:1.5px solid var(--border)}
-  .nav-mid::-webkit-scrollbar{display:none}
-  .nav-right{gap:8px;flex-shrink:0}
+  nav{padding:8px 16px;gap:8px}
+  .nav-mid{display:none}
+  .nav-right{gap:8px}
   .nav-right .nav-btn{font-size:12px;padding:7px 12px}
   .nav-logo{font-size:18px}
   .nav-logo img{height:22px}
@@ -316,10 +315,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
   #map-view{height:50vh}
   .map-sidebar{left:8px;right:8px;width:auto;top:auto;bottom:12px;height:180px}
 
-  .screen{padding-top:80px !important}
-  .launch-banner{top:80px}
-  .filters-bar{top:80px}
+  .screen{padding-top:46px !important;padding-bottom:70px}
+  .launch-banner{top:46px}
+  .filters-bar{top:46px}
   .nav-right .nav-btn{white-space:nowrap}
+  .bottom-nav{display:flex}
+  .bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px 8px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;color:var(--muted);cursor:pointer;background:none;border:none;text-decoration:none;transition:color .2s}
+  .bnav-item.on{color:var(--coral)}
+  .bnav-icon{font-size:20px;line-height:1}
 
   .site-footer{flex-direction:column;text-align:center;padding:24px 16px;gap:12px}
 
@@ -361,6 +364,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .search-input:focus{border-color:var(--coral)}
 /* Early adopter badge */
 .early-badge{display:inline-block;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;padding:2px 8px;border-radius:50px;background:#fef9c3;color:#a16207;border:1.5px solid #fde68a;margin-left:6px;vertical-align:middle;white-space:nowrap}
+/* Bottom nav (mobile only) */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:rgba(255,251,245,.96);backdrop-filter:blur(16px);border-top:1.5px solid var(--border);padding-bottom:env(safe-area-inset-bottom)}
 /* Date chip — custom label wraps hidden input for iOS Safari compat */
 .chip-date-label{cursor:pointer;position:relative}
 .chip-date-hidden{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
@@ -814,11 +819,15 @@ function go(screen, opts={}, pushUrl=true) {
   }
   nb.style.display = (screen!=='browse' && screen!=='login') ? 'flex' : 'none'
 
-  // Chip highlight
+  // Chip highlight (desktop)
   const chip = document.getElementById('nav-chip-browse')
   if (chip) chip.classList.toggle('on', screen==='browse')
   const chipAbout = document.getElementById('nav-chip-about')
   if (chipAbout) chipAbout.classList.toggle('on', screen==='about')
+  // Bottom nav highlight (mobile)
+  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('on'))
+  const bnav = document.getElementById('bnav-'+screen)
+  if (bnav) bnav.classList.add('on')
 
   // Update URL for bookmarkable screens
   if (pushUrl) {
@@ -1494,6 +1503,11 @@ document.getElementById('auth-email').addEventListener('keydown',e=>{if(e.key===
   if (location.pathname === '/how-it-works') go('about', {}, false)
 })()
 </script>
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="bnav-item on" id="bnav-browse" onclick="go('browse')"><span class="bnav-icon">🔍</span><span>Browse</span></button>
+  <button class="bnav-item" id="bnav-about" onclick="go('about')"><span class="bnav-icon">💡</span><span>How it works</span></button>
+  <a class="bnav-item" href="/skorrd-business"><span class="bnav-icon">💼</span><span>For business</span></a>
+</nav>
 <script>if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js")</script>
 </body>
 </html>
