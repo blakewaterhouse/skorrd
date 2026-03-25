@@ -877,9 +877,14 @@ async function handleAuth() {
   if (state.user) {
     try { await loadBookings() } catch(e){}
     updateNav()
-    showToast(state.authMode==='login'?'Welcome back 👋':'Account created! Welcome 🎉','ok')
-    const dest = state.currentSlot?'slot':'browse'
-    go(dest, state.currentSlot?{slot:state.currentSlot}:{})
+    if (state.authMode === 'signup') {
+      showToast('Account created! Add your details 🎉', 'ok')
+      go('account')
+    } else {
+      showToast('Welcome back 👋', 'ok')
+      const dest = state.currentSlot?'slot':'browse'
+      go(dest, state.currentSlot?{slot:state.currentSlot}:{})
+    }
   }
 }
 
