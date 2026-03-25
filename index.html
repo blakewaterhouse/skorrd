@@ -1063,6 +1063,13 @@ function clickSidebar(id) {
 function renderSlotDetail(s) {
   const cfg=CAT_CFG[s.cat]||{color:'#ffe4d4',pill:'pill-bar',icon:'🏪'}
   const saving=(s.orig-s.disc).toFixed(0), p=pct(s.orig,s.disc)
+  const customerFields = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <div><label style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:4px">Your name</label>
+      <input id="bk-name" type="text" placeholder="Jane Smith" autocomplete="name" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;background:var(--bg);box-sizing:border-box"></div>
+      <div><label style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:4px">Phone number</label>
+      <input id="bk-phone" type="tel" placeholder="0400 000 000" autocomplete="tel" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;background:var(--bg);box-sizing:border-box"></div>
+    </div>`
   const bookingPanel = state.user ? (BOOKING_FEE === 0 ? `
     <div class="panel-title">Book this slot — free!</div>
     <div class="panel-sub">🎉 No booking fee during our launch. Just confirm and it's yours.</div>
@@ -1070,6 +1077,7 @@ function renderSlotDetail(s) {
       <div class="fee-row"><span class="fl">Service (pay at appointment)</span><span class="fr">$${s.disc}</span></div>
       <div class="fee-row total"><span class="fl">Booking fee</span><span class="fr" style="color:var(--coral)">FREE 🎉</span></div>
     </div>
+    ${customerFields}
     <div class="stripe-error" id="stripe-error"></div>
     <button class="book-btn" id="pay-btn" onclick="handlePay()">Book free →</button>
     <p class="panel-note">No payment required — just show up!</p>` : `
@@ -1079,6 +1087,7 @@ function renderSlotDetail(s) {
       <div class="fee-row"><span class="fl">Service (pay at appointment)</span><span class="fr">$${s.disc}</span></div>
       <div class="fee-row total"><span class="fl">Hold fee (pay now)</span><span class="fr">$${BOOKING_FEE}</span></div>
     </div>
+    ${customerFields}
     <div id="stripe-card-element"></div>
     <div class="stripe-error" id="stripe-error"></div>
     <button class="book-btn" id="pay-btn" onclick="handlePay()">Pay $${BOOKING_FEE} &amp; confirm booking</button>
@@ -1155,6 +1164,13 @@ async function handlePay() {
   const s = state.currentSlot; if (!s) return
   const errEl = document.getElementById('stripe-error')
 
+  const customerName = document.getElementById('bk-name')?.value.trim()
+  const customerPhone = document.getElementById('bk-phone')?.value.trim()
+  if (!customerName || !customerPhone) {
+    if (errEl) { errEl.textContent = 'Please enter your name and phone number'; errEl.classList.add('show') }
+    return
+  }
+
   btn.disabled = true; btn.textContent = 'Processing...'
   if (errEl) { errEl.textContent = ''; errEl.classList.remove('show') }
 
@@ -1178,7 +1194,7 @@ async function handlePay() {
       const confirmRes = await fetch(`${SUPABASE_URL}/functions/v1/confirm-booking`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ free_booking: true, slot_id: s.id })
+        body: JSON.stringify({ free_booking: true, slot_id: s.id, customer_name: customerName, customer_phone: customerPhone })
       })
       const confirmData = await confirmRes.json()
       hideProcessing()
@@ -1225,7 +1241,7 @@ async function handlePay() {
       const confirmRes = await fetch(`${SUPABASE_URL}/functions/v1/confirm-booking`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ payment_intent_id: paymentIntent.id })
+        body: JSON.stringify({ payment_intent_id: paymentIntent.id, customer_name: customerName, customer_phone: customerPhone })
       })
       const confirmData = await confirmRes.json()
       hideProcessing()

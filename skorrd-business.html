@@ -2324,11 +2324,9 @@ async function saveProfile() {
     const hasMagicLink = window.location.hash.includes('access_token')
     if (hasMagicLink && event === 'SIGNED_IN' && session) {
       history.replaceState(null, '', window.location.pathname + window.location.search)
-      sessionLoaded = true
-      await loadDashboard(session)
+      if (!sessionLoaded) { sessionLoaded = true; await loadDashboard(session) }
       return
     }
-    // Handle session restore on page load (INITIAL_SESSION) and token refresh
     if (!hasMagicLink && !sessionLoaded && session &&
         (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN')) {
       sessionLoaded = true
@@ -2336,8 +2334,15 @@ async function saveProfile() {
     }
   })
 
-  // If magic link hash is present, onAuthStateChange handles it; otherwise fall through to setup check
+  // Belt-and-suspenders: getSession() in case auth events misfired
   const hasAccessToken = window.location.hash.includes('access_token')
+  if (!hasAccessToken) {
+    const { data: { session } } = await sb.auth.getSession()
+    if (session && !sessionLoaded) {
+      sessionLoaded = true
+      await loadDashboard(session)
+    }
+  }
   if (!hasAccessToken && new URLSearchParams(window.location.search).get('setup')) {
     // setup=1 but no session — show login, loadDashboard will handle the rest after sign in
     loginMode = 'login'
