@@ -315,6 +315,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
   #map-view{height:50vh}
   .map-sidebar{left:8px;right:8px;width:auto;top:auto;bottom:12px;height:180px}
 
+  #screen-browse{padding-top:46px !important}
+  .launch-banner{top:46px}
+  .nav-right .nav-btn{white-space:nowrap}
+
   .site-footer{flex-direction:column;text-align:center;padding:24px 16px;gap:12px}
 
   .about-stats{grid-template-columns:1fr !important}
@@ -356,7 +360,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 /* Early adopter badge */
 .early-badge{display:inline-block;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;padding:2px 8px;border-radius:50px;background:#fef9c3;color:#a16207;border:1.5px solid #fde68a;margin-left:6px;vertical-align:middle;white-space:nowrap}
 /* Date chip input */
-.chip-date{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;outline:none}
+.chip-date{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--bg);color:var(--ink);cursor:pointer;outline:none;-webkit-appearance:none;min-width:110px}
+.chip-date::-webkit-date-and-time-value{color:var(--ink)}
 .chip-date:focus{border-color:var(--coral)}
 </style>
 </head>
