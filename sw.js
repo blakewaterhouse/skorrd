@@ -1,4 +1,4 @@
-const CACHE = 'skorrd-v2'
+const CACHE = 'skorrd-v3'
 const STATIC = [
   './manifest.json',
   './icons/icon-192.png',
