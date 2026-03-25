@@ -1,19 +1,13 @@
-const CACHE = 'skorrd-v1'
-const PRECACHE = [
-  './',
-  './skorrd-business.html',
+const CACHE = 'skorrd-v2'
+const STATIC = [
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600;700&display=swap',
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
-  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
 ]
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(PRECACHE)).then(() => self.skipWaiting())
+    caches.open(CACHE).then(cache => cache.addAll(STATIC)).then(() => self.skipWaiting())
   )
 })
 
@@ -26,21 +20,36 @@ self.addEventListener('activate', e => {
 })
 
 self.addEventListener('fetch', e => {
-  // Skip non-GET and Supabase API calls (always need live data)
   if (e.request.method !== 'GET') return
   if (e.request.url.includes('supabase.co')) return
 
-  e.respondWith(
-    caches.match(e.request).then(cached => {
-      const network = fetch(e.request).then(res => {
+  const url = new URL(e.request.url)
+  const isHtml = url.pathname.endsWith('.html') || url.pathname === '/' || !url.pathname.includes('.')
+
+  if (isHtml) {
+    // Network-first for HTML — always get the latest version
+    e.respondWith(
+      fetch(e.request).then(res => {
         if (res.ok) {
           const clone = res.clone()
           caches.open(CACHE).then(cache => cache.put(e.request, clone))
         }
         return res
+      }).catch(() => caches.match(e.request))
+    )
+  } else {
+    // Cache-first for static assets (fonts, icons, JS)
+    e.respondWith(
+      caches.match(e.request).then(cached => {
+        const network = fetch(e.request).then(res => {
+          if (res.ok) {
+            const clone = res.clone()
+            caches.open(CACHE).then(cache => cache.put(e.request, clone))
+          }
+          return res
+        })
+        return cached || network
       })
-      // Return cache immediately if available, otherwise wait for network
-      return cached || network
-    })
-  )
+    )
+  }
 })
