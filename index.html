@@ -287,9 +287,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .proc-label{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800}
 
 @media(max-width:700px){
-  nav{padding:8px 16px;gap:8px}
-  .nav-mid{display:none}
-  .nav-right{gap:8px}
+  nav{flex-wrap:wrap;padding:8px 16px 0;gap:4px}
+  .nav-mid{display:flex;width:calc(100% + 32px);margin:4px -16px 0;padding:6px 16px;gap:8px;overflow-x:auto;scrollbar-width:none;border-top:1.5px solid var(--border)}
+  .nav-mid::-webkit-scrollbar{display:none}
+  .nav-right{gap:8px;flex-shrink:0}
   .nav-right .nav-btn{font-size:12px;padding:7px 12px}
   .nav-logo{font-size:18px}
   .nav-logo img{height:22px}
@@ -315,8 +316,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
   #map-view{height:50vh}
   .map-sidebar{left:8px;right:8px;width:auto;top:auto;bottom:12px;height:180px}
 
-  #screen-browse{padding-top:46px !important}
-  .launch-banner{top:46px}
+  .screen{padding-top:80px !important}
+  .launch-banner{top:80px}
+  .filters-bar{top:80px}
   .nav-right .nav-btn{white-space:nowrap}
 
   .site-footer{flex-direction:column;text-align:center;padding:24px 16px;gap:12px}
@@ -359,10 +361,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .search-input:focus{border-color:var(--coral)}
 /* Early adopter badge */
 .early-badge{display:inline-block;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;padding:2px 8px;border-radius:50px;background:#fef9c3;color:#a16207;border:1.5px solid #fde68a;margin-left:6px;vertical-align:middle;white-space:nowrap}
-/* Date chip input */
-.chip-date{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--bg);color:var(--ink);cursor:pointer;outline:none;-webkit-appearance:none;min-width:110px}
-.chip-date::-webkit-date-and-time-value{color:var(--ink)}
-.chip-date:focus{border-color:var(--coral)}
+/* Date chip — custom label wraps hidden input for iOS Safari compat */
+.chip-date-label{cursor:pointer;position:relative}
+.chip-date-hidden{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
 </style>
 </head>
 <body>
@@ -429,7 +430,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
     <div class="chip on" data-win="all" onclick="setWin(this)">All times</div>
     <div class="chip" data-win="today" onclick="setWin(this)">Today</div>
     <div class="chip" data-win="tomorrow" onclick="setWin(this)">Tomorrow</div>
-    <input type="date" class="chip-date" id="f-date-filter" onchange="setDateFilter(this.value)" title="Filter by date">
+    <label class="chip chip-date-label" for="f-date-filter">
+      <span id="f-date-label">📅 Date</span>
+      <input type="date" class="chip-date-hidden" id="f-date-filter" onchange="setDateFilter(this.value)" title="Filter by date">
+    </label>
 
     <select class="chip-select" id="f-sort" onchange="renderCards()">
       <option value="time">Soonest first</option>
@@ -1030,10 +1034,13 @@ function setWin(el) {
   timeWindow=el.dataset.win
   // Clear date filter when switching time chips
   dateFilter=''; const df=document.getElementById('f-date-filter'); if(df) df.value=''
+  const lbl=document.getElementById('f-date-label'); if(lbl) lbl.textContent='📅 Date'
   renderCards(); if(state.view==='map') renderMap()
 }
 function setDateFilter(val) {
   dateFilter=val
+  const lbl=document.getElementById('f-date-label')
+  if(lbl) lbl.textContent = val ? '📅 '+new Date(val+'T00:00:00').toLocaleDateString('en-AU',{day:'numeric',month:'short'}) : '📅 Date'
   // Clear time window chips when a date is selected
   if (val) { document.querySelectorAll('.chip[data-win]').forEach(c=>c.classList.remove('on')); timeWindow='all' }
   renderCards(); if(state.view==='map') renderMap()
