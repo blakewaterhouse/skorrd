@@ -1470,6 +1470,7 @@ function timeAgo(dateStr) {
 }
 
 function enterDashboard(biz, email) {
+  document.getElementById('biz-info-screen').style.display = 'none'
   document.getElementById('login-screen').style.display = 'none'
   document.getElementById('dashboard').style.display = 'flex'
   document.getElementById('sb-biz-name').textContent = biz.name
