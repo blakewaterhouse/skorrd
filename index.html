@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ff8f7e">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -25,12 +25,13 @@
   --mint:#b8f0d8;--lavender:#e0d4ff;--peach:#ffe4d4;
   --border:#ede8df;--r:18px;--rsm:12px;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;overflow-x:clip;min-height:100vh}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content:space-between;align-items:center;padding:12px 36px;background:rgba(255,251,245,.94);backdrop-filter:blur(16px);border-bottom:1.5px solid var(--border)}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:column;align-items:stretch;background:rgba(255,251,245,.94);backdrop-filter:blur(16px);border-bottom:1.5px solid var(--border)}
+.nav-inner{display:flex;justify-content:space-between;align-items:center;padding:12px 36px;gap:0}
 .nav-logo{cursor:pointer;background:none;border:none;padding:0;display:flex;align-items:center}
 .nav-logo img{height:28px;width:auto;display:block}
 .nav-mid{display:flex;gap:8px}
@@ -43,7 +44,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .nav-back{display:none;align-items:center;gap:6px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;background:none;border:none}.nav-back:hover{color:var(--ink)}
 
 /* SCREENS */
-.screen{display:none;animation:fadeIn .3s ease}.screen.active{display:block}
+.screen{display:none;animation:fadeIn .3s ease;padding-top:var(--nav-h,110px)}.screen.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* HERO */
@@ -68,7 +69,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .cat-btn:hover,.cat-btn.on{background:var(--peach);border-color:var(--coral);color:var(--coral)}
 
 /* FILTERS */
-.filters-bar{background:#fff;border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border);padding:12px 36px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:63px;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.filters-bar{background:#fff;border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border);padding:12px 36px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:var(--nav-h,110px);z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.04)}
 .chip{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 16px;border-radius:50px;cursor:pointer;border:1.5px solid var(--border);background:var(--bg);color:var(--muted);transition:all .2s;white-space:nowrap}
 .chip:hover,.chip.on{background:var(--peach);border-color:var(--coral);color:var(--coral)}
 .chip-select{appearance:none;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 30px 7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--bg) url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238a7a65' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;color:var(--muted);cursor:pointer;outline:none}
@@ -287,11 +288,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 .proc-label{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800}
 
 @media(max-width:700px){
-  nav{padding:8px 16px;gap:8px}
+  nav{padding:0}
+  .nav-inner{padding:3px 16px;height:52px;gap:8px}
   .nav-mid{display:none}
   .nav-right{gap:8px}
-  .nav-right .nav-btn{font-size:12px;padding:7px 12px}
-  .nav-logo{font-size:18px}
+  .nav-right .nav-btn{font-size:12px;padding:11px 12px}
+  .nav-logo{font-size:18px;padding:8px 0}
   .nav-logo img{height:22px}
 
   .hero{padding:40px 16px 24px}
@@ -315,15 +317,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
   #map-view{height:50vh}
   .map-sidebar{left:8px;right:8px;width:auto;top:auto;bottom:12px;height:180px}
 
-  .screen{padding-top:46px !important;padding-bottom:70px}
-  .launch-banner{top:46px}
-  .filters-bar{top:46px}
+  .screen{padding-bottom:70px}
   .nav-right .nav-btn{white-space:nowrap}
-  .bottom-nav{display:flex}
-  .bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px 8px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;color:var(--muted);cursor:pointer;background:none;border:none;text-decoration:none;transition:color .2s}
-  .bnav-item.on{color:var(--coral)}
-  .bnav-icon{font-size:20px;line-height:1}
-
   .site-footer{flex-direction:column;text-align:center;padding:24px 16px;gap:12px}
 
   .about-stats{grid-template-columns:1fr !important}
@@ -355,9 +350,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
   div[style*="padding:64px 36px"]{padding:40px 16px !important}
   div[style*="padding:80px 36px"]{padding:48px 16px !important}
   div[style*="max-width:900px"]{max-width:100% !important}
+  /* Raise toast above bottom nav; increase hidden offset so it fully clears the viewport */
+  .toast{bottom:calc(env(safe-area-inset-bottom) + 72px);transform:translateX(-50%) translateY(200px)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+
 }
-/* Launch banner */
-.launch-banner{background:var(--coral);color:#fff;text-align:center;padding:10px 20px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;letter-spacing:.01em;position:sticky;top:57px;z-index:199}
+/* Launch banner — lives inside fixed nav, no sticky needed */
+.launch-banner{background:var(--coral);color:#fff;text-align:center;padding:10px 20px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;letter-spacing:.01em}
 /* Keyword search */
 .search-input{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--bg);color:var(--ink);outline:none;min-width:160px}
 .search-input::placeholder{color:var(--muted);font-weight:700}
@@ -365,7 +364,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 /* Early adopter badge */
 .early-badge{display:inline-block;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;padding:2px 8px;border-radius:50px;background:#fef9c3;color:#a16207;border:1.5px solid #fde68a;margin-left:6px;vertical-align:middle;white-space:nowrap}
 /* Bottom nav (mobile only) */
-.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:rgba(255,251,245,.96);backdrop-filter:blur(16px);border-top:1.5px solid var(--border);padding-bottom:env(safe-area-inset-bottom)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:500;background:#fffbf5;border-top:1.5px solid var(--border);padding-bottom:env(safe-area-inset-bottom)}
+.bottom-nav-row{display:flex;width:100%}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px 8px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;color:var(--coral);cursor:pointer;background:none;border:none;text-decoration:none;transition:color .2s;-webkit-tap-highlight-color:transparent}
+.bnav-item.on{color:var(--coral)}
+.bnav-icon{font-size:20px;line-height:1}
+@media(min-width:701px){.bottom-nav{display:none}}
 /* Date chip — custom label wraps hidden input for iOS Safari compat */
 .chip-date-label{cursor:pointer;position:relative}
 .chip-date-hidden{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
@@ -375,24 +379,26 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 
 <!-- NAV -->
 <nav>
-  <button class="nav-logo" onclick="go('browse')"><img src="brand/logo-black.png" alt="Skorrd"></button>
-  <div class="nav-mid">
-    <span class="nav-chip on" id="nav-chip-browse" onclick="go('browse')" style="cursor:pointer">🔍 Browse slots</span>
-    <span class="nav-chip" id="nav-chip-about" onclick="go('about')" style="cursor:pointer">💡 How it works</span>
-    <a class="nav-chip" href="/skorrd-business">💼 For businesses</a>
+  <div class="nav-inner">
+    <button class="nav-logo" onclick="go('browse')"><img src="brand/logo-black.png" alt="Skorrd"></button>
+    <div class="nav-mid">
+      <span class="nav-chip on" id="nav-chip-browse" onclick="go('browse')" style="cursor:pointer">🔍 Browse slots</span>
+      <span class="nav-chip" id="nav-chip-about" onclick="go('about')" style="cursor:pointer">✨ How it works</span>
+      <a class="nav-chip" href="/skorrd-business">💼 For businesses</a>
+    </div>
+    <div class="nav-right" id="nav-right">
+      <button class="nav-btn nav-btn-ghost" onclick="go('login',{mode:'login'})">Log in</button>
+      <button class="nav-btn nav-btn-fill" onclick="go('login',{mode:'signup'})">Sign up free</button>
+    </div>
   </div>
-  <div class="nav-right" id="nav-right">
-    <button class="nav-btn nav-btn-ghost" onclick="go('login',{mode:'login'})">Log in</button>
-    <button class="nav-btn nav-btn-fill" onclick="go('login',{mode:'signup'})">Sign up free</button>
-  </div>
+  <div class="launch-banner">🎉 $0 booking fees to celebrate the launch of Skorrd — book any slot for free!</div>
 </nav>
 
 <!-- ════════════════════════════════
      BROWSE
 ════════════════════════════════ -->
-<div class="screen active" id="screen-browse" style="padding-top:63px;min-height:100vh">
+<div class="screen active" id="screen-browse" style="min-height:100vh">
 
-  <div class="launch-banner">🎉 $0 booking fees to celebrate the launch of Skorrd — book any slot for free!</div>
 
   <div class="hero">
     <div class="hero-eyebrow">
@@ -470,6 +476,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
       </div>
     </div>
   </div>
+  <div style="font-size:10px;color:var(--muted);padding:4px 16px;text-align:right">© <a href="https://www.openstreetmap.org/copyright" style="color:var(--muted)">OpenStreetMap</a> © <a href="https://carto.com/attributions" style="color:var(--muted)">CARTO</a></div>
 
   <footer class="site-footer">
     <button class="footer-logo" onclick="go('browse')"><img src="brand/logo-black.png" alt="Skorrd"></button>
@@ -486,14 +493,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 <!-- ════════════════════════════════
      SLOT DETAIL
 ════════════════════════════════ -->
-<div class="screen" id="screen-slot" style="padding-top:63px;min-height:100vh">
+<div class="screen" id="screen-slot" style="min-height:100vh">
   <div class="slot-wrap"><div id="slot-detail"></div></div>
 </div>
 
 <!-- ════════════════════════════════
      AUTH
 ════════════════════════════════ -->
-<div class="screen" id="screen-login" style="padding-top:63px">
+<div class="screen" id="screen-login" style="">
   <div class="auth-wrap">
     <div class="auth-blob auth-blob-1"></div>
     <div class="auth-blob auth-blob-2"></div>
@@ -514,7 +521,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 <!-- ════════════════════════════════
      MY ACCOUNT
 ════════════════════════════════ -->
-<div class="screen" id="screen-account" style="padding-top:63px">
+<div class="screen" id="screen-account" style="">
   <div class="auth-wrap">
     <div class="auth-blob auth-blob-1" style="background:var(--peach)"></div>
     <div class="auth-blob auth-blob-2" style="background:var(--yellow)"></div>
@@ -545,7 +552,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 <!-- ════════════════════════════════
      CONFIRM
 ════════════════════════════════ -->
-<div class="screen" id="screen-confirm" style="padding-top:63px">
+<div class="screen" id="screen-confirm" style="">
   <div class="confirm-wrap">
     <div class="auth-blob auth-blob-1"></div>
     <div class="auth-blob auth-blob-2" style="background:var(--mint)"></div>
@@ -570,7 +577,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content
 <!-- ════════════════════════════════
      ABOUT / HOW IT WORKS
 ════════════════════════════════ -->
-<div class="screen" id="screen-about" style="padding-top:63px;min-height:100vh">
+<div class="screen" id="screen-about" style="min-height:100vh">
 
   <!-- HERO BANNER -->
   <div style="background:var(--yellow);padding:64px 36px 56px;text-align:center;position:relative;overflow:hidden">
@@ -1135,8 +1142,8 @@ function setView(v) {
 }
 function initMap() {
   if (leafletMap) return
-  leafletMap=L.map('leaflet-map').setView([-33.875,151.205],13)
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(leafletMap)
+  leafletMap=L.map('leaflet-map',{attributionControl:false}).setView([-33.875,151.205],13)
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19}).addTo(leafletMap)
 }
 function renderMap() {
   if(!leafletMap) return
@@ -1504,10 +1511,19 @@ document.getElementById('auth-email').addEventListener('keydown',e=>{if(e.key===
 })()
 </script>
 <div class="bottom-nav" id="bottom-nav">
-  <button class="bnav-item on" id="bnav-browse" onclick="go('browse')"><span class="bnav-icon">🔍</span><span>Browse</span></button>
-  <button class="bnav-item" id="bnav-about" onclick="go('about')"><span class="bnav-icon">💡</span><span>How it works</span></button>
-  <a class="bnav-item" href="/skorrd-business"><span class="bnav-icon">💼</span><span>For business</span></a>
+  <div class="bottom-nav-row">
+    <button class="bnav-item on" id="bnav-browse" onclick="go('browse')"><span class="bnav-icon">🔍</span><span>Browse</span></button>
+    <button class="bnav-item" id="bnav-about" onclick="go('about')"><span class="bnav-icon">✨</span><span>How it works</span></button>
+    <a class="bnav-item" href="/skorrd-business"><span class="bnav-icon">💼</span><span>For business</span></a>
+  </div>
 </div>
+<script>
+// Set --nav-h so screens and sticky filter bar align exactly with the nav bottom
+function syncNavHeight(){var h=document.querySelector('nav').offsetHeight;document.documentElement.style.setProperty('--nav-h',h+'px')}
+syncNavHeight();
+document.fonts.ready.then(syncNavHeight);
+window.addEventListener('resize',syncNavHeight);
+</script>
 <script>if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js")</script>
 </body>
 </html>

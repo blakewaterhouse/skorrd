@@ -1,0 +1,53 @@
+<h2>Mobile Filter Bar</h2>
+<p class="subtitle">Currently the filters wrap onto multiple lines, taking up a lot of vertical space. Which approach?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Single horizontal scroll row</h3>
+      <p>All chips in one row, swipe left/right. View toggle and slot count move above the row. Most mobile-native pattern — same as Airbnb, Uber Eats, etc.</p>
+      <div style="margin-top:14px;background:#fffbf5;border:1.5px solid #ede8df;border-radius:12px;overflow:hidden;font-family:'Nunito',sans-serif">
+        <div style="padding:8px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ede8df">
+          <span style="font-size:11px;color:#8a7a65;font-weight:700">12 slots available</span>
+          <div style="display:flex;gap:4px">
+            <span style="font-size:11px;padding:4px 10px;border-radius:50px;background:#fff;border:1.5px solid #ede8df;color:#8a7a65;font-weight:700">≡ List</span>
+            <span style="font-size:11px;padding:4px 10px;border-radius:50px;background:#1a1207;border:1.5px solid #1a1207;color:#fff;font-weight:700">⊞ Map</span>
+          </div>
+        </div>
+        <div style="padding:8px 14px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none">
+          <span style="font-size:11px;padding:6px 14px;border-radius:50px;background:#ffe4d4;border:1.5px solid #ff8f7e;color:#ff8f7e;font-weight:800;white-space:nowrap;flex-shrink:0">All times</span>
+          <span style="font-size:11px;padding:6px 14px;border-radius:50px;background:#fff;border:1.5px solid #ede8df;color:#8a7a65;font-weight:700;white-space:nowrap;flex-shrink:0">Today</span>
+          <span style="font-size:11px;padding:6px 14px;border-radius:50px;background:#fff;border:1.5px solid #ede8df;color:#8a7a65;font-weight:700;white-space:nowrap;flex-shrink:0">Tomorrow</span>
+          <span style="font-size:11px;padding:6px 14px;border-radius:50px;background:#fff;border:1.5px solid #ede8df;color:#8a7a65;font-weight:700;white-space:nowrap;flex-shrink:0">📅 Date</span>
+          <span style="font-size:11px;padding:6px 14px;border-radius:50px;background:#fff;border:1.5px solid #ede8df;color:#8a7a65;font-weight:700;white-space:nowrap;flex-shrink:0">Sort ↕</span>
+          <span style="font-size:11px;padding:6px 14px;border-radius:50px;background:#fff;border:1.5px solid #ede8df;color:#8a7a65;font-weight:700;white-space:nowrap;flex-shrink:0">🔍 Search</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Two rows (time chips + extras)</h3>
+      <p>Time chips (All/Today/Tomorrow/Date) on row 1, sort + search + view toggle on row 2. More visible but takes more height.</p>
+      <div style="margin-top:14px;background:#fffbf5;border:1.5px solid #ede8df;border-radius:12px;overflow:hidden;font-family:'Nunito',sans-serif">
+        <div style="padding:8px 14px;display:flex;gap:8px;border-bottom:1px solid #ede8df;overflow-x:auto;scrollbar-width:none">
+          <span style="font-size:11px;padding:6px 14px;border-radius:50px;background:#ffe4d4;border:1.5px solid #ff8f7e;color:#ff8f7e;font-weight:800;white-space:nowrap;flex-shrink:0">All times</span>
+          <span style="font-size:11px;padding:6px 14px;border-radius:50px;background:#fff;border:1.5px solid #ede8df;color:#8a7a65;font-weight:700;white-space:nowrap;flex-shrink:0">Today</span>
+          <span style="font-size:11px;padding:6px 14px;border-radius:50px;background:#fff;border:1.5px solid #ede8df;color:#8a7a65;font-weight:700;white-space:nowrap;flex-shrink:0">Tomorrow</span>
+          <span style="font-size:11px;padding:6px 14px;border-radius:50px;background:#fff;border:1.5px solid #ede8df;color:#8a7a65;font-weight:700;white-space:nowrap;flex-shrink:0">📅 Date</span>
+        </div>
+        <div style="padding:8px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <span style="font-size:11px;color:#8a7a65;font-weight:700;white-space:nowrap">12 slots</span>
+          <span style="font-size:11px;padding:6px 10px;border-radius:50px;background:#fff;border:1.5px solid #ede8df;color:#8a7a65;font-weight:700;white-space:nowrap">Sort ↕</span>
+          <div style="display:flex;gap:4px;margin-left:auto">
+            <span style="font-size:11px;padding:4px 10px;border-radius:50px;background:#fff;border:1.5px solid #ede8df;color:#8a7a65;font-weight:700">≡</span>
+            <span style="font-size:11px;padding:4px 10px;border-radius:50px;background:#1a1207;color:#fff;font-weight:700">⊞</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

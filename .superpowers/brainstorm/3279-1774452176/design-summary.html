@@ -1,0 +1,67 @@
+<h2>Mobile Compatibility — Full Design</h2>
+<p class="subtitle">Here's everything we're fixing across both files. Does this look right?</p>
+
+<div class="section">
+  <h3>index.html — Customer App</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:13px">
+    <tr style="background:#f5f5f5">
+      <th style="text-align:left;padding:8px 12px;border-bottom:1.5px solid #e0e0e0">Issue</th>
+      <th style="text-align:left;padding:8px 12px;border-bottom:1.5px solid #e0e0e0">Fix</th>
+    </tr>
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top"><strong>Bottom nav not showing</strong><br><span style="color:#888">Browse / How it works / For business tabs invisible on mobile</span></td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top">Add <code>display:flex !important</code> on mobile to override any cascade. Also redeploy staging to push latest code (likely the real cause).</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top"><strong>Banner gap</strong><br><span style="color:#888">Strip of content visible between fixed nav and sticky coral banner</span></td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top">Measure actual mobile nav height (~46px) and align all sticky <code>top</code> values. Add <code>background</code> to nav so nothing bleeds through.</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top"><strong>Filter bar wrapping (3 rows)</strong><br><span style="color:#888">Slot count + time chips, then sort, then search + toggle — too tall</span></td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top">Single horizontally-scrollable row on mobile. Slot count + view toggle move to a compact row above. <code>flex-wrap:nowrap; overflow-x:auto</code></td>
+    </tr>
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top"><strong>Bottom nav z-index / safe area</strong><br><span style="color:#888">Ensure nav clears iPhone home indicator</span></td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top">Already has <code>padding-bottom:env(safe-area-inset-bottom)</code> — verify it's working. Adjust toast/content bottom offset to match.</td>
+    </tr>
+  </table>
+</div>
+
+<div class="section">
+  <h3>skorrd-business.html — Business Dashboard</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:13px">
+    <tr style="background:#f5f5f5">
+      <th style="text-align:left;padding:8px 12px;border-bottom:1.5px solid #e0e0e0">Issue</th>
+      <th style="text-align:left;padding:8px 12px;border-bottom:1.5px solid #e0e0e0">Fix</th>
+    </tr>
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top"><strong>Sidebar nav on mobile</strong><br><span style="color:#888">52px icon sidebar takes space, no labels</span></td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top">Hide sidebar on mobile. Add bottom tab bar: <strong>Overview · Slots · [+] · Earnings · Notifications</strong>. Profile accessible via settings icon in Overview panel header.</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top"><strong>Dashboard panel padding</strong><br><span style="color:#888">Content too wide / cut off on mobile</span></td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top">Ensure <code>.dash-main</code> takes full width on mobile. Reduce panel padding to 16px. <code>overflow-x:hidden</code> already added — verify still present.</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top"><strong>Earnings table overflow</strong><br><span style="color:#888">5-column grid doesn't fit on phone</span></td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top">Wrap table in a horizontally-scrollable container on mobile. Or collapse to a simpler card list format.</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top"><strong>Slot rows (4-column grid)</strong><br><span style="color:#888">May overflow on small screens</span></td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top">Reflow to a 2-row card layout on mobile: service name + meta on top row, price + status + actions on bottom row.</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top"><strong>Login screen (2-panel)</strong><br><span style="color:#888">Left panel already hides at 900px ✓</span></td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top">Already handled. Verify form card padding is comfortable on small screens.</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top"><strong>Panel header (title + CTA button)</strong><br><span style="color:#888">Flex row may not wrap on narrow screens</span></td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top">Stack panel header to column on mobile. Button moves below the title/subtitle.</td>
+    </tr>
+  </table>
+</div>
+
+<div class="section">
+  <h3 style="color:#22c55e">Out of scope</h3>
+  <p style="font-size:13px;color:#666">Map view mobile treatment (already has basic fix), booking/payment flow mobile (separate concern), desktop layouts (no changes).</p>
+</div>

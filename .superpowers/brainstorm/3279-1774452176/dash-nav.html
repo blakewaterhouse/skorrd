@@ -1,0 +1,54 @@
+<h2>Business Dashboard: Mobile Navigation</h2>
+<p class="subtitle">The dashboard currently collapses to a tiny 52px icon-only sidebar. Which approach should we take on mobile?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Bottom Tab Bar (like the customer app)</h3>
+      <p>Replace the sidebar with a fixed bottom tab bar on mobile. Dashboard takes full width. Same pattern as the customer-facing app — consistent experience.</p>
+      <div style="margin-top:14px;background:#f7f4f0;border-radius:12px;overflow:hidden;border:1.5px solid #e4ddd4;font-family:sans-serif">
+        <div style="background:#1a1207;padding:10px 14px;font-size:11px;color:rgba(255,255,255,.5)">← full width dashboard content →</div>
+        <div style="height:40px;background:#f7f4f0"></div>
+        <div style="display:flex;border-top:1.5px solid #e4ddd4;background:rgba(255,251,245,.96)">
+          <div style="flex:1;text-align:center;padding:8px 4px;font-size:9px;color:#ff8f7e;font-weight:800">📊<br>Overview</div>
+          <div style="flex:1;text-align:center;padding:8px 4px;font-size:9px;color:#8a7a65;font-weight:800">📅<br>Slots</div>
+          <div style="flex:1;text-align:center;padding:8px 4px;font-size:9px;color:#8a7a65;font-weight:800">💰<br>Earnings</div>
+          <div style="flex:1;text-align:center;padding:8px 4px;font-size:9px;color:#8a7a65;font-weight:800">🔔<br>Alerts</div>
+          <div style="flex:1;text-align:center;padding:8px 4px;font-size:9px;color:#8a7a65;font-weight:800">⚙️<br>Settings</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Hamburger Menu (slide-in drawer)</h3>
+      <p>Add a top hamburger button that opens the full sidebar as an overlay drawer. Keeps all nav labels visible when open. Common dashboard pattern.</p>
+      <div style="margin-top:14px;background:#f7f4f0;border-radius:12px;overflow:hidden;border:1.5px solid #e4ddd4;font-family:sans-serif">
+        <div style="background:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid #e4ddd4">
+          <span style="font-size:11px;font-weight:800;color:#1a1207">Skorrd</span>
+          <span style="font-size:16px">☰</span>
+        </div>
+        <div style="padding:12px 14px;font-size:11px;color:#8a7a65">← full width dashboard content →</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Keep Icon Sidebar (current)</h3>
+      <p>Keep the existing 52px icon-only sidebar on mobile. Simple, no extra UI. Icons are visible but no labels — users must learn the icons.</p>
+      <div style="margin-top:14px;background:#f7f4f0;border-radius:12px;overflow:hidden;border:1.5px solid #e4ddd4;font-family:sans-serif;display:flex">
+        <div style="width:44px;background:#1a1207;display:flex;flex-direction:column;gap:4px;padding:8px 6px">
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(255,143,126,.18);display:flex;align-items:center;justify-content:center;font-size:14px">📊</div>
+          <div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px">📅</div>
+          <div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px">💰</div>
+        </div>
+        <div style="flex:1;padding:10px 12px;font-size:11px;color:#8a7a65">main content</div>
+      </div>
+    </div>
+  </div>
+</div>

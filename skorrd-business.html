@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ff8f7e">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,7 +37,7 @@
 a{color:inherit;text-decoration:none}
 button{font-family:inherit;cursor:pointer}
 html,body{height:100%}
-body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;font-weight:400;overflow-x:hidden}
+body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;font-weight:400;overflow-x:clip}
 
 /* ══════════════════
    LOGIN SCREEN
@@ -386,16 +386,27 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
   .login-wrap{padding:16px}
   .lf-card{padding:24px 16px !important;margin:16px !important;max-width:100% !important}
 
-  /* Dashboard sidebar — icon only on mobile */
-  .sidebar{width:52px !important}
-  .dash-panel{padding:16px 16px 40px !important}
-  .stats-row{grid-template-columns:1fr !important}
-  .earnings-stats{grid-template-columns:1fr !important}
+  /* Dashboard — hide sidebar, use bottom nav */
+  .sidebar{display:none !important}
+  .dash-main{padding-bottom:calc(env(safe-area-inset-bottom) + 64px)}
+  .dash-panel{padding:16px 16px 24px !important}
+  .panel-header{flex-wrap:wrap;gap:10px;margin-bottom:20px !important}
+  .stats-row{grid-template-columns:1fr 1fr !important}
+  .earnings-stats{grid-template-columns:1fr 1fr !important}
 
   /* Slot form */
   .fgroup label{font-size:12px}
   .form-row{grid-template-columns:1fr !important}
 }
+/* ══════════════════
+   MOBILE BOTTOM NAV
+══════════════════ */
+.biz-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:var(--bg);border-top:1.5px solid var(--border);padding-bottom:env(safe-area-inset-bottom)}
+.biz-bnav-row{display:flex;width:100%}
+.biz-bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px 8px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;color:var(--coral);cursor:pointer;background:none;border:none;-webkit-tap-highlight-color:transparent;opacity:0.45;transition:opacity .2s}
+.biz-bnav-icon{font-size:18px;line-height:1}
+@media(max-width:600px){.biz-bottom-nav.active{display:block}}
+
 .addr-dropdown{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.10);z-index:999;display:none;overflow:hidden;margin-top:4px}
 .addr-option{padding:11px 14px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;border-bottom:1px solid var(--border);line-height:1.4}
 .addr-option:last-child{border-bottom:none}
@@ -1056,6 +1067,17 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
   </div>
 </div>
 
+<!-- MOBILE BOTTOM NAV (outside #dashboard to avoid overflow:hidden clipping) -->
+<div class="biz-bottom-nav" id="biz-bottom-nav">
+  <div class="biz-bnav-row">
+    <button class="biz-bnav-item" id="mnav-overview" onclick="showPanel('overview')" style="opacity:1"><span class="biz-bnav-icon">📊</span><span>Overview</span></button>
+    <button class="biz-bnav-item" id="mnav-slots" onclick="showPanel('slots')"><span class="biz-bnav-icon">📅</span><span>Slots</span></button>
+    <button class="biz-bnav-item" id="mnav-add" onclick="showPanel('add')"><span class="biz-bnav-icon">➕</span><span>Add slot</span></button>
+    <button class="biz-bnav-item" id="mnav-earnings" onclick="showPanel('earnings')"><span class="biz-bnav-icon">💰</span><span>Earnings</span></button>
+    <button class="biz-bnav-item" id="mnav-profile" onclick="showPanel('profile')"><span class="biz-bnav-icon">🏢</span><span>Profile</span></button>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal" id="modal">
@@ -1439,6 +1461,7 @@ function enterDashboard(biz, email) {
   document.getElementById('biz-info-screen').style.display = 'none'
   document.getElementById('login-screen').style.display = 'none'
   document.getElementById('dashboard').style.display = 'flex'
+  document.getElementById('biz-bottom-nav').classList.add('active')
   document.getElementById('sb-biz-name').textContent = biz.name
   document.getElementById('sb-user-name').textContent = biz.name.split(' ')[0] + "'s account"
   document.getElementById('sb-avatar').textContent = biz.name[0]
@@ -1468,6 +1491,7 @@ function enterDashboard(biz, email) {
 async function logout() {
   try { await sb.auth.signOut() } catch(e) { /* ignore lock errors */ }
   document.getElementById('dashboard').style.display = 'none'
+  document.getElementById('biz-bottom-nav').classList.remove('active')
   document.getElementById('login-screen').style.display = 'flex'
   BIZ = null; SLOTS = []; BOOKINGS = []
   renderLoginForm()
@@ -1480,8 +1504,11 @@ async function logout() {
 function showPanel(name) {
   document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'))
   document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'))
+  document.querySelectorAll('.biz-bnav-item').forEach(b => b.style.opacity='0.5')
   document.getElementById('panel-'+name).classList.add('active')
   document.getElementById('nav-'+name).classList.add('active')
+  const mnav = document.getElementById('mnav-'+name)
+  if (mnav) mnav.style.opacity='1'
   if (name==='add')     { updatePreview() }
   if (name==='profile') { initProfile()   }
 }
