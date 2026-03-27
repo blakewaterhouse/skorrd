@@ -561,7 +561,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
     <h2 style="font-family:'Raleway',sans-serif;font-size:clamp(24px,3vw,36px);font-weight:900;letter-spacing:-1px;margin-bottom:8px">Built for any appointment-based service</h2>
     <p style="font-size:15px;color:#8a7a65;font-weight:600;margin-bottom:28px">If people book time with you, you can list on Skorrd.</p>
     <div style="display:flex;flex-wrap:wrap;gap:10px">
-      <span style="border:1.5px solid #ede8df;padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:#8a7a65">✂️ Barbershops</span>
+      <span style="border:1.5px solid #ede8df;padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:#8a7a65">✂️ Barbers</span>
       <span style="border:1.5px solid #ede8df;padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:#8a7a65">💅 Nail salons</span>
       <span style="border:1.5px solid #ede8df;padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:#8a7a65">💆 Beauty &amp; wellness</span>
       <span style="border:1.5px solid #ede8df;padding:9px 18px;border-radius:40px;font-size:14px;font-weight:600;color:#8a7a65">🧘 Yoga &amp; fitness</span>
@@ -784,14 +784,14 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
                   <label>Category</label>
                   <select id="f-cat" onchange="updatePreview()">
                     <option value="">Select category</option>
-                    <option value="Barbershop">✂️ Barbershop</option>
+                    <option value="Barber">✂️ Barber</option>
+                    <option value="Hairdresser">💇‍♀️ Hairdresser</option>
                     <option value="Nail Salon">💅 Nail Salon</option>
                     <option value="Physiotherapy">🫁 Physiotherapy</option>
                     <option value="Beauty">💆 Beauty</option>
                     <option value="Wellness">🧖 Wellness</option>
                     <option value="Chiropractic">🦴 Chiropractic</option>
                     <option value="Personal Training">🏋️ Personal Training</option>
-                    <option value="Hairdresser">💇‍♀️ Hairdresser</option>
                     <option value="Yoga & Fitness">🧘 Yoga & Fitness</option>
                     <option value="Dental">🦷 Dental</option>
                   </select>
@@ -982,14 +982,14 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
                   <label>Category</label>
                   <select id="p-cat">
                     <option value="">Select category</option>
-                    <option value="Barbershop">✂️ Barbershop</option>
+                    <option value="Barber">✂️ Barber</option>
+                    <option value="Hairdresser">💇‍♀️ Hairdresser</option>
                     <option value="Nail Salon">💅 Nail Salon</option>
                     <option value="Physiotherapy">🫁 Physiotherapy</option>
                     <option value="Beauty">💆 Beauty</option>
                     <option value="Wellness">🧖 Wellness</option>
                     <option value="Chiropractic">🦴 Chiropractic</option>
                     <option value="Personal Training">🏋️ Personal Training</option>
-                    <option value="Hairdresser">💇‍♀️ Hairdresser</option>
                     <option value="Yoga & Fitness">🧘 Yoga & Fitness</option>
                     <option value="Dental">🦷 Dental</option>
                   </select>
@@ -1122,12 +1122,12 @@ let BOOKINGS = [] // loaded from Supabase
 let NOTIFICATIONS = []
 
 const CAT_COLORS = {
-  "Barbershop":"#c8eaff","Nail Salon":"#e0d4ff","Physiotherapy":"#b8f0d8",
+  "Barber":"#c8eaff","Nail Salon":"#e0d4ff","Physiotherapy":"#b8f0d8",
   "Beauty & Wellness":"#ffe4d4","Personal Training":"#fff0c8",
   "Hairdresser":"#fce7f3","Yoga & Fitness":"#d1fae5","Dental":"#dbeafe",
 }
 const CAT_DOTS = {
-  "Barbershop":"#1a5a8a","Nail Salon":"#5a2a8a","Physiotherapy":"#1a6a4a",
+  "Barber":"#1a5a8a","Nail Salon":"#5a2a8a","Physiotherapy":"#1a6a4a",
   "Beauty & Wellness":"#e05a20","Personal Training":"#b08000",
 }
 
@@ -1204,7 +1204,7 @@ function renderLoginForm() {
         <div><label style="font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;display:block;margin-bottom:5px">Category *</label>
           <select id="s-cat" style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:var(--ink);outline:none">
             <option value="">Select...</option>
-            <option>Barbershop</option><option>Nail Salon</option><option>Physiotherapy</option>
+            <option>Barber</option><option>Nail Salon</option><option>Physiotherapy</option>
             <option>Beauty &amp; Wellness</option><option>Personal Training</option>
             <option>Hairdresser</option><option>Yoga &amp; Fitness</option><option>Dental</option>
             <option>Tutoring</option><option>Skin &amp; Aesthetics</option><option>Therapy &amp; Counselling</option>
@@ -1357,7 +1357,7 @@ async function demoLogin() {
     // Try creating the demo account
     const res = await sb.auth.signUp({ email, password: pass })
     if (!res.error && res.data.session) {
-      await sb.from('businesses').upsert({ owner_id: res.data.session.user.id, name:"Sharp & Co.", category:"Barbershop", suburb:"Surry Hills", street:"12 Crown Street", state:"NSW", postcode:"2010", lat:-33.8838, lng:151.2111 }, { onConflict:'owner_id' })
+      await sb.from('businesses').upsert({ owner_id: res.data.session.user.id, name:"Sharp & Co.", category:"Barber", suburb:"Surry Hills", street:"12 Crown Street", state:"NSW", postcode:"2010", lat:-33.8838, lng:151.2111 }, { onConflict:'owner_id' })
       data = res.data
     }
   }

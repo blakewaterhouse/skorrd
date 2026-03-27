@@ -420,13 +420,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
   <!-- CATEGORY PILLS -->
   <div class="cat-scroll">
     <button class="cat-btn on" onclick="setCat(this,'')">All</button>
-    <button class="cat-btn" onclick="setCat(this,'Barbershop')">✂️ Barbers</button>
+    <button class="cat-btn" onclick="setCat(this,'Barber')">✂️ Barbers</button>
+    <button class="cat-btn" onclick="setCat(this,'Hairdresser')">💇‍♀️ Hairdressers</button>
     <button class="cat-btn" onclick="setCat(this,'Nail Salon')">💅 Nail salons</button>
     <button class="cat-btn" onclick="setCat(this,'Physiotherapy')">🫁 Physio</button>
     <button class="cat-btn" onclick="setCat(this,'Beauty')">💆 Beauty</button>
     <button class="cat-btn" onclick="setCat(this,'Wellness')">🧖 Wellness</button>
     <button class="cat-btn" onclick="setCat(this,'Chiropractic')">🦴 Chiropractic</button>
-    <button class="cat-btn" onclick="setCat(this,'Hairdresser')">💇‍♀️ Hairdressers</button>
     <button class="cat-btn" onclick="setCat(this,'Personal Training')">🏋️ Personal training</button>
     <button class="cat-btn" onclick="setCat(this,'Yoga & Fitness')">🧘 Yoga &amp; fitness</button>
     <button class="cat-btn" onclick="setCat(this,'Dental')">🦷 Dental</button>
@@ -651,7 +651,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
           <div style="height:4px;background:#c8eaff"></div>
           <div style="padding:16px 18px">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-              <span style="font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;background:var(--sky);color:#1a5a8a;padding:3px 10px;border-radius:50px;text-transform:uppercase;letter-spacing:.5px">Barbershop</span>
+              <span style="font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;background:var(--sky);color:#1a5a8a;padding:3px 10px;border-radius:50px;text-transform:uppercase;letter-spacing:.5px">Barber</span>
               <span style="background:var(--coral);color:#fff;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;padding:3px 10px;border-radius:50px">Save 35%</span>
             </div>
             <div style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:2px">Sharp &amp; Co.</div>
@@ -788,7 +788,7 @@ const BOOKING_FEE = 0
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'skorrd-customer-auth' } })
 
 const CAT_CFG = {
-  'Barbershop':           { pill:'pill-bar',    color:'#c8eaff', dot:'#3b82f6', icon:'✂️'  },
+  'Barber':           { pill:'pill-bar',    color:'#c8eaff', dot:'#3b82f6', icon:'✂️'  },
   'Nail Salon':           { pill:'pill-nail',   color:'#e0d4ff', dot:'#8b5cf6', icon:'💅'  },
   'Physiotherapy':        { pill:'pill-physio', color:'#b8f0d8', dot:'#10b981', icon:'🫁'  },
   'Beauty':               { pill:'pill-beauty', color:'#ffe4d4', dot:'#f97316', icon:'💆'  },
