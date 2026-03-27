@@ -388,13 +388,16 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
 
   /* Dashboard — hide sidebar, use bottom nav */
   .sidebar{display:none !important}
-  .dash-main{padding-bottom:calc(env(safe-area-inset-bottom) + 64px)}
-  .dash-panel{padding:16px 16px 24px !important}
+  .dash-main{padding-bottom:calc(env(safe-area-inset-bottom) + 64px);width:100%}
+  .dash-panel{padding:16px !important;overflow-x:hidden;width:100%}
   .panel-header{flex-wrap:wrap;gap:10px;margin-bottom:20px !important}
   .stats-row{grid-template-columns:1fr 1fr !important}
   .earnings-stats{grid-template-columns:1fr !important}
-  .earnings-table{overflow-x:auto}
-  .et-header,.et-row{min-width:480px}
+  .earnings-table{display:none}
+  .big-chart{padding:16px !important;overflow-x:hidden}
+  .form-card{padding:16px !important}
+  #hours-grid > div{grid-template-columns:90px 1fr !important;gap:8px !important}
+  #hours-grid > div button{display:none}
 
   /* Slot form */
   .fgroup label{font-size:12px}
