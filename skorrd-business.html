@@ -950,7 +950,10 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
             <div class="panel-title">Business Profile</div>
             <div class="panel-sub">This info appears on your listings and the customer map</div>
           </div>
-          <button class="btn-coral" onclick="saveProfile()">💾 Save changes</button>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button class="btn-coral" onclick="saveProfile()">💾 Save changes</button>
+            <button onclick="logout()" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;padding:9px 18px;border-radius:50px;border:1.5px solid #eee;background:#fff;color:#999;cursor:pointer">Log out</button>
+          </div>
         </div>
 
         <div class="add-slot-layout">
