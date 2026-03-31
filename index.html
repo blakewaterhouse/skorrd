@@ -312,8 +312,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
   nav{padding:0}
   .nav-inner{padding:3px 16px;height:52px;gap:8px}
   .nav-mid{display:none}
-  .nav-right{gap:8px}
-  .nav-right .nav-btn{font-size:12px;padding:11px 12px}
+  .nav-right{display:none !important}
   .nav-logo{font-size:18px;padding:8px 0}
   .nav-logo img{height:22px}
 
@@ -947,6 +946,7 @@ window.addEventListener('popstate', e => {
 // ── NAV ──────────────────────────────────────────────────
 function updateNav() {
   const nr = document.getElementById('nav-right')
+  const bnav = document.getElementById('bottom-nav').querySelector('.bottom-nav-row')
   if (state.user) {
     const n = state.bookings.filter(b=>b.status==='confirmed'&&new Date(b.slot.time)>new Date()).length
     const badge = n ? `<span class="bk-badge">${n}</span>` : ''
@@ -954,10 +954,18 @@ function updateNav() {
       <button class="nav-btn nav-btn-ghost" onclick="openDrawer()" style="position:relative">📋 My Bookings${badge}</button>
       <button class="nav-btn nav-btn-ghost" onclick="go('account')">👤 My Account</button>
       <button class="nav-btn nav-btn-ghost" onclick="signOut()">Sign out</button>`
+    bnav.innerHTML = `
+      <button class="bnav-item" id="bnav-browse" onclick="go('browse')"><span class="bnav-icon">🔍</span><span>Browse</span></button>
+      <button class="bnav-item" id="bnav-bookings" onclick="openDrawer()"><span class="bnav-icon">📋</span><span>My Bookings</span></button>
+      <button class="bnav-item" id="bnav-account" onclick="go('account')"><span class="bnav-icon">👤</span><span>My Account</span></button>`
   } else {
     nr.innerHTML = `
       <button class="nav-btn nav-btn-ghost" onclick="go('login',{mode:'login'})">Log in</button>
       <button class="nav-btn nav-btn-fill" onclick="go('login',{mode:'signup'})">Sign up free</button>`
+    bnav.innerHTML = `
+      <button class="bnav-item on" id="bnav-browse" onclick="go('browse')"><span class="bnav-icon">🔍</span><span>Browse</span></button>
+      <button class="bnav-item" id="bnav-about" onclick="go('about')"><span class="bnav-icon">✨</span><span>How it works</span></button>
+      <a class="bnav-item" href="/skorrd-business"><span class="bnav-icon">💼</span><span>For business</span></a>`
   }
 }
 
