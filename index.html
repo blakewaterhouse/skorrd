@@ -200,6 +200,27 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 .auth-msg.err{background:#fef2f2;border:1.5px solid #fecaca;color:#991b1b}
 .auth-msg.ok{background:#f0fdf4;border:1.5px solid #bbf7d0;color:#166534}
 
+/* ONBOARDING */
+.ob-sect{font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--coral);margin:0 0 10px}
+.ob-cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:24px}
+.ob-cat{display:flex;align-items:center;gap:7px;padding:10px 12px;min-height:56px;border-radius:var(--rsm);border:1.5px solid var(--border);cursor:pointer;font-size:13px;font-weight:700;transition:all .15s;user-select:none}
+.ob-cat:hover{border-color:var(--coral);background:var(--peach)}
+.ob-cat.on{border-color:var(--coral);background:var(--peach);color:var(--coral)}
+.ob-notifs{margin-bottom:24px;display:flex;flex-direction:column;gap:10px}
+.ob-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg);border-radius:var(--rsm);border:1.5px solid var(--border)}
+.ob-toggle-label{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.ob-sub-label{font-size:11px;color:var(--muted);font-weight:600;display:block;margin-top:1px}
+.toggle-sw{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle-sw input{opacity:0;width:0;height:0;position:absolute}
+.toggle-sw-track{position:absolute;inset:0;background:#d1c7bb;border-radius:50px;transition:background .2s;cursor:pointer}
+.toggle-sw input:checked+.toggle-sw-track{background:var(--coral)}
+.toggle-sw-track::after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.toggle-sw input:checked+.toggle-sw-track::after{transform:translateX(20px)}
+.ob-save-btn{width:100%;background:var(--coral);color:#fff;border:none;padding:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 18px rgba(255,143,126,.3);transition:transform .15s;margin-bottom:8px}
+.ob-save-btn:hover{transform:translateY(-2px)}
+.ob-skip{background:none;border:none;color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;padding:8px;text-align:center;width:100%}
+.ob-skip:hover{color:var(--ink)}
+
 /* CONFIRM */
 .confirm-wrap{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden}
 .confirm-card{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:44px 40px;width:100%;max-width:460px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.08);position:relative;z-index:2;animation:popIn .5s cubic-bezier(0.34,1.56,0.64,1)}
@@ -534,6 +555,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
       <div class="fgroup"><label>Full name</label><input id="acct-name" type="text" placeholder="Jane Smith" autocomplete="name"></div>
       <div class="fgroup"><label>Phone number</label><input id="acct-phone" type="tel" placeholder="0400 000 000" autocomplete="tel"></div>
       <button class="acct-save" id="acct-save-details" onclick="saveAccountDetails()">Save details</button>
+      <button class="ob-skip" id="acct-onboard-skip" style="display:none;margin-top:10px" onclick="state.fromOnboarding=false;go('browse')">Skip for now</button>
 
       <hr class="acct-divider">
       <div class="acct-section">Email address</div>
@@ -545,6 +567,78 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
       <div class="fgroup"><label>New password</label><input id="acct-pass" type="password" placeholder="New password (8+ chars)" autocomplete="new-password"></div>
       <div class="fgroup"><label>Confirm password</label><input id="acct-pass2" type="password" placeholder="Confirm new password" autocomplete="new-password"></div>
       <button class="acct-save" id="acct-save-pass" onclick="saveAccountPassword()">Change password</button>
+
+      <hr class="acct-divider">
+      <div class="acct-section">Notification Preferences</div>
+      <p style="font-size:13px;color:var(--muted);font-weight:600;line-height:1.5;margin:0 0 14px">Choose which types of appointments you want to hear about.</p>
+      <div class="ob-cats" id="acct-cats">
+        <div class="ob-cat" data-cat="Barber"               onclick="toggleObCat(this,'acct-cats')"><span>✂️</span><span>Barber</span></div>
+        <div class="ob-cat" data-cat="Nail Salon"           onclick="toggleObCat(this,'acct-cats')"><span>💅</span><span>Nail Salon</span></div>
+        <div class="ob-cat" data-cat="Physiotherapy"        onclick="toggleObCat(this,'acct-cats')"><span>🫁</span><span>Physiotherapy</span></div>
+        <div class="ob-cat" data-cat="Beauty"               onclick="toggleObCat(this,'acct-cats')"><span>💆</span><span>Beauty</span></div>
+        <div class="ob-cat" data-cat="Wellness"             onclick="toggleObCat(this,'acct-cats')"><span>🧖</span><span>Wellness</span></div>
+        <div class="ob-cat" data-cat="Chiropractic"         onclick="toggleObCat(this,'acct-cats')"><span>🦴</span><span>Chiropractic</span></div>
+        <div class="ob-cat" data-cat="Personal Training"    onclick="toggleObCat(this,'acct-cats')"><span>🏋️</span><span>Personal Training</span></div>
+        <div class="ob-cat" data-cat="Hairdresser"          onclick="toggleObCat(this,'acct-cats')"><span>💇‍♀️</span><span>Hairdresser</span></div>
+        <div class="ob-cat" data-cat="Yoga & Fitness"       onclick="toggleObCat(this,'acct-cats')"><span>🧘</span><span>Yoga &amp; Fitness</span></div>
+        <div class="ob-cat" data-cat="Dental"               onclick="toggleObCat(this,'acct-cats')"><span>🦷</span><span>Dental</span></div>
+        <div class="ob-cat" data-cat="Tutoring"             onclick="toggleObCat(this,'acct-cats')"><span>📚</span><span>Tutoring</span></div>
+        <div class="ob-cat" data-cat="Skin & Aesthetics"    onclick="toggleObCat(this,'acct-cats')"><span>🧴</span><span>Skin &amp; Aesthetics</span></div>
+        <div class="ob-cat" data-cat="Therapy & Counselling" onclick="toggleObCat(this,'acct-cats')"><span>🧠</span><span>Therapy &amp; Counselling</span></div>
+      </div>
+      <div class="ob-notifs">
+        <div class="ob-toggle-row">
+          <div>
+            <div class="ob-toggle-label">📧 Email notifications</div>
+            <span class="ob-sub-label">Get an email when a matching slot drops</span>
+          </div>
+          <label class="toggle-sw"><input type="checkbox" id="acct-email-notif" checked><span class="toggle-sw-track"></span></label>
+        </div>
+        <div class="ob-toggle-row">
+          <div>
+            <div class="ob-toggle-label">🔔 Push notifications</div>
+            <span class="ob-sub-label">Browser/app alerts (iOS: add to home screen)</span>
+          </div>
+          <label class="toggle-sw"><input type="checkbox" id="acct-push-notif" onchange="handlePushToggle(this,'acct')"><span class="toggle-sw-track"></span></label>
+        </div>
+      </div>
+      <button class="acct-save" id="acct-save-prefs" onclick="savePreferences('acct')">Save preferences</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     ONBOARDING
+════════════════════════════════ -->
+<div class="screen" id="screen-onboarding">
+  <div class="auth-wrap">
+    <div class="auth-blob auth-blob-1" style="background:var(--yellow)"></div>
+    <div class="auth-blob auth-blob-2" style="background:var(--mint)"></div>
+    <div class="acct-card" style="max-width:520px">
+      <span style="font-size:42px;display:block;margin-bottom:12px">🎉</span>
+      <h1 class="acct-title">Welcome to Skorrd!</h1>
+      <p class="acct-sub">Pick your interests so we can notify you the moment a last-minute slot drops.</p>
+      <div class="acct-section">What are you interested in?</div>
+      <div class="ob-cats" id="ob-cats"></div>
+      <div class="acct-section">How would you like to be notified?</div>
+      <div class="ob-notifs" style="margin-bottom:24px">
+        <div class="ob-toggle-row">
+          <div>
+            <div class="ob-toggle-label">📧 Email notifications</div>
+            <span class="ob-sub-label">Get an email when a matching slot drops</span>
+          </div>
+          <label class="toggle-sw"><input type="checkbox" id="ob-email-notif" checked><span class="toggle-sw-track"></span></label>
+        </div>
+        <div class="ob-toggle-row">
+          <div>
+            <div class="ob-toggle-label">🔔 Push notifications</div>
+            <span class="ob-sub-label">Browser/app alerts (iOS: add to home screen)</span>
+          </div>
+          <label class="toggle-sw"><input type="checkbox" id="ob-push-notif" onchange="handlePushToggle(this,'ob')"><span class="toggle-sw-track"></span></label>
+        </div>
+      </div>
+      <button class="acct-save" onclick="saveOnboarding()">Next: add your details →</button>
+      <button class="ob-skip" style="margin-top:10px" onclick="skipOnboarding()">Skip for now</button>
     </div>
   </div>
 </div>
@@ -785,6 +879,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 const SUPABASE_URL = 'https://ahbbnagjqpfztftswber.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmJuYWdqcXBmenRmdHN3YmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyODAyNDEsImV4cCI6MjA4ODg1NjI0MX0.p9SGxDNbkIMehoPN7KNQjioqdoU2PPe35EfZosstk6Q'
 const BOOKING_FEE = 0
+const VAPID_PUBLIC_KEY = 'BNHclK66GcPcrvAD3Kdtx9psfxzNA65fyqHGl2hgZzims9kPKeScY_mb2FnpURjCmEAzOwTBjjfDVnJpJoJ4GfM'
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'skorrd-customer-auth' } })
 
 const CAT_CFG = {
@@ -807,7 +902,8 @@ let state = {
   screen:'browse', user:null, slots:[], bookings:[],
   bookedSlotIds:new Set(), view:'list', authMode:'login',
   currentSlot:null, drawerTab:'upcoming', focusedCard:null,
-  earlyAdopterBizIds:new Set()
+  earlyAdopterBizIds:new Set(),
+  prefs: null  // cached locally: {categories, emailNotif, pushNotif}
 }
 let timeWindow = 'all', activeCat = '', searchTerm = '', dateFilter = ''
 let leafletMap = null, mapMarkers = []
@@ -903,8 +999,11 @@ async function handleAuth() {
     try { await loadBookings() } catch(e){}
     updateNav()
     if (state.authMode === 'signup') {
-      showToast('Account created! Add your details 🎉', 'ok')
-      go('account')
+      showToast('Account created! 🎉', 'ok')
+      buildCatGrid('ob-cats', [])
+      document.getElementById('ob-email-notif').checked = true
+      document.getElementById('ob-push-notif').checked = false
+      go('onboarding')
     } else {
       showToast('Welcome back 👋', 'ok')
       const dest = state.currentSlot?'slot':'browse'
@@ -921,12 +1020,16 @@ function loadAccountForm() {
   if (!state.user) { go('login',{mode:'login'}); return }
   const meta = state.user.user_metadata || {}
   const el = (id) => document.getElementById(id)
-  el('acct-name').value  = meta.full_name || meta.name || ''
-  el('acct-phone').value = meta.phone || ''
-  el('acct-email').value = state.user.email || ''
-  el('acct-pass').value  = ''
-  el('acct-pass2').value = ''
+  const setVal = (id, val) => { const e = el(id); if (e) e.value = val }
+  setVal('acct-name',  meta.full_name || meta.name || '')
+  setVal('acct-phone', meta.phone || '')
+  setVal('acct-email', state.user.email || '')
+  setVal('acct-pass',  '')
+  setVal('acct-pass2', '')
   showAcctMsg('', '')
+  const skipBtn = el('acct-onboard-skip')
+  if (skipBtn) skipBtn.style.display = state.fromOnboarding ? '' : 'none'
+  loadPreferences('acct')
 }
 
 function showAcctMsg(msg, type) {
@@ -944,6 +1047,12 @@ async function saveAccountDetails() {
   btn.disabled = false
   if (error) { showAcctMsg(error.message, 'err'); return }
   state.user = data.user
+  if (state.fromOnboarding) {
+    state.fromOnboarding = false
+    showToast("You're all set! Welcome to Skorrd 🎉", 'ok')
+    go('browse')
+    return
+  }
   showAcctMsg('Details saved!', 'ok')
   showToast('Details updated ✓', 'ok')
 }
@@ -1488,6 +1597,160 @@ function downloadCal(id){
 }
 
 function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type||'');requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));setTimeout(()=>t.classList.remove('show'),3200)}
+
+// ── ONBOARDING & NOTIFICATION PREFERENCES ──────────────────────────────────
+
+function buildCatGrid(containerId, selectedCats=[]) {
+  const cats = Object.entries(CAT_CFG)
+  const el = document.getElementById(containerId)
+  if (!el) return
+  el.innerHTML = cats.map(([name, cfg]) => `
+    <div class="ob-cat${selectedCats.includes(name)?' on':''}" data-cat="${name}" onclick="toggleObCat(this,'${containerId}')">
+      <span>${cfg.icon}</span><span>${name}</span>
+    </div>`).join('')
+}
+
+function toggleObCat(el, containerId) {
+  el.classList.toggle('on')
+}
+
+function getSelectedCats(containerId) {
+  return [...document.querySelectorAll(`#${containerId} .ob-cat.on`)].map(el => el.dataset.cat)
+}
+
+
+async function saveOnboarding() {
+  const categories = getSelectedCats('ob-cats')
+  const emailNotif = document.getElementById('ob-email-notif').checked
+  const pushNotif  = document.getElementById('ob-push-notif').checked
+  state.prefs = { categories, emailNotif, pushNotif }
+  // Directly stamp selections onto account grid before navigating — no async needed
+  document.querySelectorAll('#acct-cats .ob-cat').forEach(el => {
+    el.classList.toggle('on', categories.includes(el.dataset.cat))
+  })
+  const ae = document.getElementById('acct-email-notif')
+  const pe = document.getElementById('acct-push-notif')
+  if (ae) ae.checked = emailNotif
+  if (pe) pe.checked = pushNotif
+  upsertPreferences(categories, emailNotif, pushNotif) // fire-and-forget
+  if (pushNotif) await subscribePush()
+  state.fromOnboarding = true
+  showToast('Almost done — add your details! 🎉', 'ok')
+  go('account')
+}
+
+function skipOnboarding() {
+  state.fromOnboarding = true
+  go('account')
+}
+
+async function savePreferences(prefix) {
+  const btn = document.getElementById(`${prefix}-save-prefs`)
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving...' }
+  const categories = getSelectedCats(`${prefix}-cats`)
+  const emailNotif = document.getElementById(`${prefix}-email-notif`)?.checked ?? true
+  const pushNotif  = document.getElementById(`${prefix}-push-notif`)?.checked ?? false
+  state.prefs = { categories, emailNotif, pushNotif }
+  await upsertPreferences(categories, emailNotif, pushNotif)
+  if (pushNotif) await subscribePush()
+  if (btn) { btn.disabled = false; btn.textContent = 'Save preferences' }
+  showAcctMsg('Preferences saved!', 'ok')
+  showToast('Preferences updated ✓', 'ok')
+}
+
+async function upsertPreferences(categories, emailNotif, pushNotif) {
+  if (!state.user) return
+  try {
+    const session = (await sb.auth.getSession()).data?.session
+    if (!session) return
+    // Use service role via fetch to bypass RLS for initial insert (anon can't insert, only user can)
+    await sb.from('user_preferences').upsert({
+      user_id: state.user.id,
+      email: state.user.email,
+      categories,
+      email_notifications: emailNotif,
+      push_notifications: pushNotif,
+    }, { onConflict: 'user_id' })
+  } catch(e) { console.warn('upsertPreferences:', e.message) }
+}
+
+function applyPrefsToGrid(prefix, cats, emailNotif, pushNotif) {
+  document.querySelectorAll(`#${prefix}-cats .ob-cat`).forEach(el => {
+    el.classList.toggle('on', cats.includes(el.dataset.cat))
+  })
+  const emailEl = document.getElementById(`${prefix}-email-notif`)
+  const pushEl  = document.getElementById(`${prefix}-push-notif`)
+  if (emailEl) emailEl.checked = emailNotif
+  if (pushEl)  pushEl.checked  = pushNotif
+}
+
+async function loadPreferences(prefix) {
+  if (!state.user) return
+  // Apply cached prefs instantly if available (set by onboarding or previous save)
+  if (state.prefs) {
+    applyPrefsToGrid(prefix, state.prefs.categories, state.prefs.emailNotif, state.prefs.pushNotif)
+    return  // trust local state — don't let Supabase overwrite it this session
+  }
+  // No local state (e.g. page refresh) — fetch from Supabase
+  try {
+    const { data } = await sb.from('user_preferences').select('*').eq('user_id', state.user.id).maybeSingle()
+    if (data) {
+      const cats = Array.isArray(data.categories) ? data.categories : []
+      const emailNotif = data.email_notifications ?? true
+      const pushNotif  = data.push_notifications ?? false
+      state.prefs = { categories: cats, emailNotif, pushNotif }
+      applyPrefsToGrid(prefix, cats, emailNotif, pushNotif)
+    }
+  } catch(e) { console.warn('loadPreferences:', e.message) }
+}
+
+async function handlePushToggle(checkbox, prefix) {
+  if (!checkbox.checked) return
+  // Request permission immediately when toggled on
+  if (!('Notification' in window)) {
+    checkbox.checked = false
+    showToast('Push notifications not supported in this browser', 'err')
+    return
+  }
+  if (Notification.permission === 'denied') {
+    checkbox.checked = false
+    showToast('Notifications blocked — enable in browser settings', 'err')
+    return
+  }
+  if (Notification.permission !== 'granted') {
+    const perm = await Notification.requestPermission()
+    if (perm !== 'granted') {
+      checkbox.checked = false
+      showToast('Notifications permission denied', 'err')
+      return
+    }
+  }
+}
+
+async function subscribePush() {
+  try {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return
+    const reg = await navigator.serviceWorker.ready
+    const existing = await reg.pushManager.getSubscription()
+    const sub = existing || await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlB64ToUint8(VAPID_PUBLIC_KEY)
+    })
+    const session = (await sb.auth.getSession()).data?.session
+    if (!session) return
+    await fetch(`${SUPABASE_URL}/functions/v1/save-push-subscription`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ subscription: sub.toJSON() })
+    })
+  } catch(e) { console.warn('subscribePush:', e.message) }
+}
+
+function urlB64ToUint8(b64) {
+  const pad = b64.length % 4 === 0 ? '' : '='.repeat(4 - b64.length % 4)
+  const raw = atob(b64.replace(/-/g, '+').replace(/_/g, '/') + pad)
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)))
+}
 function showProcessing(l){document.getElementById('proc-label').textContent=l;document.getElementById('processing').classList.add('show')}
 function hideProcessing(){document.getElementById('processing').classList.remove('show')}
 

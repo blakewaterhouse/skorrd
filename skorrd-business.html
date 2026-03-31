@@ -1842,6 +1842,27 @@ async function submitSlot() {
     hideProcessing()
     if (error) { showToast('Could not publish slot: ' + error.message, 'err'); return }
 
+    // Notify interested users (fire and forget — don't block on this)
+    try {
+      const session = (await sb.auth.getSession()).data?.session
+      if (session && rows.length > 0) {
+        const r = rows[0]
+        fetch(`${SUPABASE_URL}/functions/v1/notify-slot-posted`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+          body: JSON.stringify({
+            category: r.category,
+            business_name: BIZ.name,
+            service: r.service_name,
+            slot_time: r.appointment_at,
+            address: BIZ.address || '',
+            discounted_price: r.discounted_price,
+            original_price: r.original_price,
+          })
+        }).catch(() => {})
+      }
+    } catch {}
+
     await loadSlots()
     computeStats()
     renderUpcoming()

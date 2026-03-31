@@ -1,4 +1,4 @@
-const CACHE = 'skorrd-v3'
+const CACHE = 'skorrd-v5'
 const STATIC = [
   './manifest.json',
   './icons/icon-192.png',
@@ -52,4 +52,31 @@ self.addEventListener('fetch', e => {
       })
     )
   }
+})
+
+self.addEventListener('push', e => {
+  let data = { title: 'New slot on Skorrd', body: 'A new discounted appointment just dropped!', url: '/' }
+  if (e.data) {
+    try { data = { ...data, ...JSON.parse(e.data.text()) } } catch {}
+  }
+  e.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: './icons/icon-192.png',
+      badge: './icons/icon-192.png',
+      data: { url: data.url },
+      vibrate: [100, 50, 100],
+    })
+  )
+})
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close()
+  const url = e.notification.data?.url || '/'
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      const match = list.find(c => c.url.includes('skorrd') && 'focus' in c)
+      return match ? match.focus() : clients.openWindow(url)
+    })
+  )
 })
