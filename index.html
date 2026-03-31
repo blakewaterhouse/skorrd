@@ -312,7 +312,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
   nav{padding:0}
   .nav-inner{padding:3px 16px;height:52px;gap:8px}
   .nav-mid{display:none}
-  .nav-right{display:none !important}
+  .nav-right.logged-in{display:none !important}
   .nav-logo{font-size:18px;padding:8px 0}
   .nav-logo img{height:22px}
 
@@ -586,13 +586,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
           </div>
           <label class="toggle-sw"><input type="checkbox" id="acct-email-notif" checked><span class="toggle-sw-track"></span></label>
         </div>
-        <div class="ob-toggle-row">
-          <div>
-            <div class="ob-toggle-label">🔔 Push notifications</div>
-            <span class="ob-sub-label">Browser/app alerts — on iPhone, add to Home Screen first</span>
-          </div>
-          <label class="toggle-sw"><input type="checkbox" id="acct-push-notif" onchange="handlePushToggle(this,'acct')"><span class="toggle-sw-track"></span></label>
-        </div>
       </div>
       <button class="acct-save" id="acct-save-prefs" onclick="savePreferences('acct')">Save preferences</button>
 
@@ -623,13 +616,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
             <span class="ob-sub-label">Get an email when a matching slot drops</span>
           </div>
           <label class="toggle-sw"><input type="checkbox" id="ob-email-notif" checked><span class="toggle-sw-track"></span></label>
-        </div>
-        <div class="ob-toggle-row">
-          <div>
-            <div class="ob-toggle-label">🔔 Push notifications</div>
-            <span class="ob-sub-label">Browser/app alerts — on iPhone, add to Home Screen first</span>
-          </div>
-          <label class="toggle-sw"><input type="checkbox" id="ob-push-notif" onchange="handlePushToggle(this,'ob')"><span class="toggle-sw-track"></span></label>
         </div>
       </div>
       <button class="acct-save" onclick="saveOnboarding()">Next: add your details →</button>
@@ -950,6 +936,7 @@ window.addEventListener('popstate', e => {
 function updateNav() {
   const nr = document.getElementById('nav-right')
   const bnav = document.getElementById('bottom-nav').querySelector('.bottom-nav-row')
+  nr.classList.toggle('logged-in', !!state.user)
   if (state.user) {
     const n = state.bookings.filter(b=>b.status==='confirmed'&&new Date(b.slot.time)>new Date()).length
     const badge = n ? `<span class="bk-badge">${n}</span>` : ''
@@ -1006,7 +993,6 @@ async function handleAuth() {
       showToast('Account created! 🎉', 'ok')
       buildCatGrid('ob-cats', [])
       document.getElementById('ob-email-notif').checked = true
-      document.getElementById('ob-push-notif').checked = false
       go('onboarding')
     } else {
       showToast('Welcome back 👋', 'ok')
@@ -1627,18 +1613,14 @@ function getSelectedCats(containerId) {
 async function saveOnboarding() {
   const categories = getSelectedCats('ob-cats')
   const emailNotif = document.getElementById('ob-email-notif').checked
-  const pushNotif  = document.getElementById('ob-push-notif').checked
-  state.prefs = { categories, emailNotif, pushNotif }
+  state.prefs = { categories, emailNotif, pushNotif: false }
   // Directly stamp selections onto account grid before navigating — no async needed
   document.querySelectorAll('#acct-cats .ob-cat').forEach(el => {
     el.classList.toggle('on', categories.includes(el.dataset.cat))
   })
   const ae = document.getElementById('acct-email-notif')
-  const pe = document.getElementById('acct-push-notif')
   if (ae) ae.checked = emailNotif
-  if (pe) pe.checked = pushNotif
-  upsertPreferences(categories, emailNotif, pushNotif) // fire-and-forget
-  if (pushNotif) await subscribePush()
+  upsertPreferences(categories, emailNotif, false) // fire-and-forget
   state.fromOnboarding = true
   showToast('Almost done — add your details! 🎉', 'ok')
   go('account')
@@ -1654,10 +1636,8 @@ async function savePreferences(prefix) {
   if (btn) { btn.disabled = true; btn.textContent = 'Saving...' }
   const categories = getSelectedCats(`${prefix}-cats`)
   const emailNotif = document.getElementById(`${prefix}-email-notif`)?.checked ?? true
-  const pushNotif  = document.getElementById(`${prefix}-push-notif`)?.checked ?? false
-  state.prefs = { categories, emailNotif, pushNotif }
-  await upsertPreferences(categories, emailNotif, pushNotif)
-  if (pushNotif) await subscribePush()
+  state.prefs = { categories, emailNotif, pushNotif: false }
+  await upsertPreferences(categories, emailNotif, false)
   if (btn) { btn.disabled = false; btn.textContent = 'Save preferences' }
   showAcctMsg('Preferences saved!', 'ok')
   showToast('Preferences updated ✓', 'ok')
@@ -1684,9 +1664,7 @@ function applyPrefsToGrid(prefix, cats, emailNotif, pushNotif) {
     el.classList.toggle('on', cats.includes(el.dataset.cat))
   })
   const emailEl = document.getElementById(`${prefix}-email-notif`)
-  const pushEl  = document.getElementById(`${prefix}-push-notif`)
   if (emailEl) emailEl.checked = emailNotif
-  if (pushEl)  pushEl.checked  = pushNotif
 }
 
 async function loadPreferences(prefix) {
