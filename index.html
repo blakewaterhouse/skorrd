@@ -336,7 +336,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
   .book-panel{position:static;margin-top:16px}
 
   #map-view{height:50vh}
-  .map-sidebar{left:8px;right:8px;width:auto;top:auto;bottom:12px;height:180px}
+  .map-sidebar{left:8px;right:8px;width:auto;top:auto;bottom:12px;height:180px;display:none}
+  .map-sidebar.map-sidebar-visible{display:flex}
 
   .screen{padding-bottom:70px}
   .nav-right .nav-btn{white-space:nowrap}
@@ -1282,6 +1283,7 @@ function renderMap() {
     marker.on('click',()=>highlightSidebar(loc.slots.map(s=>s.id)))
     mapMarkers.push(marker)
   })
+  leafletMap.on('click',()=>{if(window.innerWidth<=700) document.querySelector('.map-sidebar').classList.remove('map-sidebar-visible')})
   renderSidebar(filteredSlots())
   if(slots.length){const lats=slots.map(s=>s.lat),lngs=slots.map(s=>s.lng);leafletMap.fitBounds([[Math.min(...lats)-.01,Math.min(...lngs)-.01],[Math.max(...lats)+.01,Math.max(...lngs)+.01]])}
 }
@@ -1298,6 +1300,7 @@ function renderSidebar(slots) {
 function highlightSidebar(ids) {
   document.querySelectorAll('.sidebar-card').forEach(c=>c.classList.remove('highlighted'))
   ids.forEach(id=>{const el=document.getElementById('sc-'+id);if(el){el.classList.add('highlighted');el.scrollIntoView({behavior:'smooth',block:'nearest'})}})
+  if(window.innerWidth<=700) document.querySelector('.map-sidebar').classList.add('map-sidebar-visible')
 }
 function clickSidebar(id) {
   const s=state.slots.find(x=>x.id===id); if(!s) return
