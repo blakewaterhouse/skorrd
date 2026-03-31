@@ -488,15 +488,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 
   <div id="map-view">
     <div id="leaflet-map"></div>
-    <div class="map-sidebar">
-      <div class="map-sidebar-inner">
-        <div class="sidebar-header">
-          <div class="sidebar-title" id="sidebar-title">Slots nearby</div>
-          <div class="sidebar-sub">Click a pin or card to explore</div>
-        </div>
-        <div class="sidebar-slots" id="sidebar-slots"></div>
-      </div>
-    </div>
+
   </div>
   <div style="font-size:10px;color:var(--muted);padding:4px 16px;text-align:right">© <a href="https://www.openstreetmap.org/copyright" style="color:var(--muted)">OpenStreetMap</a> © <a href="https://carto.com/attributions" style="color:var(--muted)">CARTO</a></div>
 
@@ -1280,10 +1272,9 @@ function renderMap() {
         <button class="mp-btn" onclick="goSlot('${s.id}')">Book this slot →</button>
       </div>`).join('')
     marker.bindPopup(html,{maxWidth:260,minWidth:220})
-    marker.on('click',()=>highlightSidebar(loc.slots.map(s=>s.id)))
+    marker.on('click',()=>{})
     mapMarkers.push(marker)
   })
-  leafletMap.on('click',()=>{if(window.innerWidth<=700) document.querySelector('.map-sidebar').classList.remove('map-sidebar-visible')})
   renderSidebar(filteredSlots())
   if(slots.length){const lats=slots.map(s=>s.lat),lngs=slots.map(s=>s.lng);leafletMap.fitBounds([[Math.min(...lats)-.01,Math.min(...lngs)-.01],[Math.max(...lats)+.01,Math.max(...lngs)+.01]])}
 }
