@@ -918,7 +918,7 @@ function go(screen, opts={}, pushUrl=true) {
   let nb = document.getElementById('nav-back-btn')
   if (!nb) {
     nb = document.createElement('button'); nb.id='nav-back-btn'; nb.className='nav-back'; nb.innerHTML='← Back'; nb.onclick=()=>go('browse')
-    document.querySelector('nav').insertBefore(nb, document.getElementById('nav-right'))
+    const navRight = document.getElementById('nav-right'); navRight.parentNode.insertBefore(nb, navRight)
   }
   nb.style.display = (screen!=='browse' && screen!=='login') ? 'flex' : 'none'
 
@@ -1269,7 +1269,7 @@ function renderMap() {
       <div class="map-popup">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
           ${s.logoUrl?`<img src="${s.logoUrl}" style="width:32px;height:32px;border-radius:8px;object-fit:cover;border:1px solid #eee;flex-shrink:0">`:`<div style="width:32px;height:32px;border-radius:8px;background:#ffe4d4;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🏪</div>`}
-          <div><div class="mp-biz" style="margin-bottom:1px">${s.biz}</div><div class="mp-svc">${s.svc}</div></div>
+          <div><div class="mp-biz" style="margin-bottom:2px">${s.biz}</div><div class="mp-svc" style="margin-bottom:3px">${s.svc}</div><div style="display:inline-block;font-family:'Nunito',sans-serif;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:50px;background:var(--peach);color:var(--coral);border:1px solid rgba(255,143,126,.2)">${s.cat}</div></div>
         </div>
         <div class="mp-row">
           <div class="mp-price">$${s.disc} <span style="font-size:12px;color:var(--muted);text-decoration:line-through">$${s.orig}</span></div>
