@@ -589,7 +589,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
         <div class="ob-toggle-row">
           <div>
             <div class="ob-toggle-label">🔔 Push notifications</div>
-            <span class="ob-sub-label">Browser/app alerts (iOS: add to home screen)</span>
+            <span class="ob-sub-label">Browser/app alerts — on iPhone, add to Home Screen first</span>
           </div>
           <label class="toggle-sw"><input type="checkbox" id="acct-push-notif" onchange="handlePushToggle(this,'acct')"><span class="toggle-sw-track"></span></label>
         </div>
@@ -627,7 +627,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
         <div class="ob-toggle-row">
           <div>
             <div class="ob-toggle-label">🔔 Push notifications</div>
-            <span class="ob-sub-label">Browser/app alerts (iOS: add to home screen)</span>
+            <span class="ob-sub-label">Browser/app alerts — on iPhone, add to Home Screen first</span>
           </div>
           <label class="toggle-sw"><input type="checkbox" id="ob-push-notif" onchange="handlePushToggle(this,'ob')"><span class="toggle-sw-track"></span></label>
         </div>
@@ -1714,7 +1714,8 @@ async function handlePushToggle(checkbox, prefix) {
   // Request permission immediately when toggled on
   if (!('Notification' in window)) {
     checkbox.checked = false
-    showToast('Push notifications not supported in this browser', 'err')
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
+    showToast(isIOS ? 'To enable push on iOS: tap Share → "Add to Home Screen", then open from there' : 'Push notifications not supported in this browser', 'err')
     return
   }
   if (Notification.permission === 'denied') {
