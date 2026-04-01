@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skorrd — Last-minute slots. Better prices.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Tokens ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fffbf5;
+  --ink:#1a1207;
+  --muted:#8a7a65;
+  --coral:#ff6b4a;
+  --coral-light:#ff8f7e;
+  --peach:#ffe4d4;
+  --yellow:#ffd84d;
+  --mint:#b8f0d8;
+  --border:#ede8df;
+  --border-dark:rgba(26,18,7,.08);
+  --r:18px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;overflow-x:clip;min-height:100vh}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+
+/* ── Keyframe Animations ── */
+@keyframes fadeBlurUp{
+  from{opacity:0;filter:blur(12px);transform:translateY(16px)}
+  to{opacity:1;filter:blur(0);transform:translateY(0)}
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+@keyframes badgePulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(255,107,74,.25)}
+  50%{box-shadow:0 0 0 8px rgba(255,107,74,0)}
+}
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-8px)}
+}
+@keyframes shimmer{
+  from{background-position:200% center}
+  to{background-position:-200% center}
+}
+
+.anim-1{animation:fadeBlurUp .8s cubic-bezier(.16,1,.3,1) both}
+.anim-2{animation:fadeBlurUp .8s cubic-bezier(.16,1,.3,1) .15s both}
+.anim-3{animation:fadeBlurUp .8s cubic-bezier(.16,1,.3,1) .3s both}
+.anim-4{animation:fadeBlurUp .8s cubic-bezier(.16,1,.3,1) .45s both}
+.anim-5{animation:fadeUp .9s cubic-bezier(.16,1,.3,1) .6s both}
+.anim-6{animation:fadeIn 1s ease .8s both}
+
+/* ── Nav ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:16px 24px;
+  transition:all .3s ease;
+}
+.nav-inner{
+  max-width:1100px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 20px;
+  border-radius:50px;
+  transition:all .35s cubic-bezier(.16,1,.3,1);
+}
+nav.scrolled .nav-inner{
+  background:rgba(255,251,245,.82);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border:1.5px solid var(--border);
+  box-shadow:0 8px 32px rgba(26,18,7,.08);
+  padding:8px 20px;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:8px;
+  font-family:'Nunito',sans-serif;font-weight:900;font-size:22px;color:var(--ink);
+  flex-shrink:0;
+}
+.nav-logo img{height:28px;width:auto}
+.nav-links{
+  display:flex;gap:32px;list-style:none;
+  position:absolute;left:50%;transform:translateX(-50%);
+}
+.nav-links a{
+  font-size:14px;font-weight:700;color:var(--muted);
+  transition:color .2s;
+}
+.nav-links a:hover{color:var(--coral)}
+.nav-actions{display:flex;gap:10px;align-items:center}
+.btn-ghost{
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;
+  padding:8px 18px;border-radius:50px;
+  border:1.5px solid var(--border);background:transparent;color:var(--ink);
+  cursor:pointer;transition:all .2s;
+}
+.btn-ghost:hover{border-color:var(--coral);color:var(--coral)}
+.btn-fill{
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;
+  padding:8px 20px;border-radius:50px;
+  border:none;background:var(--coral);color:#fff;
+  cursor:pointer;transition:all .2s;
+  box-shadow:0 4px 14px rgba(255,107,74,.3);
+}
+.btn-fill:hover{background:#e55a39;box-shadow:0 6px 20px rgba(255,107,74,.4);transform:translateY(-1px)}
+
+/* mobile hamburger */
+.nav-hamburger{
+  display:none;flex-direction:column;gap:5px;cursor:pointer;
+  background:none;border:none;padding:4px;
+}
+.nav-hamburger span{
+  display:block;width:22px;height:2px;background:var(--ink);
+  border-radius:2px;transition:all .25s;
+}
+.nav-mobile{
+  display:none;position:absolute;top:calc(100% + 8px);left:16px;right:16px;
+  background:#fffbf5;border:1.5px solid var(--border);border-radius:20px;
+  padding:20px;box-shadow:0 16px 48px rgba(26,18,7,.12);
+}
+.nav-mobile.open{display:block}
+.nav-mobile ul{list-style:none;margin-bottom:16px}
+.nav-mobile ul li{padding:10px 0;border-bottom:1px solid var(--border)}
+.nav-mobile ul li:last-child{border-bottom:none}
+.nav-mobile ul a{font-weight:700;font-size:15px;color:var(--ink)}
+.nav-mobile-actions{display:flex;flex-direction:column;gap:8px}
+.nav-mobile-actions .btn-ghost,.nav-mobile-actions .btn-fill{width:100%;text-align:center;padding:12px}
+
+/* ── Hero ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:140px 24px 80px;
+  position:relative;overflow:hidden;
+}
+
+/* Soft radial glow blobs */
+.hero-blob{
+  position:absolute;pointer-events:none;border-radius:50%;
+  filter:blur(80px);opacity:.45;
+}
+.hero-blob-1{
+  width:600px;height:600px;
+  background:radial-gradient(circle, #ff6b4a 0%, transparent 70%);
+  top:-200px;right:-100px;opacity:.12;
+}
+.hero-blob-2{
+  width:500px;height:500px;
+  background:radial-gradient(circle, #ffd84d 0%, transparent 70%);
+  bottom:-100px;left:-100px;opacity:.14;
+}
+.hero-blob-3{
+  width:400px;height:400px;
+  background:radial-gradient(circle, #b8f0d8 0%, transparent 70%);
+  top:40%;left:60%;opacity:.18;
+}
+
+/* Noise texture overlay */
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:.4;pointer-events:none;
+}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:10px;
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:50px;padding:6px 16px 6px 8px;
+  font-size:13px;font-weight:700;color:var(--muted);
+  box-shadow:0 4px 16px rgba(26,18,7,.06);
+  margin-bottom:32px;cursor:pointer;
+  transition:all .2s;
+}
+.hero-badge:hover{border-color:var(--coral-light);color:var(--coral)}
+.badge-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--coral);
+  animation:badgePulse 2s ease-in-out infinite;flex-shrink:0;
+}
+.badge-pill{
+  background:var(--peach);color:var(--coral);
+  font-size:11px;font-weight:800;padding:3px 10px;border-radius:50px;
+  letter-spacing:.3px;text-transform:uppercase;
+}
+
+.hero-title{
+  font-family:'Nunito',sans-serif;font-weight:900;
+  font-size:clamp(44px,7vw,88px);line-height:1.04;letter-spacing:-.03em;
+  text-align:center;max-width:780px;
+  color:var(--ink);margin-bottom:24px;
+}
+.hero-title .line-coral{
+  background:linear-gradient(135deg,var(--coral) 0%,#ff9a2e 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-title .line-underline{
+  position:relative;display:inline-block;
+}
+.hero-title .line-underline::after{
+  content:'';position:absolute;bottom:-4px;left:0;right:0;height:4px;
+  background:var(--yellow);border-radius:4px;
+}
+
+.hero-sub{
+  font-size:18px;font-weight:600;color:var(--muted);
+  text-align:center;max-width:480px;line-height:1.6;
+  margin-bottom:40px;
+}
+
+.hero-actions{
+  display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;
+  margin-bottom:80px;
+}
+.btn-hero-primary{
+  font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;
+  padding:16px 32px;border-radius:50px;
+  border:none;background:var(--coral);color:#fff;cursor:pointer;
+  box-shadow:0 8px 28px rgba(255,107,74,.4);
+  transition:all .25s cubic-bezier(.16,1,.3,1);
+}
+.btn-hero-primary:hover{
+  background:#e55a39;
+  box-shadow:0 12px 36px rgba(255,107,74,.5);
+  transform:translateY(-2px) scale(1.02);
+}
+.btn-hero-secondary{
+  font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;
+  padding:16px 32px;border-radius:50px;
+  border:2px solid var(--border);background:#fff;color:var(--ink);cursor:pointer;
+  transition:all .25s;box-shadow:0 4px 16px rgba(26,18,7,.06);
+}
+.btn-hero-secondary:hover{border-color:var(--coral);color:var(--coral);transform:translateY(-1px)}
+
+.hero-trust{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:600;color:var(--muted);
+}
+.trust-avatars{display:flex}
+.trust-avatar{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid #fff;margin-left:-8px;
+  background:linear-gradient(135deg,#ffd84d,#ff6b4a);
+  font-size:11px;display:flex;align-items:center;justify-content:center;
+  font-weight:800;color:#fff;
+}
+.trust-avatar:first-child{margin-left:0}
+
+/* ── App Preview ── */
+.hero-preview{
+  width:100%;max-width:900px;
+  position:relative;
+}
+.preview-glow{
+  position:absolute;inset:-40px;
+  background:radial-gradient(ellipse at 50% 50%, rgba(255,107,74,.12) 0%, transparent 70%);
+  filter:blur(40px);pointer-events:none;
+}
+.preview-frame{
+  background:#fff;
+  border:1.5px solid var(--border);
+  border-radius:24px;
+  padding:8px;
+  box-shadow:0 32px 80px rgba(26,18,7,.14),0 0 0 1px rgba(255,255,255,.8) inset;
+  position:relative;z-index:1;
+  overflow:hidden;
+}
+.preview-bar{
+  display:flex;align-items:center;gap:6px;padding:10px 14px 6px;
+}
+.preview-dot{width:10px;height:10px;border-radius:50%}
+.preview-dot-r{background:#ff5f56}
+.preview-dot-y{background:#ffbd2e}
+.preview-dot-g{background:#27c93f}
+.preview-content{
+  border-radius:18px;overflow:hidden;
+  background:var(--bg);
+  min-height:380px;
+  display:flex;flex-direction:column;
+}
+
+/* Mini app UI inside preview */
+.mini-nav{
+  background:#fffbf5;border-bottom:1px solid var(--border);
+  padding:14px 20px;display:flex;align-items:center;justify-content:space-between;
+}
+.mini-logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:16px;color:var(--ink)}
+.mini-pills{display:flex;gap:6px}
+.mini-pill{
+  font-size:10px;font-weight:800;padding:4px 10px;border-radius:50px;
+  background:#fff;border:1.5px solid var(--border);color:var(--muted);
+  white-space:nowrap;
+}
+.mini-pill.on{background:var(--peach);border-color:var(--coral-light);color:var(--coral)}
+.mini-slots{padding:14px 16px;display:flex;flex-direction:column;gap:10px;flex:1}
+.mini-slot{
+  background:#fff;border-radius:14px;border:1.5px solid var(--border);
+  padding:12px 14px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 2px 8px rgba(26,18,7,.04);
+  animation:fadeUp .5s cubic-bezier(.16,1,.3,1) both;
+}
+.mini-slot:nth-child(1){animation-delay:.7s}
+.mini-slot:nth-child(2){animation-delay:.85s}
+.mini-slot:nth-child(3){animation-delay:1s}
+.mini-logo-bub{
+  width:36px;height:36px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+}
+.mini-slot-info{flex:1;min-width:0}
+.mini-slot-biz{font-family:'Nunito',sans-serif;font-weight:800;font-size:12px;color:var(--ink)}
+.mini-slot-svc{font-size:11px;color:var(--muted);font-weight:600;margin-top:1px}
+.mini-slot-cat{
+  display:inline-block;font-size:9px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.4px;padding:2px 7px;border-radius:50px;margin-top:3px;
+}
+.mini-slot-price{text-align:right;flex-shrink:0}
+.mini-slot-disc{font-family:'Nunito',sans-serif;font-weight:900;font-size:15px;color:var(--coral)}
+.mini-slot-orig{font-size:10px;color:var(--muted);text-decoration:line-through;font-weight:600}
+.mini-slot-save{
+  font-size:9px;font-weight:800;padding:2px 7px;border-radius:50px;
+  background:var(--mint);color:#1a6a4a;margin-top:2px;white-space:nowrap;
+}
+.mini-cta{
+  margin:0 16px 16px;
+  background:var(--coral);color:#fff;
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;
+  border:none;border-radius:14px;padding:12px;
+  cursor:pointer;text-align:center;
+  box-shadow:0 4px 14px rgba(255,107,74,.3);
+  animation:fadeUp .5s cubic-bezier(.16,1,.3,1) 1.1s both;
+}
+
+/* ── How it works ── */
+.section{padding:100px 24px}
+.section-inner{max-width:1100px;margin:0 auto}
+.section-label{
+  font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  color:var(--coral);margin-bottom:16px;text-align:center;
+}
+.section-title{
+  font-family:'Nunito',sans-serif;font-weight:900;
+  font-size:clamp(32px,4vw,52px);line-height:1.1;letter-spacing:-.02em;
+  text-align:center;color:var(--ink);margin-bottom:16px;
+}
+.section-sub{
+  font-size:16px;font-weight:600;color:var(--muted);
+  text-align:center;max-width:500px;margin:0 auto 64px;line-height:1.6;
+}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.step{
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:22px;padding:32px 28px;
+  position:relative;overflow:hidden;
+  transition:all .3s;
+}
+.step:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(26,18,7,.08)}
+.step-num{
+  font-family:'Nunito',sans-serif;font-weight:900;font-size:48px;
+  color:var(--border);line-height:1;margin-bottom:16px;
+  letter-spacing:-.02em;
+}
+.step-icon{
+  font-size:32px;margin-bottom:16px;
+  animation:float 3s ease-in-out infinite;
+}
+.step:nth-child(2) .step-icon{animation-delay:.5s}
+.step:nth-child(3) .step-icon{animation-delay:1s}
+.step-title{
+  font-family:'Nunito',sans-serif;font-weight:900;font-size:20px;
+  color:var(--ink);margin-bottom:8px;
+}
+.step-desc{font-size:14px;font-weight:600;color:var(--muted);line-height:1.6}
+.step-accent{
+  position:absolute;top:0;left:0;right:0;height:3px;border-radius:22px 22px 0 0;
+}
+
+/* ── Categories ── */
+.cats-section{padding:80px 24px;background:#fff;border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border)}
+.cat-grid{
+  max-width:900px;margin:0 auto;
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+}
+.cat-chip{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg);border:1.5px solid var(--border);
+  border-radius:50px;padding:10px 18px;
+  font-size:14px;font-weight:700;color:var(--muted);
+  transition:all .2s;cursor:default;
+}
+.cat-chip:hover{border-color:var(--coral-light);background:var(--peach);color:var(--coral);transform:translateY(-2px)}
+
+/* ── Biz CTA ── */
+.biz-section{
+  padding:100px 24px;
+  background:linear-gradient(135deg,var(--ink) 0%,#2a1f0f 100%);
+  position:relative;overflow:hidden;
+}
+.biz-glow{
+  position:absolute;top:-100px;right:-100px;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,107,74,.2) 0%,transparent 70%);
+  pointer-events:none;
+}
+.biz-inner{
+  max-width:700px;margin:0 auto;text-align:center;position:relative;z-index:1;
+}
+.biz-label{
+  font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  color:var(--coral-light);margin-bottom:20px;
+}
+.biz-title{
+  font-family:'Nunito',sans-serif;font-weight:900;
+  font-size:clamp(32px,4vw,52px);line-height:1.1;letter-spacing:-.02em;
+  color:#fff;margin-bottom:16px;
+}
+.biz-sub{
+  font-size:16px;font-weight:600;color:rgba(255,255,255,.6);
+  line-height:1.6;max-width:480px;margin:0 auto 40px;
+}
+.biz-stats{
+  display:flex;gap:32px;justify-content:center;margin-bottom:48px;
+  flex-wrap:wrap;
+}
+.biz-stat{text-align:center}
+.biz-stat-num{
+  font-family:'Nunito',sans-serif;font-weight:900;font-size:36px;
+  background:linear-gradient(135deg,var(--coral),var(--yellow));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.biz-stat-label{font-size:13px;font-weight:600;color:rgba(255,255,255,.5);margin-top:2px}
+.btn-biz{
+  font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;
+  padding:16px 36px;border-radius:50px;
+  border:none;background:var(--coral);color:#fff;cursor:pointer;
+  box-shadow:0 8px 28px rgba(255,107,74,.4);
+  transition:all .25s;display:inline-block;
+}
+.btn-biz:hover{background:#e55a39;transform:translateY(-2px)}
+
+/* ── Footer ── */
+footer{
+  padding:48px 24px;border-top:1.5px solid var(--border);
+  background:var(--bg);
+}
+.footer-inner{
+  max-width:1100px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
+}
+.footer-logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:20px;color:var(--ink)}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap}
+.footer-links a{font-size:13px;font-weight:700;color:var(--muted);transition:color .2s}
+.footer-links a:hover{color:var(--coral)}
+.footer-copy{font-size:12px;color:var(--muted);font-weight:600}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  .nav-links,.nav-actions{display:none}
+  .nav-hamburger{display:flex}
+  nav{padding:12px 16px}
+  .hero{padding:120px 20px 60px}
+  .steps{grid-template-columns:1fr;gap:16px}
+  .hero-actions{flex-direction:column;align-items:stretch}
+  .btn-hero-primary,.btn-hero-secondary{text-align:center}
+  .biz-stats{gap:20px}
+  .footer-inner{flex-direction:column;align-items:flex-start}
+  .mini-pills{display:none}
+}
+@media(max-width:480px){
+  .hero-title{font-size:40px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════ NAV ══════════════════════════════ -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="/index.html">
+      <img src="brand/logo-black.png" alt="Skorrd" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <span style="display:none">Skorrd</span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#categories">Categories</a></li>
+      <li><a href="#for-business">For businesses</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button class="btn-ghost" onclick="window.location='/index.html'">Log in</button>
+      <button class="btn-fill" onclick="window.location='/index.html'">Sign up free</button>
+    </div>
+
+    <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="nav-mobile" id="mobile-menu">
+    <ul>
+      <li><a href="#how-it-works" onclick="toggleMenu()">How it works</a></li>
+      <li><a href="#categories" onclick="toggleMenu()">Categories</a></li>
+      <li><a href="#for-business" onclick="toggleMenu()">For businesses</a></li>
+    </ul>
+    <div class="nav-mobile-actions">
+      <button class="btn-ghost" onclick="window.location='/index.html'">Log in</button>
+      <button class="btn-fill" onclick="window.location='/index.html'">Sign up free →</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════ HERO ══════════════════════════════ -->
+<section class="hero">
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+  <div class="hero-blob hero-blob-3"></div>
+
+  <div class="hero-badge anim-1">
+    <div class="badge-dot"></div>
+    <span class="badge-pill">New</span>
+    <span>Now live on Sydney's Northern Beaches</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </div>
+
+  <h1 class="hero-title anim-2">
+    Last-minute slots.<br>
+    <span class="line-underline">Better</span> prices.<br>
+    <span class="line-coral">Book in seconds.</span>
+  </h1>
+
+  <p class="hero-sub anim-3">
+    Discover discounted appointments at local businesses — hair, physio, beauty, and more. Snap up deals before they're gone.
+  </p>
+
+  <div class="hero-actions anim-4">
+    <button class="btn-hero-primary" onclick="window.location='/index.html'">
+      Browse deals near me →
+    </button>
+    <button class="btn-hero-secondary" onclick="window.location='/skorrd-business.html'">
+      List your business
+    </button>
+  </div>
+
+  <div class="anim-4" style="display:flex;align-items:center;gap:16px;margin-bottom:64px;flex-wrap:wrap;justify-content:center">
+    <div class="hero-trust">
+      <div class="trust-avatars">
+        <div class="trust-avatar">S</div>
+        <div class="trust-avatar" style="background:linear-gradient(135deg,#b8f0d8,#22c55e)">J</div>
+        <div class="trust-avatar" style="background:linear-gradient(135deg,#e0d4ff,#8b5cf6)">M</div>
+      </div>
+      <span>Loved by early customers</span>
+    </div>
+    <div style="width:1px;height:18px;background:var(--border)"></div>
+    <div class="hero-trust">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--yellow)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <span>$0 booking fees right now</span>
+    </div>
+  </div>
+
+  <!-- App preview -->
+  <div class="hero-preview anim-5">
+    <div class="preview-glow"></div>
+    <div class="preview-frame">
+      <div class="preview-bar">
+        <div class="preview-dot preview-dot-r"></div>
+        <div class="preview-dot preview-dot-y"></div>
+        <div class="preview-dot preview-dot-g"></div>
+        <div style="flex:1;background:#f0ebe3;border-radius:6px;height:18px;margin:0 auto;max-width:200px;display:flex;align-items:center;justify-content:center">
+          <span style="font-size:10px;font-weight:700;color:var(--muted)">skorrd.com.au</span>
+        </div>
+      </div>
+      <div class="preview-content">
+        <div class="mini-nav">
+          <div class="mini-logo">Sk<span style="color:var(--coral)">o</span>rrd</div>
+          <div class="mini-pills">
+            <div class="mini-pill on">All times</div>
+            <div class="mini-pill">Today</div>
+            <div class="mini-pill">Tomorrow</div>
+          </div>
+        </div>
+        <div class="mini-slots">
+          <!-- Slot 1 -->
+          <div class="mini-slot">
+            <div class="mini-logo-bub" style="background:#c8eaff">✂️</div>
+            <div class="mini-slot-info">
+              <div class="mini-slot-biz">Sharp & Co.</div>
+              <div class="mini-slot-svc">Men's Cut & Style</div>
+              <div class="mini-slot-cat" style="background:#c8eaff;color:#1a5a8a">BARBER</div>
+            </div>
+            <div class="mini-slot-price">
+              <div class="mini-slot-disc">$48</div>
+              <div class="mini-slot-orig">$65</div>
+              <div class="mini-slot-save">−26%</div>
+            </div>
+          </div>
+          <!-- Slot 2 -->
+          <div class="mini-slot">
+            <div class="mini-logo-bub" style="background:#b8f0d8">🫁</div>
+            <div class="mini-slot-info">
+              <div class="mini-slot-biz">Movement Studio</div>
+              <div class="mini-slot-svc">Initial Physio Consult</div>
+              <div class="mini-slot-cat" style="background:#b8f0d8;color:#1a6a4a">PHYSIO</div>
+            </div>
+            <div class="mini-slot-price">
+              <div class="mini-slot-disc">$64</div>
+              <div class="mini-slot-orig">$90</div>
+              <div class="mini-slot-save">−29%</div>
+            </div>
+          </div>
+          <!-- Slot 3 -->
+          <div class="mini-slot">
+            <div class="mini-logo-bub" style="background:#fce7f3">💆</div>
+            <div class="mini-slot-info">
+              <div class="mini-slot-biz">Glow Studio</div>
+              <div class="mini-slot-svc">Hydrating Facial</div>
+              <div class="mini-slot-cat" style="background:#fce7f3;color:#db2777">BEAUTY</div>
+            </div>
+            <div class="mini-slot-price">
+              <div class="mini-slot-disc">$95</div>
+              <div class="mini-slot-orig">$140</div>
+              <div class="mini-slot-save">−32%</div>
+            </div>
+          </div>
+        </div>
+        <div class="mini-cta">Browse all slots near me →</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ HOW IT WORKS ══════════════════════════════ -->
+<section class="section" id="how-it-works">
+  <div class="section-inner">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">From browsing to booked<br>in under 60 seconds</h2>
+    <p class="section-sub">No phone calls. No waiting. Just tap, confirm, and show up.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-accent" style="background:linear-gradient(90deg,var(--coral),#ff9a2e)"></div>
+        <div class="step-num">01</div>
+        <div class="step-icon">📍</div>
+        <div class="step-title">Discover nearby slots</div>
+        <p class="step-desc">Browse last-minute openings at local businesses near you — filtered by category, time, and distance.</p>
+      </div>
+      <div class="step">
+        <div class="step-accent" style="background:linear-gradient(90deg,var(--yellow),#ff9a2e)"></div>
+        <div class="step-num">02</div>
+        <div class="step-icon">⚡</div>
+        <div class="step-title">Grab the deal</div>
+        <p class="step-desc">Every slot is discounted — sometimes up to 40% off the regular price. Claim it before someone else does.</p>
+      </div>
+      <div class="step">
+        <div class="step-accent" style="background:linear-gradient(90deg,var(--mint),#22c55e)"></div>
+        <div class="step-num">03</div>
+        <div class="step-icon">✅</div>
+        <div class="step-title">Show up and enjoy</div>
+        <p class="step-desc">Your booking is confirmed instantly. Just show up at the right time — no paperwork, no hassle.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ CATEGORIES ══════════════════════════════ -->
+<section class="cats-section" id="categories">
+  <div class="section-label">What's available</div>
+  <h2 class="section-title" style="margin-bottom:8px">Every kind of appointment</h2>
+  <p class="section-sub">From your next haircut to your physio session — all discounted, all last-minute.</p>
+  <div class="cat-grid">
+    <div class="cat-chip">✂️ Barber</div>
+    <div class="cat-chip">💇‍♀️ Hairdresser</div>
+    <div class="cat-chip">💅 Nail Salon</div>
+    <div class="cat-chip">💆 Beauty</div>
+    <div class="cat-chip">🧴 Skin & Aesthetics</div>
+    <div class="cat-chip">🫁 Physiotherapy</div>
+    <div class="cat-chip">🦴 Chiropractic</div>
+    <div class="cat-chip">🏋️ Personal Training</div>
+    <div class="cat-chip">🧘 Yoga & Fitness</div>
+    <div class="cat-chip">🦷 Dental</div>
+    <div class="cat-chip">🧠 Therapy & Counselling</div>
+    <div class="cat-chip">🧖 Wellness</div>
+    <div class="cat-chip">📚 Tutoring</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ FOR BUSINESS ══════════════════════════════ -->
+<section class="biz-section" id="for-business">
+  <div class="biz-glow"></div>
+  <div class="biz-inner">
+    <div class="biz-label">For businesses</div>
+    <h2 class="biz-title">Turn empty slots into<br>paying customers</h2>
+    <p class="biz-sub">List a last-minute opening in 30 seconds. Skorrd puts it in front of locals ready to book right now.</p>
+
+    <div class="biz-stats">
+      <div class="biz-stat">
+        <div class="biz-stat-num">30s</div>
+        <div class="biz-stat-label">To list a slot</div>
+      </div>
+      <div class="biz-stat">
+        <div class="biz-stat-num">$0</div>
+        <div class="biz-stat-label">Monthly fee</div>
+      </div>
+      <div class="biz-stat">
+        <div class="biz-stat-num">40%</div>
+        <div class="biz-stat-label">Avg. discount offered</div>
+      </div>
+    </div>
+
+    <a href="/skorrd-business.html" class="btn-biz">List your slots free →</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ FOOTER ══════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">Sk<span style="color:var(--coral)">o</span>rrd</div>
+    <div class="footer-links">
+      <a href="/index.html">Browse slots</a>
+      <a href="/skorrd-business.html">For businesses</a>
+      <a href="/index.html">How it works</a>
+    </div>
+    <div class="footer-copy">© 2026 Skorrd. Made in Sydney 🇦🇺</div>
+  </div>
+</footer>
+
+<script>
+// ── Scrolled nav ──
+const nav = document.getElementById('nav')
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60)
+}, { passive: true })
+
+// ── Mobile menu ──
+function toggleMenu() {
+  document.getElementById('mobile-menu').classList.toggle('open')
+}
+document.addEventListener('click', e => {
+  const menu = document.getElementById('mobile-menu')
+  const btn = document.getElementById('hamburger')
+  if (!menu.contains(e.target) && !btn.contains(e.target)) {
+    menu.classList.remove('open')
+  }
+})
+
+// ── Scroll-triggered animations for steps & cats ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      e.target.style.animation = `fadeUp .6s cubic-bezier(.16,1,.3,1) ${i * 0.1}s both`
+      observer.unobserve(e.target)
+    }
+  })
+}, { threshold: 0.15 })
+
+document.querySelectorAll('.step, .cat-chip').forEach(el => {
+  el.style.opacity = '0'
+  observer.observe(el)
+})
+</script>
+</body>
+</html>
