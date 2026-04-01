@@ -1187,13 +1187,19 @@ function renderLoginForm() {
     document.getElementById('login-form-body').innerHTML = `
       <div class="fgroup"><label>Email address</label><input id="l-email" type="email" placeholder="owner@yourbusiness.com" autocomplete="email"></div>
       <div class="fgroup"><label>Password</label><input id="l-pass" type="password" placeholder="Choose a strong password (8+ chars)" autocomplete="new-password"></div>
+      <div class="fgroup">
+        <label>ABN <span style="font-weight:600;color:var(--muted)">(Australian Business Number)</span></label>
+        <input id="l-abn" type="text" inputmode="numeric" placeholder="XX XXX XXX XXX" maxlength="14" autocomplete="off"
+          oninput="this.value=this.value.replace(/[^0-9]/g,'').replace(/(\d{2})(\d{3})(\d{3})(\d{3})/,'$1 $2 $3 $4')">
+      </div>
       <div class="login-msg" id="login-msg" style="display:none;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px"></div>
       <button class="login-submit" id="login-submit-btn" onclick="handleLogin()">Continue →</button>
       <div class="lf-divider">or</div>
       <button class="demo-btn" onclick="demoLogin()">👀 Try the demo dashboard</button>
       <div class="login-switch">Already have an account? <a onclick="setLoginMode('login')">Log in</a></div>`
     document.getElementById('l-email')?.addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('l-pass')?.focus() })
-    document.getElementById('l-pass')?.addEventListener('keydown', e => { if(e.key==='Enter') handleLogin() })
+    document.getElementById('l-pass')?.addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('l-abn')?.focus() })
+    document.getElementById('l-abn')?.addEventListener('keydown', e => { if(e.key==='Enter') handleLogin() })
 
   } else if (signupStep === 'confirm-email') {
     const email = pendingCreds?.email || ''
@@ -1258,6 +1264,11 @@ async function handleLogin() {
 
   if (loginMode === 'signup') {
     if (pass.length < 8) { showLoginMsg('Password needs 8+ characters','err'); return }
+    const abnRaw = (document.getElementById('l-abn')?.value || '').replace(/\s/g,'')
+    if (!abnRaw) { showLoginMsg('ABN is required','err'); return }
+    if (!/^\d{11}$/.test(abnRaw)) { showLoginMsg('ABN must be exactly 11 digits','err'); return }
+    if (abnRaw[0] === '0') { showLoginMsg('ABN cannot start with zero','err'); return }
+    const abn = abnRaw
     const btn = document.getElementById('login-submit-btn'); btn.disabled = true
     showProcessing('Creating account...')
     // Use edge function to create confirmed user (bypasses unreliable email confirmation)
@@ -1272,7 +1283,7 @@ async function handleLogin() {
     // Sign in immediately (user is already confirmed)
     const { data: signInData, error: signInError } = await sb.auth.signInWithPassword({ email, password: pass })
     if (signInError) { showLoginMsg(signInError.message, 'err'); return }
-    pendingCreds = { email, password: pass }
+    pendingCreds = { email, password: pass, abn }
     signupStep = 'confirm-email'
     renderLoginForm()
     return
@@ -1341,7 +1352,7 @@ async function handleSignupDetails() {
   const { error } = await sb.from('businesses').insert({
     owner_id: session.user.id, name: bizName, category: cat, phone: phone||null,
     street: street||null, suburb: suburb||null, state, postcode: postcode||null, lat, lng,
-    email: session.user.email
+    email: session.user.email, abn: pendingCreds?.abn || null
   })
 
   hideProcessing(); btn.disabled = false
