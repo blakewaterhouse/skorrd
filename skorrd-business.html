@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NH48TS5B');</script>
+<!-- End Google Tag Manager -->
 <meta charset="UTF-8">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
@@ -11,7 +18,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Skorrd — Business">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Skorrd — Business Dashboard</title>
+<title>List Your Business on Skorrd — Fill Last-Minute Slots & Earn More</title>
+<meta name="description" content="Stop losing revenue on empty appointment slots. List your salon, gym, physio or service business on Skorrd and fill last-minute gaps with paying customers — free to join.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://skorrd.com.au/skorrd-business">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600;700&family=Raleway:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -102,6 +112,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
 .lf-divider::before{left:0}.lf-divider::after{right:0}
 .demo-btn{width:100%;background:var(--bg);color:var(--ink);border:1.5px solid var(--border);padding:12px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:50px;transition:border-color .2s}
 .demo-btn:hover{border-color:var(--ink)}
+.google-btn{width:100%;background:#fff;border:1.5px solid var(--border);padding:12px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;border-radius:50px;transition:border-color .2s;display:flex;align-items:center;justify-content:center;gap:9px}
+.google-btn:hover{border-color:var(--ink)}
 
 /* ══════════════════
    DASHBOARD SHELL
@@ -372,6 +384,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
   #biz-info-screen nav{padding:8px 16px}
   #biz-info-screen nav img{height:22px !important}
   .biz-nav-browse{display:none !important}
+  .biz-nav-chips{display:none !important}
   .biz-nav-cta{font-size:12px !important;padding:7px 14px !important}
   #biz-info-screen nav > div + div{padding-left:24px}
   #biz-info-screen div[style*="padding:80px"]{padding:48px 16px !important}
@@ -381,6 +394,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
   #biz-info-screen div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important}
   #biz-info-screen h1{font-size:36px !important;letter-spacing:-1px !important}
   #biz-info-screen .step-grid{grid-template-columns:1fr !important}
+  #biz-info-screen .site-footer{padding-bottom:calc(72px + env(safe-area-inset-bottom)) !important}
 
   /* Login screen */
   .login-wrap{padding:16px}
@@ -412,13 +426,37 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
 .biz-bnav-icon{font-size:18px;line-height:1}
 @media(max-width:600px){.biz-bottom-nav.active{display:block}}
 
+/* Info page mobile bottom nav */
+.biz-info-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:#fffbf5;border-top:1.5px solid #ede8df;padding-bottom:env(safe-area-inset-bottom)}
+.biz-info-bnav-row{display:flex;width:100%}
+.biz-info-bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 8px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;color:#8a7a65;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:color .2s}
+.biz-info-bnav-item.active{color:#ff8f7e}
+.biz-info-bnav-item svg{flex-shrink:0}
+@media(max-width:600px){.biz-info-bottom-nav{display:block}}
+
 .addr-dropdown{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.10);z-index:999;display:none;overflow:hidden;margin-top:4px}
 .addr-option{padding:11px 14px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;border-bottom:1px solid var(--border);line-height:1.4}
 .addr-option:last-child{border-bottom:none}
 .addr-option:hover{background:var(--bg)}
+.site-footer{padding:40px 36px;border-top:1.5px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;background:var(--bg)}
+.footer-top{display:flex;justify-content:space-between;align-items:center;width:100%;flex-wrap:wrap;gap:16px}
+.footer-logo{cursor:pointer;background:none;border:none;padding:0;display:flex;align-items:center}
+.footer-logo img{height:22px;width:auto;display:block}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+.footer-links a{font-size:13px;color:var(--muted);font-weight:600;text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--ink)}
+.footer-copy{font-size:12px;color:var(--muted);font-weight:600}
+.footer-socials{display:flex;gap:16px;align-items:center}
+.footer-socials a{color:var(--muted);transition:color .2s;display:flex;align-items:center}
+.footer-socials a:hover{color:var(--coral)}
+@media(max-width:600px){.site-footer{flex-direction:column;text-align:center;padding:24px 16px;gap:12px}}
 </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NH48TS5B"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <!-- ══════════════════════════════════════
      LOGIN SCREEN
@@ -431,9 +469,13 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
   <!-- NAV -->
   <nav style="position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:12px 36px;background:rgba(255,251,245,.94);backdrop-filter:blur(16px);border-bottom:1.5px solid #ede8df">
     <div onclick="window.location='./'" style="cursor:pointer"><img src="brand/logo-black.png" alt="Skorrd" style="height:28px;width:auto;display:block"></div>
+    <div class="biz-nav-chips" style="display:flex;gap:8px">
+      <a href="./" style="display:inline-flex;align-items:center;gap:6px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:6px 14px;border-radius:50px;border:1.5px solid #ede8df;background:#fffbf5;color:#8a7a65;cursor:pointer;transition:all .2s;text-decoration:none" onmouseover="this.style.background='#ffe4d4';this.style.borderColor='#ff8f7e';this.style.color='#ff8f7e'" onmouseout="this.style.background='#fffbf5';this.style.borderColor='#ede8df';this.style.color='#8a7a65'"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Browse slots</a>
+      <a href="/#how-it-works" style="display:inline-flex;align-items:center;gap:6px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:6px 14px;border-radius:50px;border:1.5px solid #ede8df;background:#fffbf5;color:#8a7a65;cursor:pointer;transition:all .2s;text-decoration:none" onmouseover="this.style.background='#ffe4d4';this.style.borderColor='#ff8f7e';this.style.color='#ff8f7e'" onmouseout="this.style.background='#fffbf5';this.style.borderColor='#ede8df';this.style.color='#8a7a65'"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>How it works</a>
+      <a href="/skorrd-business" style="display:inline-flex;align-items:center;gap:6px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:6px 14px;border-radius:50px;border:1.5px solid #ff8f7e;background:#ffe4d4;color:#ff8f7e;cursor:pointer;transition:all .2s;text-decoration:none"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>For businesses</a>
+    </div>
     <div style="display:flex;gap:10px;align-items:center">
-      <button class="biz-nav-browse" onclick="window.location='./'" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:#8a7a65;padding:8px 16px;border-radius:50px;border:1.5px solid #ede8df;background:#fffbf5;transition:all .2s;cursor:pointer" onmouseover="this.style.borderColor='#ff8f7e';this.style.color='#ff8f7e'" onmouseout="this.style.borderColor='#ede8df';this.style.color='#8a7a65'">Browse slots</button>
-      <button class="biz-nav-cta" onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('login-screen').style.display='flex'" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;padding:8px 20px;border-radius:50px;border:none;cursor:pointer;background:#ff8f7e;color:#fff;box-shadow:0 4px 12px rgba(255,143,126,.3)">Log in / Sign up →</button>
+      <button class="biz-nav-cta" onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('biz-info-bottom-nav').style.display='none';document.getElementById('login-screen').style.display='flex'" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;padding:8px 20px;border-radius:50px;border:none;cursor:pointer;background:#ff8f7e;color:#fff;box-shadow:0 4px 12px rgba(255,143,126,.3)">Log in / Sign up →</button>
     </div>
   </nav>
 
@@ -445,47 +487,53 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
     <h1 style="font-family:'Raleway',sans-serif;font-size:clamp(36px,6vw,68px);font-weight:900;color:#fff;letter-spacing:-2px;line-height:1.05;margin-bottom:20px;position:relative">Stop letting empty slots<br><span style="color:#ff8f7e">cost you.</span></h1>
     <p style="font-size:17px;color:rgba(255,255,255,.6);font-weight:600;max-width:520px;margin:0 auto 36px;line-height:1.65;position:relative">Skorrd connects your spare appointment capacity with nearby customers who want a deal. Fill your chair. Book your slot. Zero empty seats.</p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative">
-      <button onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('login-screen').style.display='flex'" style="background:#ff8f7e;color:#fff;border:none;padding:15px 30px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,143,126,.4)">List your slots free →</button>
+      <button onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('biz-info-bottom-nav').style.display='none';document.getElementById('login-screen').style.display='flex'" style="background:#ff8f7e;color:#fff;border:none;padding:15px 30px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,143,126,.4)">List your slots free →</button>
       <a href="./" style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,.4);padding:15px 30px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;text-decoration:none;display:inline-block;transition:background .2s,border-color .2s" onmouseover="this.style.background='rgba(255,255,255,.1)';this.style.borderColor='rgba(255,255,255,.7)'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(255,255,255,.4)'">Find deals as a customer</a>
     </div>
   </div>
 
   <!-- STATS STRIP -->
   <div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1.5px solid #ede8df;background:#fff">
-    <div style="padding:40px 36px;border-right:1.5px solid #ede8df">
-      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:#ff8f7e;line-height:1;margin-bottom:6px">30%</div>
-      <div style="font-size:14px;color:#8a7a65;font-weight:600;line-height:1.5">Average unused appointment<br>capacity per week</div>
-    </div>
-    <div style="padding:40px 36px;border-right:1.5px solid #ede8df">
-      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:#ff8f7e;line-height:1;margin-bottom:6px">$0</div>
-      <div style="font-size:14px;color:#8a7a65;font-weight:600;line-height:1.5">Revenue earned from<br>your empty slots today</div>
-    </div>
-    <div style="padding:40px 36px">
+    <div style="padding:40px 36px;border-right:1.5px solid #ede8df;text-align:center">
       <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:#ff8f7e;line-height:1;margin-bottom:6px">60s</div>
-      <div style="font-size:14px;color:#8a7a65;font-weight:600;line-height:1.5">To list a slot and go<br>live to customers nearby</div>
+      <div style="font-size:14px;color:#8a7a65;font-weight:600;line-height:1.5">To list a slot and go live<br>to customers nearby</div>
+    </div>
+    <div style="padding:40px 36px;border-right:1.5px solid #ede8df;text-align:center">
+      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:#ff8f7e;line-height:1;margin-bottom:6px">40%</div>
+      <div style="font-size:14px;color:#8a7a65;font-weight:600;line-height:1.5">Average discount<br>customers save</div>
+    </div>
+    <div style="padding:40px 36px;text-align:center">
+      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:#ff8f7e;line-height:1;margin-bottom:6px">Free</div>
+      <div style="font-size:14px;color:#8a7a65;font-weight:600;line-height:1.5">To sign up<br>as a business</div>
     </div>
   </div>
 
   <!-- HOW IT WORKS -->
   <div style="padding:72px 36px;max-width:960px;margin:0 auto">
-    <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#ff8f7e;margin-bottom:12px">✦ How it works</div>
+    <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 16px;border-radius:50px;border:1.5px solid #ede8df;background:#fff;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:#ff8f7e;letter-spacing:.2px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.06)">How it works</div>
     <h2 style="font-family:'Raleway',sans-serif;font-size:clamp(26px,4vw,42px);font-weight:900;letter-spacing:-1px;margin-bottom:48px">Simple on both sides</h2>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px">
-      <div style="background:#fff;padding:36px 28px;border-radius:16px 0 0 16px;border:1.5px solid #ede8df">
-        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,143,126,.12);line-height:1;margin-bottom:16px">01</div>
-        <div style="font-size:22px;margin-bottom:10px">📋</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+      <div style="background:#fff;padding:36px 28px;border-radius:16px;border:1.5px solid #ede8df;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.06)">
+        <div style="font-family:'Nunito',sans-serif;font-size:56px;font-weight:900;color:rgba(255,143,126,.13);line-height:1;margin-bottom:16px">01</div>
+        <div style="width:42px;height:42px;background:rgba(255,143,126,.10);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff8f7e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px">List a slot</h3>
         <p style="font-size:14px;color:#8a7a65;line-height:1.7;font-weight:600">Post an available appointment time in seconds — service type, time, and your own discount. It goes live immediately for customers nearby.</p>
       </div>
-      <div style="background:#fff;padding:36px 28px;border-top:1.5px solid #ede8df;border-bottom:1.5px solid #ede8df">
-        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,143,126,.12);line-height:1;margin-bottom:16px">02</div>
-        <div style="font-size:22px;margin-bottom:10px">📱</div>
+      <div style="background:#fff;padding:36px 28px;border-radius:16px;border:1.5px solid #ede8df;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.06)">
+        <div style="font-family:'Nunito',sans-serif;font-size:56px;font-weight:900;color:rgba(255,143,126,.13);line-height:1;margin-bottom:16px">02</div>
+        <div style="width:42px;height:42px;background:rgba(255,143,126,.10);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff8f7e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px">Customer books</h3>
         <p style="font-size:14px;color:#8a7a65;line-height:1.7;font-weight:600">Nearby customers find the slot, confirm the details, and pay a small $5 hold fee through Stripe to secure the appointment. No phone calls needed.</p>
       </div>
-      <div style="background:#fff;padding:36px 28px;border-radius:0 16px 16px 0;border:1.5px solid #ede8df">
-        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,143,126,.12);line-height:1;margin-bottom:16px">03</div>
-        <div style="font-size:22px;margin-bottom:10px">🎉</div>
+      <div style="background:#fff;padding:36px 28px;border-radius:16px;border:1.5px solid #ede8df;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.06)">
+        <div style="font-family:'Nunito',sans-serif;font-size:56px;font-weight:900;color:rgba(255,143,126,.13);line-height:1;margin-bottom:16px">03</div>
+        <div style="width:42px;height:42px;background:rgba(255,143,126,.10);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff8f7e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px">Both get notified</h3>
         <p style="font-size:14px;color:#8a7a65;line-height:1.7;font-weight:600">Instant confirmation for you and the customer. Slot is locked. Customer pays for the service at the appointment — you keep full control of your money.</p>
       </div>
@@ -507,7 +555,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
           <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:#ff8f7e;flex-shrink:0;font-size:13px;margin-top:2px">→</span>Calendar sync to auto-detect gaps (coming soon)</li>
           <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:#ff8f7e;flex-shrink:0;font-size:13px;margin-top:2px">→</span>Free to list — we only earn a small fee when you book</li>
         </ul>
-        <button onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('login-screen').style.display='flex'" style="background:#ff8f7e;color:#fff;border:none;padding:15px 28px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,143,126,.35)">Get started free →</button>
+        <button onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('biz-info-bottom-nav').style.display='none';document.getElementById('login-screen').style.display='flex'" style="background:#ff8f7e;color:#fff;border:none;padding:15px 28px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 6px 20px rgba(255,143,126,.35)">Get started free →</button>
       </div>
       <div style="display:flex;flex-direction:column;gap:14px">
         <!-- MINI DASHBOARD MOCKUP -->
@@ -581,20 +629,33 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
     <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(255,143,126,.15) 0%,transparent 60%);pointer-events:none"></div>
     <h2 style="font-family:'Raleway',sans-serif;font-size:clamp(28px,5vw,52px);font-weight:900;color:#fff;letter-spacing:-1.5px;margin-bottom:14px;position:relative">Ready to fill every slot?</h2>
     <p style="font-size:16px;color:rgba(255,255,255,.55);font-weight:600;max-width:420px;margin:0 auto 32px;line-height:1.65;position:relative">Join free. No commitment. List your first slot in under 60 seconds.</p>
-    <button onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('login-screen').style.display='flex'" style="background:#ff8f7e;color:#fff;border:none;padding:16px 32px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 8px 28px rgba(255,143,126,.4);position:relative">Create free business account →</button>
+    <button onclick="document.getElementById('biz-info-screen').style.display='none';document.getElementById('biz-info-bottom-nav').style.display='none';document.getElementById('login-screen').style.display='flex'" style="background:#ff8f7e;color:#fff;border:none;padding:16px 32px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;border-radius:50px;box-shadow:0 8px 28px rgba(255,143,126,.4);position:relative">Create free business account →</button>
   </div>
 
   <!-- FOOTER -->
-  <div style="padding:36px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;border-top:1.5px solid #ede8df;background:#fffbf5">
-    <a href="./" style="font-family:'Nunito',sans-serif;font-weight:900;font-size:20px;color:#1a1207;text-decoration:none">sk<span style="color:#ff8f7e">orr</span>d</a>
-    <div style="display:flex;gap:20px;flex-wrap:wrap">
-      <a href="./" style="font-size:13px;color:#8a7a65;font-weight:600;text-decoration:none">Browse slots</a>
-      <a href="#" style="font-size:13px;color:#8a7a65;font-weight:600;text-decoration:none">Privacy</a>
-      <a href="#" style="font-size:13px;color:#8a7a65;font-weight:600;text-decoration:none">Terms</a>
-      <a href="#" style="font-size:13px;color:#8a7a65;font-weight:600;text-decoration:none">Contact</a>
+  <footer class="site-footer">
+    <div class="footer-top">
+      <a href="./" class="footer-logo"><img src="brand/logo-black.png" alt="Skorrd"></a>
+      <div class="footer-links">
+        <a href="./">Browse slots</a>
+        <a href="/skorrd-privacy.html">Privacy</a>
+        <a href="/skorrd-terms.html">Terms</a>
+        <a href="/skorrd-contact.html">Contact</a>
+      </div>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/skorrdofficial/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="https://www.tiktok.com/@skorrdofficial" target="_blank" rel="noopener" aria-label="TikTok">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.17 8.17 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=61577662563590" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
     </div>
-    <div style="font-size:12px;color:#8a7a65;font-weight:600">© 2026 Skorrd. All rights reserved.</div>
-  </div>
+    <div class="footer-copy">© 2026 SKORRD (ABN 38 623 713 636). All rights reserved.</div>
+  </footer>
 </div>
 
 <!-- ══════════════════════════════════════
@@ -604,7 +665,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
   <div class="login-left">
     <div class="ll-logo"><img src="brand/logo-white.png" alt="Skorrd" style="height:32px;width:auto"></div>
     <div class="ll-tag">Business portal</div>
-    <a href="/how-it-works" style="display:inline-flex;align-items:center;gap:6px;background:#ff8f7e;border:none;color:#fff;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:50px;cursor:pointer;margin-bottom:40px;text-decoration:none;transition:opacity .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">← How it works</a>
+    <a href="/#how-it-works" style="display:inline-flex;align-items:center;gap:6px;background:#ff8f7e;border:none;color:#fff;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:50px;cursor:pointer;margin-bottom:40px;text-decoration:none;transition:opacity .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">← How it works</a>
     <div class="ll-heading">Your empty slots are <em>costing you.</em></div>
     <p class="ll-sub">Log in to list your spare appointment times and start earning from capacity you'd otherwise lose forever.</p>
     <div class="ll-badges">
@@ -797,6 +858,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
                     <option value="Tutoring">📚 Tutoring</option>
                     <option value="Skin & Aesthetics">🧴 Skin & Aesthetics</option>
                     <option value="Therapy & Counselling">🧠 Therapy & Counselling</option>
+                    <option value="Other">🔖 Other</option>
                   </select>
                 </div>
                 <div class="fgroup">
@@ -1001,6 +1063,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
                     <option value="Tutoring">📚 Tutoring</option>
                     <option value="Skin & Aesthetics">🧴 Skin & Aesthetics</option>
                     <option value="Therapy & Counselling">🧠 Therapy & Counselling</option>
+                    <option value="Other">🔖 Other</option>
                   </select>
                 </div>
                 <div class="fgroup">
@@ -1092,6 +1155,24 @@ body{background:var(--bg);color:var(--ink);font-family:'Nunito Sans',sans-serif;
   </div>
 </div>
 
+<!-- INFO PAGE MOBILE BOTTOM NAV -->
+<div class="biz-info-bottom-nav" id="biz-info-bottom-nav">
+  <div class="biz-info-bnav-row">
+    <a class="biz-info-bnav-item" href="./">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span>Browse slots</span>
+    </a>
+    <a class="biz-info-bnav-item" href="/#how-it-works">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>How it works</span>
+    </a>
+    <a class="biz-info-bnav-item active" href="/skorrd-business">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      <span>For businesses</span>
+    </a>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal" id="modal">
@@ -1151,6 +1232,7 @@ let loginMode = 'login'
 let signupStep = 'credentials'
 let pendingSession = null
 let pendingCreds = null  // store email/pass so we can sign in after business record created
+let isOAuthSignup = false
 
 function renderLoginForm() {
   const li = loginMode === 'login'
@@ -1178,6 +1260,8 @@ function renderLoginForm() {
       <div class="login-msg" id="login-msg" style="display:none;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px"></div>
       <button class="login-submit" id="login-submit-btn" onclick="handleLogin()">Log in to dashboard →</button>
       <div class="lf-divider">or</div>
+      <button class="google-btn" onclick="signInWithGoogle()"><svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.17z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>Continue with Google</button>
+      <div class="lf-divider">or</div>
       <button class="demo-btn" onclick="demoLogin()">👀 Try the demo dashboard</button>
       <div class="login-switch">New business? <a onclick="setLoginMode('signup')">Create a free account</a></div>`
     document.getElementById('l-email')?.addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('l-pass')?.focus() })
@@ -1194,6 +1278,8 @@ function renderLoginForm() {
       </div>
       <div class="login-msg" id="login-msg" style="display:none;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px"></div>
       <button class="login-submit" id="login-submit-btn" onclick="handleLogin()">Continue →</button>
+      <div class="lf-divider">or</div>
+      <button class="google-btn" onclick="signInWithGoogle()"><svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.17z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>Continue with Google</button>
       <div class="lf-divider">or</div>
       <button class="demo-btn" onclick="demoLogin()">👀 Try the demo dashboard</button>
       <div class="login-switch">Already have an account? <a onclick="setLoginMode('login')">Log in</a></div>`
@@ -1216,6 +1302,7 @@ function renderLoginForm() {
     // Step 2 — business details
     document.getElementById('login-form-body').innerHTML = `
       <div class="login-msg" id="login-msg" style="display:none;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px"></div>
+      ${isOAuthSignup ? `<div class="fgroup"><label>ABN <span style="font-weight:600;color:var(--muted)">(Australian Business Number)</span></label><input id="s-abn" type="text" inputmode="numeric" placeholder="XX XXX XXX XXX" maxlength="14" autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'').replace(/(\\d{2})(\\d{3})(\\d{3})(\\d{3})/,'$1 $2 $3 $4')"></div>` : ''}
       <div class="fgroup"><label>Business name *</label><input id="s-bizname" type="text" placeholder="e.g. Sharp & Co."></div>
       <div class="fgroup" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div><label style="font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;display:block;margin-bottom:5px">Category *</label>
@@ -1225,6 +1312,7 @@ function renderLoginForm() {
             <option>Beauty &amp; Wellness</option><option>Personal Training</option>
             <option>Hairdresser</option><option>Yoga &amp; Fitness</option><option>Dental</option>
             <option>Tutoring</option><option>Skin &amp; Aesthetics</option><option>Therapy &amp; Counselling</option>
+            <option value="Other">Other</option>
           </select>
         </div>
         <div><label style="font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;display:block;margin-bottom:5px">Phone</label>
@@ -1248,6 +1336,15 @@ function renderLoginForm() {
 }
 
 function setLoginMode(m) { loginMode = m; signupStep = 'credentials'; renderLoginForm() }
+
+async function signInWithGoogle() {
+  if (loginMode === 'signup') sessionStorage.setItem('skorrd_biz_google_signup', '1')
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.origin + window.location.pathname }
+  })
+  if (error) alert(error.message)
+}
 
 function showLoginMsg(msg, type) {
   const el = document.getElementById('login-msg'); if(!el) return
@@ -1283,6 +1380,7 @@ async function handleLogin() {
     // Sign in immediately (user is already confirmed)
     const { data: signInData, error: signInError } = await sb.auth.signInWithPassword({ email, password: pass })
     if (signInError) { showLoginMsg(signInError.message, 'err'); return }
+    await sb.auth.updateUser({ data: { role: 'business' } })
     pendingCreds = { email, password: pass, abn }
     signupStep = 'confirm-email'
     renderLoginForm()
@@ -1295,6 +1393,7 @@ async function handleLogin() {
   const { data, error } = await sb.auth.signInWithPassword({ email, password: pass })
   hideProcessing(); btn.disabled = false
   if (error) { showLoginMsg(error.message,'err'); return }
+  await sb.auth.updateUser({ data: { role: 'business' } })
   await loadDashboard(data.session)
 }
 
@@ -1352,7 +1451,7 @@ async function handleSignupDetails() {
   const { error } = await sb.from('businesses').insert({
     owner_id: session.user.id, name: bizName, category: cat, phone: phone||null,
     street: street||null, suburb: suburb||null, state, postcode: postcode||null, lat, lng,
-    email: session.user.email, abn: pendingCreds?.abn || null
+    email: session.user.email, abn: pendingCreds?.abn || (isOAuthSignup ? document.getElementById('s-abn')?.value?.replace(/\s/g,'') || null : null)
   })
 
   hideProcessing(); btn.disabled = false
@@ -1366,6 +1465,7 @@ async function handleSignupDetails() {
   pendingCreds = null
   pendingSession = null
   signupStep = 'credentials'
+  isOAuthSignup = false
   showToast('Welcome to Skorrd! 🎉','ok')
   await loadDashboard(session)
 }
@@ -1396,7 +1496,7 @@ async function loadDashboard(session) {
 
     if (!bizData) {
       const isSetupFlow = !!new URLSearchParams(window.location.search).get('setup')
-      if (isSetupFlow) {
+      if (isSetupFlow || isOAuthSignup) {
         // Came from welcome email link — show Step 2 business details form
         pendingSession = session
         loginMode = 'signup'; signupStep = 'details'
@@ -1489,6 +1589,7 @@ function enterDashboard(biz, email) {
   document.getElementById('login-screen').style.display = 'none'
   document.getElementById('dashboard').style.display = 'flex'
   document.getElementById('biz-bottom-nav').classList.add('active')
+  document.getElementById('biz-info-bottom-nav').style.display = 'none'
   document.getElementById('sb-biz-name').textContent = biz.name
   document.getElementById('sb-user-name').textContent = biz.name.split(' ')[0] + "'s account"
   document.getElementById('sb-avatar').textContent = biz.name[0]
@@ -1863,7 +1964,7 @@ async function submitSlot() {
         const r = rows[0]
         fetch(`${SUPABASE_URL}/functions/v1/notify-slot-posted`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token, 'apikey': SUPABASE_KEY },
           body: JSON.stringify({
             category: r.category,
             business_name: BIZ.name,
@@ -2369,6 +2470,10 @@ async function saveProfile() {
     const hasMagicLink = window.location.hash.includes('access_token')
     if (hasMagicLink && event === 'SIGNED_IN' && session) {
       history.replaceState(null, '', window.location.pathname + window.location.search)
+      if (sessionStorage.getItem('skorrd_biz_google_signup') === '1') {
+        sessionStorage.removeItem('skorrd_biz_google_signup')
+        isOAuthSignup = true
+      }
       if (!sessionLoaded) { sessionLoaded = true; loadDashboard(session) }
       return
     }

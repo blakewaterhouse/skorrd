@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NH48TS5B');</script>
+<!-- End Google Tag Manager -->
 <meta charset="UTF-8">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
@@ -11,7 +18,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Skorrd">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Skorrd — Last-minute appointments, better prices</title>
+<title>Skorrd — Last-minute appointments at discounted prices | Australia</title>
+<meta name="description" content="Browse and book last-minute discounted appointments at local salons, gyms, physios and more across Australia. Businesses upload empty slots — you book and save.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://skorrd.com.au/">
+<meta name="google-site-verification" content="-RGItmiLO3k7tQNnxhZg38PwZPv3xmK7FNRmAW3sRE0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600;700&family=Raleway:wght@700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -24,6 +35,10 @@
   --coral:#ff8f7e;--yellow:#ffc952;--sky:#c8eaff;
   --mint:#b8f0d8;--lavender:#e0d4ff;--peach:#ffe4d4;
   --border:#ede8df;--r:18px;--rsm:12px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.06);
+  --shadow-md:0 2px 6px rgba(0,0,0,.05),0 10px 28px rgba(0,0,0,.09);
+  --shadow-lg:0 4px 12px rgba(0,0,0,.06),0 22px 50px rgba(0,0,0,.10);
+  --shadow-coral:0 6px 22px rgba(255,143,126,.32),0 2px 6px rgba(255,143,126,.14);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
@@ -49,7 +64,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 
 /* HERO */
 .hero{padding:60px 36px 0;max-width:860px;margin:0 auto;text-align:center}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--border);border-radius:50px;padding:7px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:24px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--border);border-radius:50px;padding:7px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:24px;box-shadow:var(--shadow-sm)}
 .live-dot{width:7px;height:7px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite;flex-shrink:0}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
 .hero-title{font-family:'Raleway',sans-serif;font-size:clamp(38px,6vw,70px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:20px}
@@ -59,11 +74,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 .hero-sub{font-size:17px;color:var(--muted);font-weight:600;max-width:500px;margin:0 auto 32px;line-height:1.65}
 .hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:40px}
 .btn-hero{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;padding:15px 30px;border-radius:50px;border:none;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
-.btn-hero-fill{background:var(--coral);color:#fff;box-shadow:0 6px 20px rgba(255,143,126,.35)}.btn-hero-fill:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,143,126,.45)}
+.btn-hero-fill{background:var(--coral);color:#fff;box-shadow:var(--shadow-coral)}.btn-hero-fill:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(255,143,126,.42)}
 .btn-hero-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--border)}.btn-hero-ghost:hover{border-color:var(--ink)}
 
 /* CATEGORY PILLS */
-.cat-scroll{padding:0 36px 24px;display:flex;gap:10px;overflow-x:auto;scrollbar-width:none}
+.cat-scroll{padding:24px 36px;display:flex;gap:10px;overflow-x:auto;scrollbar-width:none}
 .cat-scroll::-webkit-scrollbar{display:none}
 .cat-btn{font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;padding:9px 18px;border-radius:50px;border:1.5px solid var(--border);background:#fff;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
 .cat-btn:hover,.cat-btn.on{background:var(--peach);border-color:var(--coral);color:var(--coral)}
@@ -72,7 +87,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 .filters-bar{background:#fff;border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border);padding:12px 36px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:var(--nav-h,110px);z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.04)}
 .chip{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 16px;border-radius:50px;cursor:pointer;border:1.5px solid var(--border);background:var(--bg);color:var(--muted);transition:all .2s;white-space:nowrap}
 .chip:hover,.chip.on{background:var(--peach);border-color:var(--coral);color:var(--coral)}
-.chip-select{appearance:none;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 30px 7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--bg) url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238a7a65' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;color:var(--muted);cursor:pointer;outline:none}
+.chip-select{appearance:none;-webkit-appearance:none;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:7px 32px 7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--bg) url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238a7a65' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;color:var(--muted);cursor:pointer;outline:none}
 .chip-select:focus{border-color:var(--coral)}
 .view-toggle{display:flex;background:var(--bg);border:1.5px solid var(--border);border-radius:50px;padding:3px;gap:2px;margin-left:auto}
 .vtbtn{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:6px 14px;border-radius:50px;border:none;cursor:pointer;background:transparent;color:var(--muted);transition:all .2s;display:flex;align-items:center;gap:5px}
@@ -81,8 +96,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 
 /* CARDS */
 .slots-grid{padding:24px 36px 80px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
-.slot-card{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .25s;animation:cardIn .35s ease both}
-.slot-card:hover{transform:translateY(-5px);box-shadow:0 14px 36px rgba(0,0,0,.1)}
+.slot-card{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .25s;animation:cardIn .35s ease both;box-shadow:var(--shadow-sm)}
+.slot-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
 @keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .card-stripe{height:5px}.card-body{padding:18px}
 .card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
@@ -169,7 +184,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 .auth-blob{position:absolute;border-radius:50%;pointer-events:none;filter:blur(60px)}
 .auth-blob-1{width:400px;height:400px;background:var(--yellow);top:-80px;right:-80px;opacity:.45}
 .auth-blob-2{width:300px;height:300px;background:var(--sky);bottom:-60px;left:-60px;opacity:.45}
-.auth-card{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:40px 36px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,.08);position:relative;z-index:2}
+.auth-card{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:40px 36px;width:100%;max-width:400px;box-shadow:var(--shadow-lg);position:relative;z-index:2}
 .auth-tabs{display:flex;gap:4px;background:var(--bg);border-radius:50px;padding:4px;margin-bottom:28px}
 .auth-tab{flex:1;text-align:center;padding:9px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;border-radius:50px;cursor:pointer;transition:all .2s;color:var(--muted);border:none;background:transparent}
 .auth-tab.on{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.08)}
@@ -179,7 +194,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 .fgroup input:focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,143,126,.1)}
 .fgroup input::placeholder{color:#c4b9aa}
 /* ACCOUNT */
-.acct-card{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:40px 36px;width:100%;max-width:440px;box-shadow:0 8px 40px rgba(0,0,0,.08);position:relative;z-index:2}
+.acct-card{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:40px 36px;width:100%;max-width:440px;box-shadow:var(--shadow-lg);position:relative;z-index:2}
 .acct-title{font-family:'Nunito',sans-serif;font-size:22px;font-weight:800;color:var(--ink);margin:0 0 6px}
 .acct-sub{font-size:13px;color:var(--muted);font-weight:600;margin:0 0 28px;line-height:1.5}
 .acct-section{font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--coral);margin:24px 0 12px}
@@ -195,6 +210,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 .auth-submit:hover{transform:translateY(-2px)}
 .auth-foot{text-align:center;font-size:13px;color:var(--muted);font-weight:600;margin-top:18px}
 .auth-foot a{color:var(--coral);font-weight:800;cursor:pointer}
+.auth-google{width:100%;background:#fff;border:1.5px solid #e2e2e2;border-radius:50px;padding:12px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:#1a1a1a;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:12px;transition:background .15s}
+.auth-google:hover{background:#f8f8f8}
+.auth-divider{text-align:center;font-size:12px;color:var(--muted);margin:4px 0 16px;position:relative}
+.auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:calc(50% - 20px);height:1px;background:var(--border)}
+.auth-divider::before{left:0}.auth-divider::after{right:0}
 .auth-msg{border-radius:var(--rsm);padding:11px 14px;font-size:13px;font-weight:600;margin-bottom:14px;display:none}
 .auth-msg.show{display:block}
 .auth-msg.err{background:#fef2f2;border:1.5px solid #fecaca;color:#991b1b}
@@ -287,13 +307,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 .btn-danger:hover{background:#fef2f2;border-color:#991b1b}
 
 /* FOOTER */
-.site-footer{padding:40px 36px;border-top:1.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.site-footer{padding:40px 36px;border-top:1.5px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center}
+.footer-top{display:flex;justify-content:space-between;align-items:center;width:100%;flex-wrap:wrap;gap:16px}
 .footer-logo{cursor:pointer;background:none;border:none;padding:0;display:flex;align-items:center}
 .footer-logo img{height:22px;width:auto;display:block}
-.footer-links{display:flex;gap:20px;flex-wrap:wrap}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap;align-items:center}
 .footer-links a{font-size:13px;color:var(--muted);font-weight:600;text-decoration:none;transition:color .2s}
 .footer-links a:hover{color:var(--ink)}
 .footer-copy{font-size:12px;color:var(--muted);font-weight:600}
+.footer-socials{display:flex;gap:16px;align-items:center}
+.footer-socials a{color:var(--muted);transition:color .2s;display:flex;align-items:center}
+.footer-socials a:hover{color:var(--coral)}
 
 /* SKELETON */
 .skeleton{background:linear-gradient(90deg,#f0ead8 25%,#e8e0cc 50%,#f0ead8 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--r);height:200px}
@@ -326,7 +350,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
   .cat-scroll button{font-size:13px;padding:8px 14px}
 
   .filters-bar{padding:10px 16px;gap:8px;flex-wrap:wrap}
-  .filters-bar select{font-size:13px;padding:8px 10px}
+  .filters-bar select{font-size:13px;padding:8px 32px 8px 14px}
 
   .slots-grid{padding:12px 16px 80px;grid-template-columns:1fr}
   .slot-card{padding:16px}
@@ -346,6 +370,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
   .about-stats>div{border-right:none !important;border-bottom:1.5px solid var(--border)}
   .about-steps{grid-template-columns:1fr !important}
   .about-steps>div{border-radius:var(--r) !important}
+  .mini-steps{grid-template-columns:1fr !important}
   .about-two-col{grid-template-columns:1fr !important}
 
   .policies-grid{grid-template-columns:1fr !important}
@@ -387,25 +412,93 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 /* Bottom nav (mobile only) */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:500;background:#fffbf5;border-top:1.5px solid var(--border);padding-bottom:env(safe-area-inset-bottom)}
 .bottom-nav-row{display:flex;width:100%}
-.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px 8px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;color:var(--coral);cursor:pointer;background:none;border:none;text-decoration:none;transition:color .2s;-webkit-tap-highlight-color:transparent}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px 8px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;color:var(--muted);cursor:pointer;background:none;border:none;text-decoration:none;transition:color .2s;-webkit-tap-highlight-color:transparent}
 .bnav-item.on{color:var(--coral)}
-.bnav-icon{font-size:20px;line-height:1}
+.bnav-item svg{flex-shrink:0}
 @media(min-width:701px){.bottom-nav{display:none}}
 /* Date chip — custom label wraps hidden input for iOS Safari compat */
 .chip-date-label{cursor:pointer;position:relative}
 .chip-date-hidden{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+
+/* HERO BACKGROUND PATHS */
+.hero-wrapper{position:relative;overflow:hidden}
+.hero-paths-bg{position:absolute;inset:0;pointer-events:none;z-index:0}
+.hero-paths-bg svg{width:100%;height:100%}
+.hero{position:relative;z-index:1}
+@keyframes heroPathFlow{0%{stroke-dashoffset:3400}100%{stroke-dashoffset:-3400}}
+@keyframes heroFadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.hero-eyebrow{opacity:0;animation:heroFadeUp .65s .1s ease forwards}
+.hero-title{opacity:0;animation:heroFadeUp .7s .22s ease forwards}
+.hero-sub{opacity:0;animation:heroFadeUp .65s .38s ease forwards}
+.hero-actions{opacity:0;animation:heroFadeUp .65s .52s ease forwards}
+@media(prefers-reduced-motion:reduce){
+  .hero-eyebrow,.hero-title,.hero-sub,.hero-actions{opacity:1;animation:none}
+  .hero-paths-bg{display:none}
+}
+
+/* SECTION BADGE — Feature108 style label above headings */
+.section-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 16px;border-radius:50px;border:1.5px solid var(--border);background:#fff;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:var(--coral);letter-spacing:.2px;margin-bottom:16px;box-shadow:var(--shadow-sm)}
+
+/* IMPROVED BUTTON SHADOWS */
+.nav-btn-fill{box-shadow:0 3px 10px rgba(255,143,126,.25)}
+.book-btn{box-shadow:var(--shadow-coral)}
+.acct-save,.auth-submit,.ob-save-btn{box-shadow:0 4px 14px rgba(255,143,126,.2)}
+
+/* IMPROVED CARD SHADOWS */
+.modal{box-shadow:var(--shadow-lg)}
+.book-panel{box-shadow:var(--shadow-sm)}
+.map-sidebar-inner{box-shadow:var(--shadow-md)}
+
+/* FOCUS STATES — keyboard navigation */
+:focus-visible{outline:2.5px solid var(--coral);outline-offset:2px}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2.5px solid var(--coral);outline-offset:2px;border-radius:4px}
+
+/* REDUCED MOTION */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* INSTALL BANNER */
+.install-banner{margin:24px 16px 8px;background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--shadow-sm);animation:fadeIn .4s ease}
+.install-banner-inner{display:flex;align-items:center;gap:14px}
+.install-banner-icon{width:48px;height:48px;background:var(--peach);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.install-banner-body{flex:1;min-width:0}
+.install-banner-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:15px;color:var(--ink);margin-bottom:3px}
+.install-banner-sub{font-size:13px;color:var(--muted);font-weight:600;line-height:1.45}
+.install-banner-dismiss{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:4px;line-height:1;flex-shrink:0}
+.install-banner-dismiss:hover{color:var(--ink)}
+.install-banner-actions{margin-top:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.install-btn{font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;padding:11px 22px;border-radius:50px;border:none;background:var(--coral);color:#fff;cursor:pointer;box-shadow:var(--shadow-coral);transition:all .2s}
+.install-btn:hover{transform:translateY(-1px)}
+.install-ios-steps{display:flex;flex-direction:column;gap:8px}
+.install-ios-step{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--ink)}
+.install-ios-step-num{width:22px;height:22px;border-radius:50%;background:var(--coral);color:#fff;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* PUSH PROMPT BANNER (PWA mode) */
+.push-prompt{margin:16px 16px 0;background:linear-gradient(135deg,var(--peach) 0%,#fff8f5 100%);border:1.5px solid #ffcfbf;border-radius:var(--r);padding:16px 18px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-sm);animation:fadeIn .4s ease}
+.push-prompt-text{flex:1;min-width:0}
+.push-prompt-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:14px;color:var(--ink);margin-bottom:2px}
+.push-prompt-sub{font-size:12px;color:var(--muted);font-weight:600}
+.push-prompt-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.push-prompt-btn{font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;padding:8px 16px;border-radius:50px;border:none;background:var(--coral);color:#fff;cursor:pointer;white-space:nowrap;transition:all .2s}
+.push-prompt-btn:hover{transform:translateY(-1px)}
+.push-prompt-dismiss{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:4px;line-height:1}
 </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NH48TS5B"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
     <button class="nav-logo" onclick="go('browse')"><img src="brand/logo-black.png" alt="Skorrd"></button>
     <div class="nav-mid">
-      <span class="nav-chip on" id="nav-chip-browse" onclick="go('browse')" style="cursor:pointer">🔍 Browse slots</span>
-      <span class="nav-chip" id="nav-chip-about" onclick="go('about')" style="cursor:pointer">✨ How it works</span>
-      <a class="nav-chip" href="/skorrd-business">💼 For businesses</a>
+      <span class="nav-chip on" id="nav-chip-browse" onclick="go('browse')" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Browse slots</span>
+      <span class="nav-chip" id="nav-chip-about" onclick="go('about')" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>How it works</span>
+      <a class="nav-chip" href="/skorrd-business" style="display:inline-flex;align-items:center;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>For businesses</a>
     </div>
     <div class="nav-right" id="nav-right">
       <button class="nav-btn nav-btn-ghost" onclick="go('login',{mode:'login'})">Log in</button>
@@ -421,20 +514,60 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 <div class="screen active" id="screen-browse" style="min-height:100vh">
 
 
-  <div class="hero">
-    <div class="hero-eyebrow">
-      <span class="live-dot"></span>
-      Live appointments near you right now
+  <div class="hero-wrapper">
+    <div class="hero-paths-bg" aria-hidden="true">
+      <svg id="hero-paths-svg" viewBox="0 0 696 316" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
-    <h1 class="hero-title">
-      Last-minute slots.<br>
-      <span class="hl">Better prices.</span><br>
-      <em>Book in seconds.</em>
-    </h1>
-    <p class="hero-sub">Discover discounted appointments at local businesses.</p>
-    <div class="hero-actions">
-      <button class="btn-hero btn-hero-fill" onclick="document.getElementById('filters-anchor').scrollIntoView({behavior:'smooth'})">Browse deals near me →</button>
-      <a class="btn-hero btn-hero-ghost" href="/skorrd-business">List your business</a>
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span class="live-dot"></span>
+        Live appointments near you right now
+      </div>
+      <h1 class="hero-title">
+        Businesses Upload<br>
+        <span class="hl">Discounted Slots.</span><br>
+        <em>You book and save!</em>
+      </h1>
+      <p class="hero-sub">Discover discounted appointments at local businesses.</p>
+      <div class="hero-actions">
+        <button class="btn-hero btn-hero-fill" onclick="document.getElementById('filters-anchor').scrollIntoView({behavior:'smooth'})">Browse deals near me →</button>
+        <a class="btn-hero btn-hero-ghost" href="/skorrd-business">List your business</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS MINI -->
+  <div style="background:#fff;border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border);padding:56px 24px">
+    <div style="max-width:860px;margin:0 auto;text-align:center">
+      <span class="section-badge">How it works</span>
+      <h2 style="font-family:'Raleway',sans-serif;font-size:clamp(22px,3.5vw,34px);font-weight:900;letter-spacing:-1px;margin-bottom:8px">From browsing to booked in under 60 seconds</h2>
+      <p style="font-size:14px;color:var(--muted);font-weight:600;margin-bottom:36px">No phone calls. No waiting. Just tap, confirm, and show up.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px" class="mini-steps">
+        <div style="background:var(--bg);border-radius:16px;border:1.5px solid var(--border);padding:28px 22px;text-align:left;box-shadow:var(--shadow-sm);transition:box-shadow .2s,transform .2s" onmouseenter="this.style.boxShadow='var(--shadow-md)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.boxShadow='var(--shadow-sm)';this.style.transform='translateY(0)'">
+          <div style="font-family:'Nunito',sans-serif;font-size:32px;font-weight:900;color:rgba(255,143,126,.14);line-height:1;margin-bottom:14px">01</div>
+          <div style="width:36px;height:36px;background:rgba(255,143,126,.10);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:6px">Discover nearby slots</h3>
+          <p style="font-size:13px;color:var(--muted);font-weight:600;line-height:1.65">Browse last-minute openings at local businesses — filtered by category, time, and distance.</p>
+        </div>
+        <div style="background:var(--bg);border-radius:16px;border:1.5px solid var(--border);padding:28px 22px;text-align:left;box-shadow:var(--shadow-sm);transition:box-shadow .2s,transform .2s" onmouseenter="this.style.boxShadow='var(--shadow-md)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.boxShadow='var(--shadow-sm)';this.style.transform='translateY(0)'">
+          <div style="font-family:'Nunito',sans-serif;font-size:32px;font-weight:900;color:rgba(255,143,126,.14);line-height:1;margin-bottom:14px">02</div>
+          <div style="width:36px;height:36px;background:rgba(255,143,126,.10);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:6px">Grab the deal</h3>
+          <p style="font-size:13px;color:var(--muted);font-weight:600;line-height:1.65">Every slot is discounted — sometimes up to 40% off the regular price. Claim it before someone else does.</p>
+        </div>
+        <div style="background:var(--bg);border-radius:16px;border:1.5px solid var(--border);padding:28px 22px;text-align:left;box-shadow:var(--shadow-sm);transition:box-shadow .2s,transform .2s" onmouseenter="this.style.boxShadow='var(--shadow-md)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.boxShadow='var(--shadow-sm)';this.style.transform='translateY(0)'">
+          <div style="font-family:'Nunito',sans-serif;font-size:32px;font-weight:900;color:rgba(255,143,126,.14);line-height:1;margin-bottom:14px">03</div>
+          <div style="width:36px;height:36px;background:rgba(255,143,126,.10);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:6px">Show up and enjoy</h3>
+          <p style="font-size:13px;color:var(--muted);font-weight:600;line-height:1.65">Your booking is confirmed instantly. Just show up at the right time — no paperwork, no hassle.</p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -454,6 +587,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
     <button class="cat-btn" onclick="setCat(this,'Tutoring')">📚 Tutoring</button>
     <button class="cat-btn" onclick="setCat(this,'Skin & Aesthetics')">🧴 Skin &amp; Aesthetics</button>
     <button class="cat-btn" onclick="setCat(this,'Therapy & Counselling')">🧠 Therapy</button>
+    <button class="cat-btn" onclick="setCat(this,'Other')">🔖 Other</button>
   </div>
 
   <div id="filters-anchor"></div>
@@ -462,13 +596,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
     <div class="chip on" data-win="all" onclick="setWin(this)">All times</div>
     <div class="chip" data-win="today" onclick="setWin(this)">Today</div>
     <div class="chip" data-win="tomorrow" onclick="setWin(this)">Tomorrow</div>
-    <label class="chip chip-date-label" for="f-date-filter">
+    <div class="chip chip-date-label" onclick="const i=document.getElementById('f-date-filter');try{i.showPicker()}catch(e){i.click()}">
       <span id="f-date-label">📅 Date</span>
-      <input type="date" class="chip-date-hidden" id="f-date-filter" onchange="setDateFilter(this.value)" title="Filter by date">
-    </label>
+      <input type="date" id="f-date-filter" onchange="setDateFilter(this.value)" style="position:absolute;opacity:0;pointer-events:none;width:0;height:0">
+    </div>
 
     <select class="chip-select" id="f-sort" onchange="renderCards()">
-      <option value="time">Soonest first</option>
+      <option value="time">Next available</option>
       <option value="disc">Biggest saving</option>
       <option value="price">Lowest price</option>
     </select>
@@ -491,15 +625,58 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
   </div>
   <div style="font-size:10px;color:var(--muted);padding:4px 16px;text-align:right">© <a href="https://www.openstreetmap.org/copyright" style="color:var(--muted)">OpenStreetMap</a> © <a href="https://carto.com/attributions" style="color:var(--muted)">CARTO</a></div>
 
-  <footer class="site-footer">
-    <button class="footer-logo" onclick="go('browse')"><img src="brand/logo-black.png" alt="Skorrd"></button>
-    <div class="footer-links">
-      <a href="/skorrd-business">For businesses</a>
-      <a href="#">Privacy</a>
-      <a href="#">Terms</a>
-      <a href="#">Contact</a>
+  <!-- PUSH PROMPT — shown in PWA/standalone mode only -->
+  <div id="push-prompt" class="push-prompt" style="display:none">
+    <div style="width:36px;height:36px;background:var(--coral);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     </div>
-    <div class="footer-copy">© 2026 Skorrd. All rights reserved.</div>
+    <div class="push-prompt-text">
+      <div class="push-prompt-title">Get instant slot alerts</div>
+      <div class="push-prompt-sub">Enable push notifications so you never miss a deal</div>
+    </div>
+    <div class="push-prompt-actions">
+      <button class="push-prompt-btn" onclick="enablePushFromPrompt()">Enable</button>
+      <button class="push-prompt-dismiss" onclick="dismissPushPrompt()" aria-label="Dismiss">✕</button>
+    </div>
+  </div>
+
+  <!-- INSTALL BANNER — shown to non-installed users -->
+  <div id="install-banner" class="install-banner" style="display:none">
+    <div class="install-banner-inner">
+      <div class="install-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+      </div>
+      <div class="install-banner-body">
+        <div class="install-banner-title">Add Skorrd App to home screen.</div>
+        <div class="install-banner-sub">Quick access + instant notifications when new slots drop near you</div>
+      </div>
+      <button class="install-banner-dismiss" onclick="dismissInstallBanner()" aria-label="Dismiss">✕</button>
+    </div>
+    <div class="install-banner-actions" id="install-banner-actions"></div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-top">
+      <button class="footer-logo" onclick="go('browse')"><img src="brand/logo-black.png" alt="Skorrd"></button>
+      <div class="footer-links">
+        <a href="/skorrd-business">For businesses</a>
+        <a href="/skorrd-privacy.html">Privacy</a>
+        <a href="/skorrd-terms.html">Terms</a>
+        <a href="/skorrd-contact.html">Contact</a>
+      </div>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/skorrdofficial/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="https://www.tiktok.com/@skorrdofficial" target="_blank" rel="noopener" aria-label="TikTok">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.17 8.17 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=61577662563590" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-copy">© 2026 SKORRD (ABN 38 623 713 636). All rights reserved.</div>
   </footer>
 </div>
 
@@ -523,6 +700,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
         <button class="auth-tab" id="tab-signup" onclick="authMode('signup')">Sign up free</button>
       </div>
       <div class="auth-msg" id="auth-msg"></div>
+      <button class="auth-google" onclick="signInWithGoogle()"><svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.17z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>Continue with Google</button>
+      <div class="auth-divider">or</div>
       <div class="fgroup"><label>Email address</label><input id="auth-email" type="email" placeholder="you@email.com" autocomplete="email"></div>
       <div class="fgroup"><label>Password</label><input id="auth-pass" type="password" placeholder="Password" autocomplete="current-password"></div>
       <button class="auth-submit" id="auth-submit" onclick="handleAuth()">Log in</button>
@@ -547,7 +726,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
       <div class="fgroup"><label>Full name</label><input id="acct-name" type="text" placeholder="Jane Smith" autocomplete="name"></div>
       <div class="fgroup"><label>Phone number</label><input id="acct-phone" type="tel" placeholder="0400 000 000" autocomplete="tel"></div>
       <button class="acct-save" id="acct-save-details" onclick="saveAccountDetails()">Save details</button>
-      <button class="ob-skip" id="acct-onboard-skip" style="display:none;margin-top:10px" onclick="state.fromOnboarding=false;go('browse')">Skip for now</button>
 
       <hr class="acct-divider">
       <div class="acct-section">Email address</div>
@@ -577,6 +755,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
         <div class="ob-cat" data-cat="Tutoring"             onclick="toggleObCat(this,'acct-cats')"><span>📚</span><span>Tutoring</span></div>
         <div class="ob-cat" data-cat="Skin & Aesthetics"    onclick="toggleObCat(this,'acct-cats')"><span>🧴</span><span>Skin &amp; Aesthetics</span></div>
         <div class="ob-cat" data-cat="Therapy & Counselling" onclick="toggleObCat(this,'acct-cats')"><span>🧠</span><span>Therapy &amp; Counselling</span></div>
+        <div class="ob-cat" data-cat="Other"                onclick="toggleObCat(this,'acct-cats')"><span>🔖</span><span>Other</span></div>
       </div>
       <div class="ob-notifs">
         <div class="ob-toggle-row">
@@ -585,6 +764,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
             <span class="ob-sub-label">Get an email when a matching slot drops</span>
           </div>
           <label class="toggle-sw"><input type="checkbox" id="acct-email-notif" checked><span class="toggle-sw-track"></span></label>
+        </div>
+        <div class="ob-toggle-row" id="acct-push-row">
+          <div>
+            <div class="ob-toggle-label">🔔 Push notifications</div>
+            <span class="ob-sub-label" id="acct-push-sub">Instant alerts on your device when slots drop</span>
+          </div>
+          <label class="toggle-sw"><input type="checkbox" id="acct-push-notif" onchange="handlePushToggle(this,'acct')"><span class="toggle-sw-track"></span></label>
         </div>
       </div>
       <button class="acct-save" id="acct-save-prefs" onclick="savePreferences('acct')">Save preferences</button>
@@ -616,6 +802,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
             <span class="ob-sub-label">Get an email when a matching slot drops</span>
           </div>
           <label class="toggle-sw"><input type="checkbox" id="ob-email-notif" checked><span class="toggle-sw-track"></span></label>
+        </div>
+        <div class="ob-toggle-row" id="ob-push-row" style="display:none">
+          <div>
+            <div class="ob-toggle-label">🔔 Push notifications</div>
+            <span class="ob-sub-label">Instant alerts on your device — requires home screen install</span>
+          </div>
+          <label class="toggle-sw"><input type="checkbox" id="ob-push-notif" onchange="handlePushToggle(this,'ob')"><span class="toggle-sw-track"></span></label>
         </div>
       </div>
       <button class="acct-save" onclick="saveOnboarding()">Next: add your details →</button>
@@ -665,40 +858,46 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 
   <!-- STATS -->
   <div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1.5px solid var(--border)" class="about-stats">
-    <div style="padding:40px 36px;border-right:1.5px solid var(--border)">
-      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:var(--coral);line-height:1;margin-bottom:6px">30%</div>
-      <div style="font-size:14px;color:var(--muted);font-weight:600;line-height:1.5">Average unused appointment<br>capacity per week</div>
+    <div style="padding:40px 36px;border-right:1.5px solid var(--border);text-align:center">
+      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:var(--coral);line-height:1;margin-bottom:6px">60s</div>
+      <div style="font-size:14px;color:var(--muted);font-weight:600;line-height:1.5">To list a slot and go live<br>to customers nearby</div>
     </div>
-    <div style="padding:40px 36px;border-right:1.5px solid var(--border)">
-      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:var(--coral);line-height:1;margin-bottom:6px">$0</div>
-      <div style="font-size:14px;color:var(--muted);font-weight:600;line-height:1.5">Revenue earned from<br>empty slots</div>
+    <div style="padding:40px 36px;border-right:1.5px solid var(--border);text-align:center">
+      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:var(--coral);line-height:1;margin-bottom:6px">40%</div>
+      <div style="font-size:14px;color:var(--muted);font-weight:600;line-height:1.5">Average discount<br>customers save</div>
     </div>
-    <div style="padding:40px 36px">
-      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:var(--coral);line-height:1;margin-bottom:6px">7 days</div>
-      <div style="font-size:14px;color:var(--muted);font-weight:600;line-height:1.5">Booking window — list<br>slots up to a week ahead</div>
+    <div style="padding:40px 36px;text-align:center">
+      <div style="font-family:'Nunito',sans-serif;font-size:48px;font-weight:900;color:var(--coral);line-height:1;margin-bottom:6px">Free</div>
+      <div style="font-size:14px;color:var(--muted);font-weight:600;line-height:1.5">To sign up<br>as a business</div>
     </div>
   </div>
 
   <!-- HOW IT WORKS STEPS -->
   <div style="padding:72px 36px;max-width:900px;margin:0 auto">
-    <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--coral);margin-bottom:12px">✦ Simple on both sides</div>
+    <span class="section-badge">Easy for Businesses. Easy for customers.</span>
     <h2 style="font-family:'Raleway',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:900;letter-spacing:-1px;margin-bottom:48px">Three steps, that's it.</h2>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px" class="about-steps">
-      <div style="background:#fff;padding:36px 28px;border-radius:var(--r) 0 0 var(--r);border:1.5px solid var(--border)">
-        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,143,126,.12);line-height:1;margin-bottom:16px">01</div>
-        <div style="font-size:22px;margin-bottom:10px">📋</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px" class="about-steps">
+      <div style="background:#fff;padding:36px 28px;border-radius:var(--r);border:1.5px solid var(--border);box-shadow:var(--shadow-sm)">
+        <div style="font-family:'Nunito',sans-serif;font-size:56px;font-weight:900;color:rgba(255,143,126,.13);line-height:1;margin-bottom:16px">01</div>
+        <div style="width:42px;height:42px;background:rgba(255,143,126,.10);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px">Business lists a slot</h3>
         <p style="font-size:14px;color:var(--muted);line-height:1.7;font-weight:600">Takes under 60 seconds. Pick a service, set the time, choose your own discount. It goes live immediately for nearby customers to discover.</p>
       </div>
-      <div style="background:#fff;padding:36px 28px;border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border)">
-        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,143,126,.12);line-height:1;margin-bottom:16px">02</div>
-        <div style="font-size:22px;margin-bottom:10px">🔍</div>
+      <div style="background:#fff;padding:36px 28px;border-radius:var(--r);border:1.5px solid var(--border);box-shadow:var(--shadow-sm)">
+        <div style="font-family:'Nunito',sans-serif;font-size:56px;font-weight:900;color:rgba(255,143,126,.13);line-height:1;margin-bottom:16px">02</div>
+        <div style="width:42px;height:42px;background:rgba(255,143,126,.10);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px">Customer discovers &amp; books</h3>
         <p style="font-size:14px;color:var(--muted);line-height:1.7;font-weight:600">Nearby customers browse by category, time, or saving size. They book instantly with a small $5 hold fee — no phone calls, no back-and-forth.</p>
       </div>
-      <div style="background:#fff;padding:36px 28px;border-radius:0 var(--r) var(--r) 0;border:1.5px solid var(--border)">
-        <div style="font-family:'Nunito',sans-serif;font-size:64px;font-weight:900;color:rgba(255,143,126,.12);line-height:1;margin-bottom:16px">03</div>
-        <div style="font-size:22px;margin-bottom:10px">🎉</div>
+      <div style="background:#fff;padding:36px 28px;border-radius:var(--r);border:1.5px solid var(--border);box-shadow:var(--shadow-sm)">
+        <div style="font-family:'Nunito',sans-serif;font-size:56px;font-weight:900;color:rgba(255,143,126,.13);line-height:1;margin-bottom:16px">03</div>
+        <div style="width:42px;height:42px;background:rgba(255,143,126,.10);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px">Both sides confirmed</h3>
         <p style="font-size:14px;color:var(--muted);line-height:1.7;font-weight:600">Instant notification for the business and customer. The slot is locked. Customer pays the full service fee at the appointment — you keep control of your money.</p>
       </div>
@@ -709,7 +908,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
   <div style="background:#fff;border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border);padding:72px 36px">
     <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center" class="about-two-col">
       <div>
-        <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--coral);margin-bottom:12px">✦ For customers</div>
+        <span class="section-badge">For customers</span>
         <h2 style="font-family:'Raleway',sans-serif;font-size:clamp(26px,3.5vw,38px);font-weight:900;letter-spacing:-1px;line-height:1.1;margin-bottom:20px">Great services.<br>Better prices.</h2>
         <p style="font-size:15px;color:var(--muted);line-height:1.7;font-weight:600;margin-bottom:28px">Discover real last-minute appointments at businesses near you — not fake "deals". These are genuine spare slots that would otherwise go empty, offered at a real discount.</p>
         <ul style="list-style:none;display:flex;flex-direction:column;gap:12px">
@@ -720,9 +919,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
           <li style="display:flex;gap:10px;align-items:flex-start;font-size:15px;color:rgba(26,18,7,.75);font-weight:600"><span style="color:var(--coral);flex-shrink:0;font-size:13px;margin-top:2px">→</span>New deals listed throughout the day — check back often</li>
         </ul>
       </div>
-      <div style="background:var(--bg);border-radius:var(--r);border:1.5px solid var(--border);padding:28px;display:flex;flex-direction:column;gap:16px">
+      <div style="background:var(--bg);border-radius:var(--r);border:1.5px solid var(--border);padding:28px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow-sm)">
         <!-- Mock slot cards -->
-        <div style="background:#fff;border-radius:14px;border:1.5px solid var(--border);overflow:hidden">
+        <div style="background:#fff;border-radius:14px;border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--shadow-sm)">
           <div style="height:4px;background:#c8eaff"></div>
           <div style="padding:16px 18px">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
@@ -738,7 +937,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
             </div>
           </div>
         </div>
-        <div style="background:#fff;border-radius:14px;border:1.5px solid var(--border);overflow:hidden">
+        <div style="background:#fff;border-radius:14px;border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--shadow-sm)">
           <div style="height:4px;background:#e0d4ff"></div>
           <div style="padding:16px 18px">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
@@ -761,30 +960,38 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 
   <!-- CANCELLATION & HOLD FEE EXPLAINER -->
   <div style="padding:72px 36px;max-width:900px;margin:0 auto">
-    <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--coral);margin-bottom:12px">✦ Policies &amp; pricing</div>
+    <span class="section-badge">Policies &amp; pricing</span>
     <h2 style="font-family:'Raleway',sans-serif;font-size:clamp(26px,3.5vw,38px);font-weight:900;letter-spacing:-1px;margin-bottom:36px">Good to know before you book</h2>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" class="policies-grid">
-      <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative">
+      <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative;box-shadow:var(--shadow-sm)">
         <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,143,126,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">1</div>
-        <div style="font-size:28px;margin-bottom:12px">💳</div>
+        <div style="width:40px;height:40px;background:rgba(255,143,126,.08);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:8px">$5 hold fee</h3>
         <p style="font-size:13px;color:var(--muted);line-height:1.65;font-weight:600">You pay $5 online to secure your slot. This confirms you're serious and protects the business from no-shows. The service fee is paid directly at the appointment.</p>
       </div>
-      <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative">
+      <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative;box-shadow:var(--shadow-sm)">
         <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,143,126,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">2</div>
-        <div style="font-size:28px;margin-bottom:12px">❌</div>
+        <div style="width:40px;height:40px;background:rgba(255,143,126,.08);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        </div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:8px">Cancellation policy</h3>
         <p style="font-size:13px;color:var(--muted);line-height:1.65;font-weight:600">You can cancel any time, but the $5 hold fee is non-refundable — it goes to Skorrd. The slot automatically gets re-listed so someone else can grab it.</p>
       </div>
-      <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative">
+      <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative;box-shadow:var(--shadow-sm)">
         <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,143,126,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">3</div>
-        <div style="font-size:28px;margin-bottom:12px">📅</div>
+        <div style="width:40px;height:40px;background:rgba(255,143,126,.08);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:8px">Booking window</h3>
         <p style="font-size:13px;color:var(--muted);line-height:1.65;font-weight:600">Slots are listed up to 7 days ahead with no minimum lead time. Most deals are same-day or next-day — so check back regularly for fresh listings.</p>
       </div>
-      <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative">
+      <div style="background:#fff;border-radius:var(--r);border:1.5px solid var(--border);padding:24px;position:relative;box-shadow:var(--shadow-sm)">
         <div style="position:absolute;top:16px;right:16px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--coral);background:rgba(255,143,126,.08);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">4</div>
-        <div style="font-size:28px;margin-bottom:12px">🔒</div>
+        <div style="width:40px;height:40px;background:rgba(255,143,126,.08);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
         <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:8px">Secure payments</h3>
         <p style="font-size:13px;color:var(--muted);line-height:1.65;font-weight:600">Hold fees are processed securely via Stripe. Your card details are never stored by Skorrd. The business receives payment directly at the appointment.</p>
       </div>
@@ -794,7 +1001,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
   <!-- CATEGORIES -->
   <div style="background:#fff;border-top:1.5px solid var(--border);padding:64px 36px">
     <div style="max-width:900px;margin:0 auto">
-      <div style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--coral);margin-bottom:12px">✦ Categories</div>
+      <span class="section-badge">Categories</span>
       <h2 style="font-family:'Raleway',sans-serif;font-size:clamp(24px,3vw,36px);font-weight:900;letter-spacing:-1px;margin-bottom:8px">Works for any appointment-based service</h2>
       <p style="font-size:15px;color:var(--muted);font-weight:600;margin-bottom:28px">If people book time with you, you can list on Skorrd.</p>
       <div style="display:flex;flex-wrap:wrap;gap:10px">
@@ -817,7 +1024,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
   <!-- CTA -->
   <div style="padding:80px 36px;text-align:center;position:relative;overflow:hidden">
     <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(255,143,126,.08) 0%,transparent 65%);pointer-events:none"></div>
-    <div style="font-size:48px;margin-bottom:16px">🎯</div>
+    <div style="width:64px;height:64px;background:var(--coral);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:var(--shadow-coral)">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+    </div>
     <h2 style="font-family:'Raleway',sans-serif;font-size:clamp(28px,4vw,46px);font-weight:900;letter-spacing:-1.5px;margin-bottom:14px">Ready to find a deal?</h2>
     <p style="font-size:16px;color:var(--muted);font-weight:600;max-width:400px;margin:0 auto 32px;line-height:1.65">New slots are listed every day. Jump in and see what's available near you right now.</p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
@@ -827,14 +1036,27 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
   </div>
 
   <footer class="site-footer">
-    <button class="footer-logo" onclick="go('browse')"><img src="brand/logo-black.png" alt="Skorrd"></button>
-    <div class="footer-links">
-      <a href="/skorrd-business">For businesses</a>
-      <a href="#">Privacy</a>
-      <a href="#">Terms</a>
-      <a href="#">Contact</a>
+    <div class="footer-top">
+      <button class="footer-logo" onclick="go('browse')"><img src="brand/logo-black.png" alt="Skorrd"></button>
+      <div class="footer-links">
+        <a href="/skorrd-business">For businesses</a>
+        <a href="/skorrd-privacy.html">Privacy</a>
+        <a href="/skorrd-terms.html">Terms</a>
+        <a href="/skorrd-contact.html">Contact</a>
+      </div>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/skorrdofficial/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="https://www.tiktok.com/@skorrdofficial" target="_blank" rel="noopener" aria-label="TikTok">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.17 8.17 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=61577662563590" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
     </div>
-    <div class="footer-copy">© 2026 Skorrd. All rights reserved.</div>
+    <div class="footer-copy">© 2026 SKORRD (ABN 38 623 713 636). All rights reserved.</div>
   </footer>
 </div>
 
@@ -857,6 +1079,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;flex-direction:
 </div>
 
 <script>
+function esc(s){const d=document.createElement('div');d.appendChild(document.createTextNode(String(s??'')));return d.innerHTML}
+
 const SUPABASE_URL = 'https://ahbbnagjqpfztftswber.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmJuYWdqcXBmenRmdHN3YmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyODAyNDEsImV4cCI6MjA4ODg1NjI0MX0.p9SGxDNbkIMehoPN7KNQjioqdoU2PPe35EfZosstk6Q'
 const BOOKING_FEE = 0
@@ -877,6 +1101,7 @@ const CAT_CFG = {
   'Tutoring':             { pill:'pill-pt',     color:'#fef9c3', dot:'#eab308', icon:'📚'  },
   'Skin & Aesthetics':    { pill:'pill-beauty', color:'#fce7f3', dot:'#db2777', icon:'🧴'  },
   'Therapy & Counselling':{ pill:'pill-nail',   color:'#ede9fe', dot:'#7c3aed', icon:'🧠'  },
+  'Other':                { pill:'pill-bar',    color:'#f1f5f9', dot:'#64748b', icon:'🔖'  },
 }
 
 let state = {
@@ -894,14 +1119,6 @@ function go(screen, opts={}, pushUrl=true) {
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'))
   document.getElementById('screen-'+screen).classList.add('active')
   state.screen = screen
-
-  // Back button
-  let nb = document.getElementById('nav-back-btn')
-  if (!nb) {
-    nb = document.createElement('button'); nb.id='nav-back-btn'; nb.className='nav-back'; nb.innerHTML='← Back'; nb.onclick=()=>go('browse')
-    const navRight = document.getElementById('nav-right'); navRight.parentNode.insertBefore(nb, navRight)
-  }
-  nb.style.display = (screen!=='browse' && screen!=='login') ? 'flex' : 'none'
 
   // Chip highlight (desktop)
   const chip = document.getElementById('nav-chip-browse')
@@ -945,17 +1162,17 @@ function updateNav() {
       <button class="nav-btn nav-btn-ghost" onclick="go('account')">👤 My Account</button>
       <button class="nav-btn nav-btn-ghost" onclick="signOut()">Sign out</button>`
     bnav.innerHTML = `
-      <button class="bnav-item" id="bnav-browse" onclick="go('browse')"><span class="bnav-icon">🔍</span><span>Browse</span></button>
-      <button class="bnav-item" id="bnav-bookings" onclick="openDrawer()"><span class="bnav-icon">📋</span><span>My Bookings</span></button>
-      <button class="bnav-item" id="bnav-account" onclick="go('account')"><span class="bnav-icon">👤</span><span>My Account</span></button>`
+      <button class="bnav-item" id="bnav-browse" onclick="go('browse')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Browse</span></button>
+      <button class="bnav-item" id="bnav-bookings" onclick="openDrawer()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1" ry="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg><span>My Bookings</span></button>
+      <button class="bnav-item" id="bnav-account" onclick="go('account')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>My Account</span></button>`
   } else {
     nr.innerHTML = `
       <button class="nav-btn nav-btn-ghost" onclick="go('login',{mode:'login'})">Log in</button>
       <button class="nav-btn nav-btn-fill" onclick="go('login',{mode:'signup'})">Sign up free</button>`
     bnav.innerHTML = `
-      <button class="bnav-item on" id="bnav-browse" onclick="go('browse')"><span class="bnav-icon">🔍</span><span>Browse</span></button>
-      <button class="bnav-item" id="bnav-about" onclick="go('about')"><span class="bnav-icon">✨</span><span>How it works</span></button>
-      <a class="bnav-item" href="/skorrd-business"><span class="bnav-icon">💼</span><span>For business</span></a>`
+      <button class="bnav-item on" id="bnav-browse" onclick="go('browse')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Browse</span></button>
+      <button class="bnav-item" id="bnav-about" onclick="go('about')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>How it works</span></button>
+      <a class="bnav-item" href="/skorrd-business"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span>For business</span></a>`
   }
 }
 
@@ -982,13 +1199,14 @@ async function handleAuth() {
   showProcessing(state.authMode==='login'?'Logging in...':'Creating account...')
   const { data, error } = state.authMode==='login'
     ? await sb.auth.signInWithPassword({email,password:pass})
-    : await sb.auth.signUp({email,password:pass})
+    : await sb.auth.signUp({email,password:pass,options:{data:{role:'customer'}}})
   hideProcessing(); btn.disabled=false
   if (error) { showAuthMsg(error.message,'err'); return }
   state.user = data.session?.user || data.user
   if (state.user) {
     try { await loadBookings() } catch(e){}
     updateNav()
+    setTimeout(maybeShowPushPrompt, 800)
     if (state.authMode === 'signup') {
       showToast('Account created! 🎉', 'ok')
       buildCatGrid('ob-cats', [])
@@ -1000,6 +1218,15 @@ async function handleAuth() {
       go(dest, state.currentSlot?{slot:state.currentSlot}:{})
     }
   }
+}
+
+async function signInWithGoogle() {
+  sessionStorage.setItem('skorrd_google_auth', '1')
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.origin + window.location.pathname }
+  })
+  if (error) showAuthMsg(error.message, 'err')
 }
 
 function showAuthMsg(msg,type) { const el=document.getElementById('auth-msg'); el.textContent=msg; el.className=`auth-msg show ${type}` }
@@ -1017,8 +1244,6 @@ function loadAccountForm() {
   setVal('acct-pass',  '')
   setVal('acct-pass2', '')
   showAcctMsg('', '')
-  const skipBtn = el('acct-onboard-skip')
-  if (skipBtn) skipBtn.style.display = state.fromOnboarding ? '' : 'none'
   loadPreferences('acct')
 }
 
@@ -1031,7 +1256,8 @@ async function saveAccountDetails() {
   const btn = document.getElementById('acct-save-details')
   const name  = document.getElementById('acct-name').value.trim()
   const phone = document.getElementById('acct-phone').value.trim()
-  if (!name) { showAcctMsg('Please enter your name.','err'); return }
+  if (!name)  { showAcctMsg('Please enter your full name.','err'); return }
+  if (!phone) { showAcctMsg('Please enter your phone number.','err'); return }
   btn.disabled = true
   const { data, error } = await sb.auth.updateUser({ data: { full_name: name, phone } })
   btn.disabled = false
@@ -1081,16 +1307,19 @@ async function signOut() {
 }
 
 // ── DATA ─────────────────────────────────────────────────
+const IS_PRODUCTION = window.location.hostname === 'skorrd.com.au'
+
 async function loadSlots() {
-  const { data, error } = await sb
+  let query = sb
     .from('slots')
     .select(`id, service_name, category, original_price, discounted_price,
              appointment_at, duration_mins, notes, status,
              businesses!inner ( id, name, suburb, street, state, postcode, lat, lng, logo_url, is_demo )`)
     .eq('status','available')
-    .eq('businesses.is_demo', false)
     .gte('appointment_at', new Date().toISOString())
     .order('appointment_at',{ascending:true})
+  if (IS_PRODUCTION) query = query.eq('businesses.is_demo', false)
+  const { data, error } = await query
   if (error) { console.error('loadSlots:',error); return }
   state.slots=(data||[]).map(normaliseSlot)
 }
@@ -1108,13 +1337,18 @@ function normaliseSlot(s) {
 }
 
 async function loadEarlyAdopters() {
-  const { data } = await sb.from('businesses').select('id').eq('is_demo',false).order('created_at',{ascending:true}).limit(30)
+  const { data } = await sb.from('businesses').select('id').order('created_at',{ascending:true}).limit(30)
   if (data) state.earlyAdopterBizIds = new Set(data.map(b=>b.id))
 }
 
 sb.channel('public:slots').on('postgres_changes',{event:'*',schema:'public',table:'slots'},async()=>{
   await loadSlots(); renderCards(); if(state.view==='map') renderMap()
 }).subscribe()
+
+// Refresh slots when app returns to foreground (PWA WebSocket drops in background on iOS)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) loadSlots().then(() => { renderCards(); if(state.view==='map') renderMap() })
+})
 
 async function loadBookings() {
   if (!state.user) return
@@ -1166,7 +1400,7 @@ function filteredSlots() {
   let slots=state.slots.filter(s=>!state.bookedSlotIds.has(s.id))
   if (activeCat) slots=slots.filter(s=>s.cat===activeCat)
   if (dateFilter) {
-    slots=slots.filter(s=>s.time.toISOString().split('T')[0]===dateFilter)
+    slots=slots.filter(s=>{const d=s.time;return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`===dateFilter})
   } else if (timeWindow==='today') {
     slots=slots.filter(s=>s.time.toDateString()===now().toDateString())
   } else if (timeWindow==='tomorrow') {
@@ -1197,31 +1431,31 @@ function renderCards() {
   document.getElementById('slots-grid').innerHTML=slots.map((s,i)=>{
     const cfg=CAT_CFG[s.cat]||{pill:'pill-bar',color:'#ffe4d4',icon:'🏪'}
     return `
-    <div class="slot-card" onclick="goSlot('${s.id}')" style="animation-delay:${i*.05}s">
+    <div class="slot-card" onclick="goSlot('${esc(s.id)}')" style="animation-delay:${i*.05}s">
       <div class="card-stripe" style="background:${cfg.color}"></div>
       <div class="card-body">
         <div class="card-top">
-          <span class="pill ${cfg.pill}">${s.cat}</span>
+          <span class="pill ${cfg.pill}">${esc(s.cat)}</span>
           <span class="save-badge">Save ${pct(s.orig,s.disc)}%</span>
         </div>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
           ${s.logoUrl
-            ? `<img src="${s.logoUrl}" style="width:36px;height:36px;border-radius:9px;object-fit:cover;border:1.5px solid var(--border);flex-shrink:0">`
+            ? `<img src="${esc(s.logoUrl)}" style="width:36px;height:36px;border-radius:9px;object-fit:cover;border:1.5px solid var(--border);flex-shrink:0">`
             : `<div style="width:36px;height:36px;border-radius:9px;background:${cfg.color};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${cfg.icon}</div>`}
           <div>
-            <div class="biz-name" style="margin-bottom:0">${s.biz}</div>
+            <div class="biz-name" style="margin-bottom:0">${esc(s.biz)}</div>
             ${s.bizId && state.earlyAdopterBizIds.has(s.bizId) ? `<span class="early-badge">⭐ Early adopter</span>` : ''}
           </div>
         </div>
-        <div class="svc-name">${s.svc}</div>
+        <div class="svc-name">${esc(s.svc)}</div>
         <div class="card-meta">
           <div class="meta"><div class="mlabel">When</div><div class="mval">${fmtDate(s.time)}, ${fmt(s.time)}</div></div>
-          <div class="meta"><div class="mlabel">Was</div><div class="mval strike">$${s.orig}</div></div>
-          <div class="meta"><div class="mlabel">Now</div><div class="mval coral">$${s.disc}</div></div>
+          <div class="meta"><div class="mlabel">Was</div><div class="mval strike">$${esc(s.orig)}</div></div>
+          <div class="meta"><div class="mlabel">Now</div><div class="mval coral">$${esc(s.disc)}</div></div>
         </div>
       </div>
       <div class="card-foot">
-        <span class="card-loc">📍 ${s.suburb}</span>
+        <span class="card-loc">📍 ${esc(s.suburb)}</span>
         <span class="card-cta">Book now →</span>
       </div>
     </div>`
@@ -1279,10 +1513,10 @@ function renderSidebar(slots) {
   document.getElementById('sidebar-title').textContent=`${slots.length} slot${slots.length===1?'':'s'} nearby`
   document.getElementById('sidebar-slots').innerHTML=slots.map(s=>{
     const cfg=CAT_CFG[s.cat]||{dot:'#ff8f7e'}
-    return `<div class="sidebar-card" id="sc-${s.id}" onclick="clickSidebar('${s.id}')">
-      ${s.logoUrl?`<img src="${s.logoUrl}" style="width:38px;height:38px;border-radius:9px;object-fit:cover;border:1.5px solid #eee;flex-shrink:0">`:`<div class="sc-dot" style="background:${cfg.dot}"></div>`}
-      <div class="sc-right"><div class="sc-biz">${s.biz}</div><div class="sc-svc">${s.svc}</div>
-      <div class="sc-meta"><span class="sc-price">$${s.disc}</span><span class="sc-save">−${pct(s.orig,s.disc)}%</span><span class="sc-time">${fmt(s.time)}</span></div></div></div>`
+    return `<div class="sidebar-card" id="sc-${esc(s.id)}" onclick="clickSidebar('${esc(s.id)}')">
+      ${s.logoUrl?`<img src="${esc(s.logoUrl)}" style="width:38px;height:38px;border-radius:9px;object-fit:cover;border:1.5px solid #eee;flex-shrink:0">`:`<div class="sc-dot" style="background:${cfg.dot}"></div>`}
+      <div class="sc-right"><div class="sc-biz">${esc(s.biz)}</div><div class="sc-svc">${esc(s.svc)}</div>
+      <div class="sc-meta"><span class="sc-price">$${esc(s.disc)}</span><span class="sc-save">−${pct(s.orig,s.disc)}%</span><span class="sc-time">${fmt(s.time)}</span></div></div></div>`
   }).join('')
 }
 function highlightSidebar(ids) {
@@ -1343,27 +1577,27 @@ function renderSlotDetail(s) {
         <div class="slot-accent-bar" style="background:${cfg.color}"></div>
         <div class="slot-info-body">
           <div style="display:flex;align-items:center;gap:14px;margin-bottom:6px">
-            ${s.logoUrl?`<img src="${s.logoUrl}" style="width:52px;height:52px;border-radius:12px;object-fit:cover;border:1.5px solid var(--border);flex-shrink:0">`:`<div style="width:52px;height:52px;border-radius:12px;background:${cfg.color};display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">${cfg.icon}</div>`}
+            ${s.logoUrl?`<img src="${esc(s.logoUrl)}" style="width:52px;height:52px;border-radius:12px;object-fit:cover;border:1.5px solid var(--border);flex-shrink:0">`:`<div style="width:52px;height:52px;border-radius:12px;background:${cfg.color};display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">${cfg.icon}</div>`}
             <div>
-              <span class="pill ${cfg.pill}" style="margin-bottom:4px;display:inline-block">${s.cat}</span>
-              <div class="slot-title" style="margin-top:4px">${s.svc}</div>
+              <span class="pill ${cfg.pill}" style="margin-bottom:4px;display:inline-block">${esc(s.cat)}</span>
+              <div class="slot-title" style="margin-top:4px">${esc(s.svc)}</div>
             </div>
           </div>
-          <div class="slot-biz">at ${s.biz}</div>
+          <div class="slot-biz">at ${esc(s.biz)}</div>
           <div class="detail-grid">
             <div class="detail-box"><div class="dlabel">📅 Date</div><div class="dval">${fmtDate(s.time)}</div></div>
             <div class="detail-box"><div class="dlabel">⏰ Time</div><div class="dval">${fmt(s.time)}</div></div>
             <div class="detail-box" style="grid-column:1/-1">
               <div class="dlabel">📍 Address</div>
-              <div class="dval" style="font-size:15px;font-weight:700">${s.fullAddress||s.address||'Address not provided'}</div>
+              <div class="dval" style="font-size:15px;font-weight:700">${esc(s.fullAddress||s.address||'Address not provided')}</div>
               ${s.fullAddress?`<a href="https://maps.google.com/?q=${encodeURIComponent(s.fullAddress)}" target="_blank" style="font-size:12px;color:var(--coral);font-weight:700;text-decoration:none;margin-top:4px;display:inline-block">Open in Maps →</a>`:''}
             </div>
-            <div class="detail-box"><div class="dlabel">🎉 You save</div><div class="dval accent">$${saving} (${p}% off)</div></div>
+            <div class="detail-box"><div class="dlabel">🎉 You save</div><div class="dval accent">$${esc(saving)} (${p}% off)</div></div>
           </div>
-          ${s.notes?`<div class="notes-box"><strong>📝 Note from the business</strong>${s.notes}</div>`:''}
+          ${s.notes?`<div class="notes-box"><strong>📝 Note from the business</strong>${esc(s.notes)}</div>`:''}
           <div class="price-row">
-            <div><div class="price-was">Was $${s.orig}</div><div class="price-now">$${s.disc}</div></div>
-            <div class="saving-chip">Save $${saving} today 🎉</div>
+            <div><div class="price-was">Was $${esc(s.orig)}</div><div class="price-now">$${esc(s.disc)}</div></div>
+            <div class="saving-chip">Save $${esc(saving)} today 🎉</div>
           </div>
         </div>
       </div>
@@ -1509,19 +1743,19 @@ function renderConfirm(s) {
   document.getElementById('confirm-card').innerHTML=`
     <span class="confirm-emoji">🎉</span>
     <div class="confirm-title">You've Skorrd yourself a deal!</div>
-    <p class="confirm-sub">Booking confirmed — see you at ${s.biz}!</p>
+    <p class="confirm-sub">Booking confirmed — see you at ${esc(s.biz)}!</p>
     <div class="summary-box">
-      <div class="sum-row"><span class="sum-l">Service</span><span class="sum-r">${s.svc}</span></div>
-      <div class="sum-row"><span class="sum-l">Business</span><span class="sum-r">${s.biz}</span></div>
-      <div class="sum-row"><span class="sum-l">Address</span><span class="sum-r">${s.address}</span></div>
+      <div class="sum-row"><span class="sum-l">Service</span><span class="sum-r">${esc(s.svc)}</span></div>
+      <div class="sum-row"><span class="sum-l">Business</span><span class="sum-r">${esc(s.biz)}</span></div>
+      <div class="sum-row"><span class="sum-l">Address</span><span class="sum-r">${esc(s.address)}</span></div>
       <div class="sum-row"><span class="sum-l">Date &amp; time</span><span class="sum-r">${fmtDate(s.time)}, ${fmt(s.time)}</span></div>
-      <div class="sum-row"><span class="sum-l">Pay at appointment</span><span class="sum-r" style="color:var(--coral)">$${s.disc}</span></div>
+      <div class="sum-row"><span class="sum-l">Pay at appointment</span><span class="sum-r" style="color:var(--coral)">$${esc(s.disc)}</span></div>
       ${BOOKING_FEE > 0 ? `<div class="sum-row"><span class="sum-l">Hold fee charged</span><span class="sum-r">$${BOOKING_FEE} ✓</span></div>` : ''}
     </div>
     <div class="confirm-actions">
       <button class="btn-pri" onclick="go('browse')">Browse more slots</button>
       <button class="btn-sec" onclick="openDrawer()">📋 View my bookings</button>
-      <button class="btn-sec" onclick="downloadCal('${s.id}')">📅 Add to calendar</button>
+      <button class="btn-sec" onclick="downloadCal('${esc(s.id)}')">📅 Add to calendar</button>
     </div>`
 }
 
@@ -1541,14 +1775,14 @@ function renderDrawer() {
     return `<div class="bk-card ${b.status}" style="animation-delay:${i*.05}s">
       <div class="bk-stripe" style="background:${cfg.color}"></div>
       <div class="bk-body">
-        <div class="bk-top"><div><div class="bk-svc">${s.svc}</div><div class="bk-biz">${s.biz}</div></div><span class="bk-status ${b.status}">${b.status}</span></div>
+        <div class="bk-top"><div><div class="bk-svc">${esc(s.svc)}</div><div class="bk-biz">${esc(s.biz)}</div></div><span class="bk-status ${b.status}">${esc(b.status)}</span></div>
         <div class="bk-details">
           <div class="bk-detail-row">📅 <strong>${fmtDate(s.time)}, ${fmt(s.time)}</strong></div>
-          <div class="bk-detail-row">📍 ${s.address}</div>
+          <div class="bk-detail-row">📍 ${esc(s.address)}</div>
         </div>
         <div class="bk-actions">
-          <button class="bk-btn-cal" onclick="downloadCal('${b.id}')">📅 Add to calendar</button>
-          ${b.status==='confirmed'?`<button class="bk-btn-cancel" onclick="confirmCancel('${b.id}')">Cancel</button>`:''}
+          <button class="bk-btn-cal" onclick="downloadCal('${esc(b.id)}')">📅 Add to calendar</button>
+          ${b.status==='confirmed'?`<button class="bk-btn-cancel" onclick="confirmCancel('${esc(b.id)}')">Cancel</button>`:''}
         </div>
       </div></div>`
   }).join('')
@@ -1613,14 +1847,23 @@ function getSelectedCats(containerId) {
 async function saveOnboarding() {
   const categories = getSelectedCats('ob-cats')
   const emailNotif = document.getElementById('ob-email-notif').checked
-  state.prefs = { categories, emailNotif, pushNotif: false }
-  // Directly stamp selections onto account grid before navigating — no async needed
+  const pushEl = document.getElementById('ob-push-notif')
+  const wantPush = pushEl?.checked ?? false
+  if (wantPush && Notification.permission !== 'granted') {
+    await handlePushToggle(pushEl, 'ob')
+  }
+  const pushNotif = wantPush && Notification.permission === 'granted'
+  if (pushNotif) await subscribePush()
+  state.prefs = { categories, emailNotif, pushNotif }
+  // Stamp selections onto account grid before navigating
   document.querySelectorAll('#acct-cats .ob-cat').forEach(el => {
     el.classList.toggle('on', categories.includes(el.dataset.cat))
   })
   const ae = document.getElementById('acct-email-notif')
   if (ae) ae.checked = emailNotif
-  upsertPreferences(categories, emailNotif, false) // fire-and-forget
+  const ape = document.getElementById('acct-push-notif')
+  if (ape) ape.checked = pushNotif
+  upsertPreferences(categories, emailNotif, pushNotif) // fire-and-forget
   state.fromOnboarding = true
   showToast('Almost done — add your details! 🎉', 'ok')
   go('account')
@@ -1636,8 +1879,16 @@ async function savePreferences(prefix) {
   if (btn) { btn.disabled = true; btn.textContent = 'Saving...' }
   const categories = getSelectedCats(`${prefix}-cats`)
   const emailNotif = document.getElementById(`${prefix}-email-notif`)?.checked ?? true
-  state.prefs = { categories, emailNotif, pushNotif: false }
-  await upsertPreferences(categories, emailNotif, false)
+  const pushEl = document.getElementById(`${prefix}-push-notif`)
+  const wantPush = pushEl?.checked ?? false
+  // If push just got enabled, request permission and subscribe
+  if (wantPush && Notification.permission !== 'granted') {
+    await handlePushToggle(pushEl, prefix)
+  }
+  const pushNotif = wantPush && Notification.permission === 'granted'
+  if (pushNotif) await subscribePush()
+  state.prefs = { categories, emailNotif, pushNotif }
+  await upsertPreferences(categories, emailNotif, pushNotif)
   if (btn) { btn.disabled = false; btn.textContent = 'Save preferences' }
   showAcctMsg('Preferences saved!', 'ok')
   showToast('Preferences updated ✓', 'ok')
@@ -1665,6 +1916,8 @@ function applyPrefsToGrid(prefix, cats, emailNotif, pushNotif) {
   })
   const emailEl = document.getElementById(`${prefix}-email-notif`)
   if (emailEl) emailEl.checked = emailNotif
+  const pushEl = document.getElementById(`${prefix}-push-notif`)
+  if (pushEl) pushEl.checked = pushNotif && Notification.permission === 'granted'
 }
 
 async function loadPreferences(prefix) {
@@ -1720,13 +1973,17 @@ async function subscribePush() {
       userVisibleOnly: true,
       applicationServerKey: urlB64ToUint8(VAPID_PUBLIC_KEY)
     })
-    const session = (await sb.auth.getSession()).data?.session
-    if (!session) return
-    await fetch(`${SUPABASE_URL}/functions/v1/save-push-subscription`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
-      body: JSON.stringify({ subscription: sub.toJSON() })
-    })
+    if (!sub) return
+    const json = sub.toJSON()
+    if (!json.endpoint || !json.keys?.p256dh || !json.keys?.auth) return
+    const { data: { user } } = await sb.auth.getUser()
+    if (!user) return
+    await sb.from('push_subscriptions').upsert({
+      user_id: user.id,
+      endpoint: json.endpoint,
+      p256dh: json.keys.p256dh,
+      auth: json.keys.auth,
+    }, { onConflict: 'endpoint' })
   } catch(e) { console.warn('subscribePush:', e.message) }
 }
 
@@ -1742,26 +1999,70 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();close
 document.getElementById('auth-pass').addEventListener('keydown',e=>{if(e.key==='Enter')handleAuth()})
 document.getElementById('auth-email').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('auth-pass').focus()})
 
+// HERO BACKGROUND PATHS
+function initHeroPaths(){
+  const svg=document.getElementById('hero-paths-svg')
+  if(!svg)return
+  const COUNT=16
+  const NS='http://www.w3.org/2000/svg'
+  for(const pos of[1,-1]){
+    for(let i=0;i<COUNT;i++){
+      const ax=-380-i*5*pos, ay=-189+i*6
+      const bx=-312-i*5*pos, by=216-i*6
+      const cx=152-i*5*pos,  cy=343-i*6
+      const dx=616-i*5*pos,  dy=470-i*6
+      const ex=684-i*5*pos,  ey=875-i*6
+      const d=`M${ax} ${ay}C${ax} ${ay} ${bx} ${by} ${cx} ${cy}C${dx} ${dy} ${ex} ${ey} ${ex} ${ey}`
+      const el=document.createElementNS(NS,'path')
+      el.setAttribute('d',d)
+      el.setAttribute('stroke','#ff8f7e')
+      el.setAttribute('stroke-width',(0.4+i*0.022).toFixed(2))
+      el.setAttribute('stroke-opacity',(Math.min(0.18+i*0.0047,0.25)).toFixed(3))
+      el.setAttribute('fill','none')
+      el.style.strokeDasharray='3400'
+      el.style.strokeDashoffset='3400'
+      const dur=8+i*0.25+(pos===1?0:1)
+      const delay=-(i*0.6+(pos===1?0:4))
+      el.style.animation=`heroPathFlow ${dur}s linear ${delay}s infinite`
+      svg.appendChild(el)
+    }
+  }
+}
+initHeroPaths()
+
+// Apply correct screen immediately from URL before any async work
+if (location.pathname === '/how-it-works' || location.hash === '#how-it-works') { history.replaceState({screen:'about'}, '', '/how-it-works'); go('about', {}, false) }
+
 // INIT
 ;(async()=>{
   const safetyTimer=setTimeout(()=>{hideProcessing();renderCards()},8000)
   showProcessing('Loading slots...')
+  let _oauthNewUser = false
   try {
     const r=await Promise.race([sb.auth.getSession(),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),4000))])
     const session=r?.data?.session
-    if(session?.user){state.user=session.user;try{await loadBookings()}catch(e){console.warn('loadBookings:',e.message)};updateNav()}
+    if(session?.user){
+      state.user=session.user;try{await loadBookings()}catch(e){console.warn('loadBookings:',e.message)};updateNav();setTimeout(maybeShowPushPrompt,800)
+      if (sessionStorage.getItem('skorrd_google_auth') === '1') {
+        sessionStorage.removeItem('skorrd_google_auth')
+        if (!session.user.user_metadata?.role) {
+          await sb.auth.updateUser({ data: { role: 'customer' } })
+          _oauthNewUser = true
+        }
+      }
+    }
   } catch(e){console.warn('session:',e.message)}
   try{await Promise.all([loadSlots(), loadEarlyAdopters()])}catch(e){console.warn('loadSlots:',e.message)}
   clearTimeout(safetyTimer); hideProcessing(); renderCards()
-  // Restore screen from URL on direct navigation
-  if (location.pathname === '/how-it-works') go('about', {}, false)
+  if (_oauthNewUser) { showToast('Account created! 🎉','ok'); buildCatGrid('ob-cats',[]); document.getElementById('ob-email-notif').checked=true; go('onboarding'); return }
+  if (location.pathname === '/how-it-works' || location.hash === '#how-it-works') { history.replaceState({screen:'about'}, '', '/how-it-works'); go('about', {}, false) }
 })()
 </script>
 <div class="bottom-nav" id="bottom-nav">
   <div class="bottom-nav-row">
-    <button class="bnav-item on" id="bnav-browse" onclick="go('browse')"><span class="bnav-icon">🔍</span><span>Browse</span></button>
-    <button class="bnav-item" id="bnav-about" onclick="go('about')"><span class="bnav-icon">✨</span><span>How it works</span></button>
-    <a class="bnav-item" href="/skorrd-business"><span class="bnav-icon">💼</span><span>For business</span></a>
+    <button class="bnav-item on" id="bnav-browse" onclick="go('browse')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Browse</span></button>
+    <button class="bnav-item" id="bnav-about" onclick="go('about')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>How it works</span></button>
+    <a class="bnav-item" href="/skorrd-business"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span>For business</span></a>
   </div>
 </div>
 <script>
@@ -1770,6 +2071,114 @@ function syncNavHeight(){var h=document.querySelector('nav').offsetHeight;docume
 syncNavHeight();
 document.fonts.ready.then(syncNavHeight);
 window.addEventListener('resize',syncNavHeight);
+
+// ── INSTALL BANNER ────────────────────────────────────────────────────────────
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream
+let deferredInstallPrompt = null
+
+// Capture Android install prompt before it fires
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault()
+  deferredInstallPrompt = e
+  maybeShowInstallBanner()
+})
+
+function maybeShowInstallBanner() {
+  if (isStandalone) return                                    // already installed
+  if (localStorage.getItem('install-dismissed')) return       // previously dismissed
+  const banner = document.getElementById('install-banner')
+  const actions = document.getElementById('install-banner-actions')
+  if (!banner || !actions) return
+
+  if (deferredInstallPrompt) {
+    // Android/Chrome — show a proper install button
+    actions.innerHTML = `<button class="install-btn" onclick="triggerInstall()">Add Skorrd App to home screen.</button>`
+  } else if (isIOS) {
+    // iOS Safari — show manual instructions
+    actions.innerHTML = `<div class="install-ios-steps">
+      <div class="install-ios-step">
+        <div class="install-ios-step-num">1</div>
+        <span>Tap the <strong>Share</strong> button
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-left:2px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        at the bottom of your browser</span>
+      </div>
+      <div class="install-ios-step">
+        <div class="install-ios-step-num">2</div>
+        <span>Scroll down and tap <strong>"Add to Home Screen"</strong></span>
+      </div>
+    </div>`
+  } else {
+    return // unsupported browser — don't show
+  }
+
+  banner.style.display = 'block'
+}
+
+async function triggerInstall() {
+  if (!deferredInstallPrompt) return
+  deferredInstallPrompt.prompt()
+  const { outcome } = await deferredInstallPrompt.userChoice
+  deferredInstallPrompt = null
+  if (outcome === 'accepted') dismissInstallBanner()
+}
+
+function dismissInstallBanner() {
+  localStorage.setItem('install-dismissed', '1')
+  const b = document.getElementById('install-banner')
+  if (b) b.style.display = 'none'
+}
+
+// Show after slots load so it doesn't flash during initial render
+window.addEventListener('load', () => setTimeout(maybeShowInstallBanner, 1500))
+
+// ── PUSH PROMPT (PWA mode only) ───────────────────────────────────────────────
+function maybeShowPushPrompt() {
+  if (!isStandalone) return                                       // only in PWA
+  if (!state.user) return                                         // must be logged in
+  if (localStorage.getItem('push-prompt-dismissed')) return       // previously dismissed
+  if (!('Notification' in window)) return                         // browser support
+  if (Notification.permission !== 'default') return               // already answered
+
+  document.getElementById('push-prompt').style.display = 'flex'
+}
+
+async function enablePushFromPrompt() {
+  document.getElementById('push-prompt').style.display = 'none'
+  const perm = await Notification.requestPermission()
+  if (perm === 'granted') {
+    await subscribePush()
+    // Reflect in account toggle if visible
+    const el = document.getElementById('acct-push-notif')
+    if (el) el.checked = true
+    if (state.prefs) {
+      state.prefs.pushNotif = true
+      await upsertPreferences(state.prefs.categories, state.prefs.emailNotif, true)
+    }
+    showToast('Push notifications enabled ✓', 'ok')
+  } else {
+    showToast('Notifications permission denied', 'err')
+  }
+}
+
+function dismissPushPrompt() {
+  localStorage.setItem('push-prompt-dismissed', '1')
+  document.getElementById('push-prompt').style.display = 'none'
+}
+
+// Show push toggle on onboarding only if already in standalone mode
+if (isStandalone) {
+  const obRow = document.getElementById('ob-push-row')
+  if (obRow) obRow.style.display = 'flex'
+}
+
+// Show hint on account push toggle if not in standalone
+;(function() {
+  if (!isStandalone && isIOS) {
+    const sub = document.getElementById('acct-push-sub')
+    if (sub) sub.textContent = 'Requires Skorrd installed to home screen first'
+  }
+})()
 </script>
 <script>if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js")</script>
 </body>
