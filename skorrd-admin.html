@@ -7,6 +7,7 @@
 <meta name="robots" content="noindex, nofollow">
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Nunito Sans',sans-serif;background:#f5f4f2;color:#1a1a2e;font-size:14px}
@@ -162,6 +163,7 @@ td.muted{color:var(--muted)}
     <button class="nav-tab" onclick="switchTab('customers',this)">Customers</button>
     <button class="nav-tab" onclick="switchTab('slots',this)">Slots</button>
     <button class="nav-tab" onclick="switchTab('bookings',this)">Bookings</button>
+    <button class="nav-tab" onclick="switchTab('revenue',this)">Revenue</button>
   </nav>
 
   <div class="admin-content">
@@ -318,6 +320,38 @@ td.muted{color:var(--muted)}
       </div>
     </div>
 
+    <!-- REVENUE -->
+    <div class="tab-pane" id="pane-revenue">
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:28px">
+        <div class="stat-card">
+          <div class="stat-label">Total revenue</div>
+          <div class="stat-value" id="rev-total">—</div>
+          <div class="stat-sub" id="rev-total-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">This month</div>
+          <div class="stat-value" id="rev-month">—</div>
+          <div class="stat-sub" id="rev-month-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">All-time bookings</div>
+          <div class="stat-value" id="rev-bookings">—</div>
+          <div class="stat-sub" id="rev-bookings-sub"></div>
+        </div>
+      </div>
+      <div class="section-header"><span class="section-title">Monthly Revenue</span></div>
+      <div style="background:#fff;border-radius:var(--radius);border:1.5px solid var(--border);padding:24px;margin-bottom:28px">
+        <canvas id="revenue-chart" height="80"></canvas>
+      </div>
+      <div class="section-header"><span class="section-title">Monthly Breakdown</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Month</th><th>Confirmed Bookings</th><th>Revenue</th><th>vs Prior Month</th></tr></thead>
+          <tbody id="rev-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -409,6 +443,7 @@ async function loadAll() {
   renderCustTable()
   renderSlotsTable()
   renderBookingsTable()
+  renderRevenue()
 }
 
 async function loadBusinesses() {
@@ -827,6 +862,65 @@ async function doDelete(type, id) {
 }
 
 // ── HELPERS ────────────────────────────────────────────────
+// ── REVENUE ────────────────────────────────────────────────
+let revenueChart = null
+function renderRevenue() {
+  const paid = data.bookings.filter(b => b.hold_fee_paid)
+  const total = paid.length * 5
+  const now = new Date()
+  const thisMonthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`
+  const thisMonth = paid.filter(b => b.created_at?.slice(0,7) === thisMonthKey)
+
+  document.getElementById('rev-total').textContent     = `$${total.toFixed(2)}`
+  document.getElementById('rev-total-sub').textContent = `${paid.length} hold fees collected`
+  document.getElementById('rev-month').textContent     = `$${(thisMonth.length*5).toFixed(2)}`
+  document.getElementById('rev-month-sub').textContent = `${thisMonth.length} bookings this month`
+  document.getElementById('rev-bookings').textContent  = data.bookings.length
+  document.getElementById('rev-bookings-sub').textContent = `${data.bookings.filter(b=>b.status==='confirmed').length} confirmed · ${data.bookings.filter(b=>b.status==='cancelled').length} cancelled`
+
+  // Group by month
+  const byMonth = {}
+  paid.forEach(b => {
+    const key = b.created_at?.slice(0,7)
+    if (key) byMonth[key] = (byMonth[key]||0) + 1
+  })
+  const months = Object.keys(byMonth).sort()
+  const labels = months.map(m => { const [y,mo] = m.split('-'); return new Date(y,mo-1).toLocaleDateString('en-AU',{month:'short',year:'numeric'}) })
+  const values = months.map(m => byMonth[m]*5)
+
+  // Chart
+  const ctx = document.getElementById('revenue-chart')?.getContext('2d')
+  if (ctx) {
+    if (revenueChart) revenueChart.destroy()
+    revenueChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{ label: 'Revenue (AUD)', data: values, backgroundColor: 'rgba(255,107,74,0.8)', borderRadius: 6 }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { callback: v => `$${v}` } } }
+      }
+    })
+  }
+
+  // Breakdown table
+  const rows = [...months].reverse()
+  document.getElementById('rev-tbody').innerHTML = rows.length
+    ? rows.map((m, i) => {
+        const count = byMonth[m]
+        const rev = count * 5
+        const prev = rows[i+1] ? byMonth[rows[i+1]]*5 : null
+        const diff = prev !== null ? rev - prev : null
+        const trend = diff === null ? '—' : diff > 0 ? `<span style="color:#2e7d32">▲ $${diff.toFixed(2)}</span>` : diff < 0 ? `<span style="color:#c62828">▼ $${Math.abs(diff).toFixed(2)}</span>` : '—'
+        const [y,mo] = m.split('-')
+        const label = new Date(y,mo-1).toLocaleDateString('en-AU',{month:'long',year:'numeric'})
+        return `<tr><td>${label}</td><td>${count}</td><td><strong>$${rev.toFixed(2)}</strong></td><td>${trend}</td></tr>`
+      }).join('')
+    : `<tr class="empty-row"><td colspan="4">No revenue yet</td></tr>`
+}
+
 // ── CSV EXPORT ─────────────────────────────────────────────
 function downloadCSV(rows, filename) {
   const csv = rows.map(r => r.map(c => `"${String(c??'').replace(/"/g,'""')}"`).join(',')).join('\n')
