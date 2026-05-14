@@ -2467,13 +2467,13 @@ async function saveProfile() {
   // Restore session on load and handle magic link redirects
   let sessionLoaded = false
   sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session && sessionStorage.getItem('skorrd_biz_google_signup') === '1') {
+      sessionStorage.removeItem('skorrd_biz_google_signup')
+      isOAuthSignup = true
+    }
     const hasMagicLink = window.location.hash.includes('access_token')
     if (hasMagicLink && event === 'SIGNED_IN' && session) {
       history.replaceState(null, '', window.location.pathname + window.location.search)
-      if (sessionStorage.getItem('skorrd_biz_google_signup') === '1') {
-        sessionStorage.removeItem('skorrd_biz_google_signup')
-        isOAuthSignup = true
-      }
       if (!sessionLoaded) { sessionLoaded = true; loadDashboard(session) }
       return
     }
