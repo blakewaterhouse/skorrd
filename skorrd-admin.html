@@ -164,6 +164,7 @@ td.muted{color:var(--muted)}
     <button class="nav-tab" onclick="switchTab('slots',this)">Slots</button>
     <button class="nav-tab" onclick="switchTab('bookings',this)">Bookings</button>
     <button class="nav-tab" onclick="switchTab('revenue',this)">Revenue</button>
+    <button class="nav-tab" onclick="switchTab('marketing',this)">Marketing</button>
   </nav>
 
   <div class="admin-content">
@@ -352,6 +353,78 @@ td.muted{color:var(--muted)}
       </div>
     </div>
 
+    <!-- MARKETING -->
+    <div class="tab-pane" id="pane-marketing">
+
+      <!-- Growth -->
+      <div class="section-header"><span class="section-title">Growth — Signups & Bookings</span></div>
+      <div style="background:#fff;border-radius:var(--radius);border:1.5px solid var(--border);padding:24px;margin-bottom:28px">
+        <canvas id="growth-chart" height="80"></canvas>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px">
+
+        <!-- Top Categories -->
+        <div>
+          <div class="section-header"><span class="section-title">Top Categories</span></div>
+          <div class="table-wrap">
+            <table><thead><tr><th>Category</th><th>Businesses</th><th>Slots</th><th>Bookings</th></tr></thead>
+            <tbody id="mkt-cats-tbody"></tbody></table>
+          </div>
+        </div>
+
+        <!-- Top Suburbs -->
+        <div>
+          <div class="section-header"><span class="section-title">Top Suburbs</span></div>
+          <div class="table-wrap">
+            <table><thead><tr><th>Suburb</th><th>Businesses</th><th>Bookings</th></tr></thead>
+            <tbody id="mkt-suburbs-tbody"></tbody></table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Retention -->
+      <div class="section-header"><span class="section-title">Customer Retention</span></div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:28px">
+        <div class="stat-card"><div class="stat-label">One-time bookers</div><div class="stat-value" id="ret-one">—</div><div class="stat-sub" id="ret-one-sub"></div></div>
+        <div class="stat-card"><div class="stat-label">Repeat bookers</div><div class="stat-value" id="ret-repeat">—</div><div class="stat-sub" id="ret-repeat-sub"></div></div>
+        <div class="stat-card"><div class="stat-label">Never booked</div><div class="stat-value" id="ret-none">—</div><div class="stat-sub" id="ret-none-sub"></div></div>
+      </div>
+
+      <!-- Email Broadcast -->
+      <div class="section-header"><span class="section-title">Email Broadcast</span></div>
+      <div style="background:#fff;border-radius:var(--radius);border:1.5px solid var(--border);padding:24px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div class="form-row" style="margin:0">
+            <label class="form-label">Recipients</label>
+            <select class="form-select" id="bc-to" onchange="updateBroadcastCount()">
+              <option value="customers">All customers</option>
+              <option value="businesses">All businesses</option>
+              <option value="all">Everyone</option>
+            </select>
+          </div>
+          <div class="form-row" style="margin:0">
+            <label class="form-label">Resend API Key <span style="font-weight:600;color:var(--muted)">(session only)</span></label>
+            <input class="form-input" id="bc-key" type="password" placeholder="re_…" autocomplete="off">
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Subject</label>
+          <input class="form-input" id="bc-subject" type="text" placeholder="e.g. New slots near you this week 🎉">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Message</label>
+          <textarea class="form-textarea" id="bc-body" rows="5" placeholder="Write your message here…" style="min-height:120px"></textarea>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px">
+          <button class="modal-save" style="max-width:200px" onclick="sendBroadcast()">Send broadcast</button>
+          <span id="bc-status" style="font-size:13px;font-weight:600;color:var(--muted)"></span>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 </div>
 
@@ -444,6 +517,7 @@ async function loadAll() {
   renderSlotsTable()
   renderBookingsTable()
   renderRevenue()
+  renderMarketing()
 }
 
 async function loadBusinesses() {
@@ -919,6 +993,128 @@ function renderRevenue() {
         return `<tr><td>${label}</td><td>${count}</td><td><strong>$${rev.toFixed(2)}</strong></td><td>${trend}</td></tr>`
       }).join('')
     : `<tr class="empty-row"><td colspan="4">No revenue yet</td></tr>`
+}
+
+// ── MARKETING ──────────────────────────────────────────────
+let growthChart = null
+function renderMarketing() {
+  // Growth chart — signups & bookings by month
+  const signupsByMonth = {}, bookingsByMonth = {}
+  data.customers.forEach(c => {
+    const k = c.created_at?.slice(0,7); if(k) signupsByMonth[k]=(signupsByMonth[k]||0)+1
+  })
+  data.bookings.forEach(b => {
+    const k = b.created_at?.slice(0,7); if(k) bookingsByMonth[k]=(bookingsByMonth[k]||0)+1
+  })
+  const allMonths = [...new Set([...Object.keys(signupsByMonth),...Object.keys(bookingsByMonth)])].sort()
+  const labels = allMonths.map(m => { const [y,mo]=m.split('-'); return new Date(y,mo-1).toLocaleDateString('en-AU',{month:'short',year:'numeric'}) })
+
+  const ctx = document.getElementById('growth-chart')?.getContext('2d')
+  if (ctx) {
+    if (growthChart) growthChart.destroy()
+    growthChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Signups', data: allMonths.map(m=>signupsByMonth[m]||0), borderColor:'#ff6b4a', backgroundColor:'rgba(255,107,74,0.1)', tension:0.3, fill:true },
+          { label: 'Bookings', data: allMonths.map(m=>bookingsByMonth[m]||0), borderColor:'#1565c0', backgroundColor:'rgba(21,101,192,0.08)', tension:0.3, fill:true }
+        ]
+      },
+      options: { plugins:{ legend:{ position:'top' } }, scales:{ y:{ beginAtZero:true } } }
+    })
+  }
+
+  // Top categories
+  const catBiz={}, catSlots={}, catBookings={}
+  data.businesses.forEach(b => { const c=b.category||'Unknown'; catBiz[c]=(catBiz[c]||0)+1 })
+  data.slots.forEach(s => { const c=s.category||'Unknown'; catSlots[c]=(catSlots[c]||0)+1 })
+  data.bookings.forEach(bk => {
+    const s=data.slots.find(x=>x.id===bk.slot_id); const c=s?.category||'Unknown'
+    catBookings[c]=(catBookings[c]||0)+1
+  })
+  const cats = Object.keys(catBiz).sort((a,b)=>(catBookings[b]||0)-(catBookings[a]||0))
+  document.getElementById('mkt-cats-tbody').innerHTML = cats.length
+    ? cats.map(c=>`<tr><td><strong>${c}</strong></td><td>${catBiz[c]||0}</td><td>${catSlots[c]||0}</td><td>${catBookings[c]||0}</td></tr>`).join('')
+    : `<tr class="empty-row"><td colspan="4">No data</td></tr>`
+
+  // Top suburbs
+  const suburbBiz={}, suburbBookings={}
+  data.businesses.forEach(b => { const s=b.suburb||'Unknown'; suburbBiz[s]=(suburbBiz[s]||0)+1 })
+  data.bookings.forEach(bk => {
+    const sl=data.slots.find(x=>x.id===bk.slot_id)
+    const biz=data.businesses.find(b=>b.id===sl?.business_id)
+    const s=biz?.suburb||'Unknown'; suburbBookings[s]=(suburbBookings[s]||0)+1
+  })
+  const suburbs = Object.keys(suburbBiz).sort((a,b)=>(suburbBookings[b]||0)-(suburbBookings[a]||0)).slice(0,10)
+  document.getElementById('mkt-suburbs-tbody').innerHTML = suburbs.length
+    ? suburbs.map(s=>`<tr><td><strong>${s}</strong></td><td>${suburbBiz[s]||0}</td><td>${suburbBookings[s]||0}</td></tr>`).join('')
+    : `<tr class="empty-row"><td colspan="3">No data</td></tr>`
+
+  // Retention
+  const bookingsByUser = {}
+  data.bookings.forEach(b => { bookingsByUser[b.customer_id]=(bookingsByUser[b.customer_id]||0)+1 })
+  const none   = data.customers.filter(c=>!bookingsByUser[c.id]).length
+  const once   = data.customers.filter(c=>bookingsByUser[c.id]===1).length
+  const repeat = data.customers.filter(c=>(bookingsByUser[c.id]||0)>1).length
+  const total  = data.customers.length
+  document.getElementById('ret-one').textContent     = once
+  document.getElementById('ret-one-sub').textContent = total ? `${Math.round(once/total*100)}% of customers` : ''
+  document.getElementById('ret-repeat').textContent     = repeat
+  document.getElementById('ret-repeat-sub').textContent = total ? `${Math.round(repeat/total*100)}% of customers` : ''
+  document.getElementById('ret-none').textContent     = none
+  document.getElementById('ret-none-sub').textContent = total ? `${Math.round(none/total*100)}% of customers` : ''
+
+  updateBroadcastCount()
+}
+
+function updateBroadcastCount() {
+  const to = document.getElementById('bc-to')?.value
+  const status = document.getElementById('bc-status')
+  if (!status) return
+  const count = to === 'customers' ? data.customers.length
+    : to === 'businesses' ? data.businesses.length
+    : data.customers.length + data.businesses.length
+  status.textContent = `${count} recipient${count!==1?'s':''}`
+}
+
+async function sendBroadcast() {
+  const key     = document.getElementById('bc-key').value.trim()
+  const subject = document.getElementById('bc-subject').value.trim()
+  const body    = document.getElementById('bc-body').value.trim()
+  const to      = document.getElementById('bc-to').value
+  const status  = document.getElementById('bc-status')
+
+  if (!key)     { status.textContent = '⚠ Enter your Resend API key'; status.style.color='#c62828'; return }
+  if (!subject) { status.textContent = '⚠ Enter a subject'; status.style.color='#c62828'; return }
+  if (!body)    { status.textContent = '⚠ Enter a message'; status.style.color='#c62828'; return }
+
+  const customerEmails  = data.customers.map(c=>c.email).filter(Boolean)
+  const businessEmails  = data.businesses.map(b=>b.email).filter(Boolean)
+  const recipients = to==='customers' ? customerEmails : to==='businesses' ? businessEmails : [...new Set([...customerEmails,...businessEmails])]
+
+  if (!recipients.length) { status.textContent = '⚠ No recipients found'; status.style.color='#c62828'; return }
+
+  status.textContent = `Sending to ${recipients.length} recipients…`; status.style.color='var(--muted)'
+
+  const batch = recipients.map(email => ({
+    from: 'Skorrd <hello@skorrd.com.au>',
+    to: [email],
+    subject,
+    text: body
+  }))
+
+  try {
+    const res = await fetch('https://api.resend.com/emails/batch', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(batch)
+    })
+    if (!res.ok) { const e=await res.json(); throw new Error(e.message||res.statusText) }
+    status.textContent = `✓ Sent to ${recipients.length} recipients`; status.style.color='#2e7d32'
+  } catch(e) {
+    status.textContent = `✘ ${e.message}`; status.style.color='#c62828'
+  }
 }
 
 // ── CSV EXPORT ─────────────────────────────────────────────
