@@ -225,10 +225,18 @@ td.muted{color:var(--muted)}
       <div class="table-wrap">
         <div class="table-toolbar">
           <input class="t-search" id="biz-search" placeholder="Search name, suburb, email…" oninput="renderBizTable()">
+          <select class="t-filter" id="biz-cat-filter" onchange="renderBizTable()">
+            <option value="">All categories</option>
+            <option>Barber</option><option>Nail Salon</option><option>Physiotherapy</option>
+            <option>Beauty &amp; Wellness</option><option>Personal Training</option>
+            <option>Hairdresser</option><option>Yoga &amp; Fitness</option><option>Dental</option>
+            <option>Tutoring</option><option>Skin &amp; Aesthetics</option><option>Therapy &amp; Counselling</option>
+            <option>Other</option>
+          </select>
         </div>
         <table>
           <thead><tr>
-            <th>Business</th><th>Category</th><th>Suburb</th><th>Email</th><th>Phone</th><th>ABN</th><th>Joined</th><th>Actions</th>
+            <th>Business</th><th>Category</th><th>Suburb</th><th>Email</th><th>ABN</th><th>Slots</th><th>Bookings</th><th>Last Active</th><th>Joined</th><th>Actions</th>
           </tr></thead>
           <tbody id="biz-tbody"></tbody>
         </table>
@@ -247,7 +255,7 @@ td.muted{color:var(--muted)}
         </div>
         <table>
           <thead><tr>
-            <th>Name</th><th>Email</th><th>Phone</th><th>Signed Up</th><th>Last Sign In</th><th>Bookings</th><th>Actions</th>
+            <th>Name</th><th>Email</th><th>Provider</th><th>Phone</th><th>Signed Up</th><th>Last Sign In</th><th>Bookings</th><th>Spend</th><th>Actions</th>
           </tr></thead>
           <tbody id="cust-tbody"></tbody>
         </table>
@@ -481,25 +489,45 @@ function renderOverview() {
 
 // ── BUSINESSES TABLE ───────────────────────────────────────
 function renderBizTable() {
-  const q = document.getElementById('biz-search').value.toLowerCase()
+  const q   = document.getElementById('biz-search').value.toLowerCase()
+  const cat = document.getElementById('biz-cat-filter').value
   let rows = data.businesses
-  if (q) rows = rows.filter(b => `${b.name} ${b.suburb} ${b.email}`.toLowerCase().includes(q))
+  if (q)   rows = rows.filter(b => `${b.name} ${b.suburb} ${b.email}`.toLowerCase().includes(q))
+  if (cat) rows = rows.filter(b => b.category === cat)
   document.getElementById('biz-count').textContent = `${rows.length} result${rows.length !== 1 ? 's' : ''}`
+
+  const slotsByBiz = {}
+  const bookingsByBiz = {}
+  const lastActiveByBiz = {}
+  data.slots.forEach(s => {
+    if (!s.business_id) return
+    slotsByBiz[s.business_id] = (slotsByBiz[s.business_id] || 0) + 1
+    const t = new Date(s.created_at)
+    if (!lastActiveByBiz[s.business_id] || t > lastActiveByBiz[s.business_id]) lastActiveByBiz[s.business_id] = t
+  })
+  data.bookings.forEach(bk => {
+    const slot = data.slots.find(s => s.id === bk.slot_id)
+    if (!slot?.business_id) return
+    bookingsByBiz[slot.business_id] = (bookingsByBiz[slot.business_id] || 0) + 1
+  })
+
   document.getElementById('biz-tbody').innerHTML = rows.length
     ? rows.map(b => `<tr>
         <td><strong>${b.name || '—'}</strong></td>
         <td>${b.category || '—'}</td>
         <td>${b.suburb || '—'}</td>
         <td class="muted">${b.email || '—'}</td>
-        <td class="muted">${b.phone || '—'}</td>
         <td class="muted">${b.abn || '—'}</td>
+        <td>${slotsByBiz[b.id] || 0}</td>
+        <td>${bookingsByBiz[b.id] || 0}</td>
+        <td class="muted">${lastActiveByBiz[b.id] ? fmtDate(lastActiveByBiz[b.id]) : '—'}</td>
         <td class="muted">${fmtDate(new Date(b.created_at))}</td>
         <td>
           <button class="btn-edit" onclick="editBusiness('${b.id}')">Edit</button>
           <button class="btn-del" onclick="confirmDelete('business','${b.id}','${esc(b.name)}')">✕</button>
         </td>
       </tr>`).join('')
-    : `<tr class="empty-row"><td colspan="8">No businesses found</td></tr>`
+    : `<tr class="empty-row"><td colspan="10">No businesses found</td></tr>`
 }
 
 // ── CUSTOMERS TABLE ────────────────────────────────────────
@@ -514,22 +542,30 @@ function renderCustTable() {
 
   document.getElementById('cust-tbody').innerHTML = rows.length
     ? rows.map(c => {
-        const name  = c.user_metadata?.full_name || '—'
-        const phone = c.user_metadata?.phone || '—'
+        const name     = c.user_metadata?.full_name || '—'
+        const phone    = c.user_metadata?.phone || '—'
+        const provider = c.identities?.[0]?.provider || 'email'
+        const providerChip = provider === 'google'
+          ? `<span class="chip chip-blue">Google</span>`
+          : `<span class="chip chip-grey">Email</span>`
+        const bookingCount = bookingsByUser[c.id] || 0
+        const spend = bookingCount * 5
         return `<tr>
           <td><strong>${name}</strong></td>
           <td>${c.email}</td>
+          <td>${providerChip}</td>
           <td class="muted">${phone}</td>
           <td class="muted">${fmtDate(new Date(c.created_at))}</td>
           <td class="muted">${c.last_sign_in_at ? fmtDate(new Date(c.last_sign_in_at)) : 'Never'}</td>
-          <td>${bookingsByUser[c.id] || 0}</td>
+          <td>${bookingCount}</td>
+          <td>$${spend.toFixed(2)}</td>
           <td>
             <button class="btn-edit" onclick="editCustomer('${c.id}')">Edit</button>
             <button class="btn-del" onclick="confirmDelete('customer','${c.id}','${esc(c.email)}')">✕</button>
           </td>
         </tr>`
       }).join('')
-    : `<tr class="empty-row"><td colspan="7">No customers found</td></tr>`
+    : `<tr class="empty-row"><td colspan="9">No customers found</td></tr>`
 }
 
 // ── SLOTS TABLE ────────────────────────────────────────────
