@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skorrd Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito Sans',sans-serif;background:#f5f4f2;color:#1a1a2e;font-size:14px}
+:root{--coral:#ff6b4a;--coral-light:#fff3f1;--muted:#6b7280;--border:#e5e7eb;--white:#fff;--radius:10px}
+
+/* AUTH */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f4f2}
+.auth-card{background:var(--white);border-radius:16px;padding:40px;width:360px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.auth-logo{font-size:22px;font-weight:900;color:var(--coral);margin-bottom:6px}
+.auth-sub{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:28px}
+.auth-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:block}
+.auth-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:600;outline:none;margin-bottom:14px;transition:border .2s}
+.auth-input:focus{border-color:var(--coral)}
+.auth-btn{width:100%;padding:13px;background:var(--coral);color:#fff;border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:800;cursor:pointer}
+.auth-btn:hover{opacity:.9}
+.auth-btn:disabled{opacity:.6;cursor:default}
+.auth-ok{background:#e8f5e9;color:#2e7d32;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600;margin-bottom:14px;display:none}
+.auth-err{background:#fff0ee;color:#c0392b;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600;margin-bottom:14px;display:none}
+
+/* LAYOUT */
+.admin-wrap{display:flex;flex-direction:column;min-height:100vh}
+.admin-header{background:var(--white);border-bottom:1.5px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header-left{display:flex;align-items:center;gap:10px}
+.admin-logo{font-size:18px;font-weight:900;color:var(--coral)}
+.admin-badge{background:var(--coral-light);color:var(--coral);font-size:11px;font-weight:800;padding:3px 9px;border-radius:50px;text-transform:uppercase;letter-spacing:.5px}
+.header-right{display:flex;align-items:center;gap:14px}
+.header-email{font-size:13px;font-weight:600;color:var(--muted)}
+.signout-btn{font-size:13px;font-weight:700;color:var(--muted);background:none;border:1.5px solid var(--border);border-radius:50px;padding:6px 14px;cursor:pointer;font-family:'Nunito Sans',sans-serif}
+.signout-btn:hover{border-color:#ccc}
+
+/* NAV */
+.admin-nav{background:var(--white);border-bottom:1.5px solid var(--border);padding:0 24px;display:flex;gap:2px}
+.nav-tab{padding:14px 18px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;background:none;border-left:none;border-right:none;border-top:none;font-family:'Nunito Sans',sans-serif;transition:color .15s}
+.nav-tab:hover{color:#1a1a2e}
+.nav-tab.active{color:var(--coral);border-bottom-color:var(--coral)}
+
+/* CONTENT */
+.admin-content{padding:28px 24px;max-width:1400px;width:100%}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
+.stats-grid-2{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+.stat-card{background:var(--white);border-radius:var(--radius);padding:20px 22px;border:1.5px solid var(--border)}
+.stat-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.stat-value{font-size:28px;font-weight:900;color:#1a1a2e}
+.stat-sub{font-size:12px;font-weight:600;color:var(--muted);margin-top:4px}
+
+/* TABLE */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-size:16px;font-weight:800}
+.section-count{font-size:13px;font-weight:600;color:var(--muted)}
+.table-wrap{background:var(--white);border-radius:var(--radius);border:1.5px solid var(--border);overflow:hidden}
+.table-toolbar{padding:14px 16px;border-bottom:1.5px solid var(--border);display:flex;gap:10px;align-items:center}
+.t-search{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;outline:none;min-width:220px}
+.t-search:focus{border-color:var(--coral)}
+.t-filter{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;outline:none;cursor:pointer;background:var(--white)}
+.t-filter:focus{border-color:var(--coral)}
+table{width:100%;border-collapse:collapse}
+thead th{padding:11px 14px;text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);background:#fafaf9;border-bottom:1.5px solid var(--border)}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#fafaf9}
+td{padding:11px 14px;font-size:13px;font-weight:600;vertical-align:middle}
+td.muted{color:var(--muted)}
+.empty-row td{text-align:center;padding:40px;color:var(--muted);font-weight:700}
+
+/* CHIPS */
+.chip{display:inline-block;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.3px}
+.chip-green{background:#e8f5e9;color:#2e7d32}
+.chip-coral{background:var(--coral-light);color:var(--coral)}
+.chip-grey{background:#f3f4f6;color:#6b7280}
+.chip-blue{background:#e3f2fd;color:#1565c0}
+.chip-red{background:#fce4ec;color:#c62828}
+
+/* ACTIONS */
+.btn-edit{background:none;border:1.5px solid var(--border);border-radius:6px;padding:5px 12px;font-family:'Nunito Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;color:#1a1a2e;transition:border-color .15s}
+.btn-edit:hover{border-color:var(--coral);color:var(--coral)}
+.btn-del{background:none;border:1.5px solid var(--border);border-radius:6px;padding:5px 10px;font-family:'Nunito Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);margin-left:6px}
+.btn-del:hover{border-color:#e53935;color:#e53935}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:flex;align-items:center;justify-content:center;display:none}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:16px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto;padding:28px}
+.modal-title{font-size:16px;font-weight:900;margin-bottom:20px}
+.form-row{margin-bottom:16px}
+.form-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:block}
+.form-input{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;outline:none}
+.form-input:focus{border-color:var(--coral)}
+.form-select{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;outline:none;background:var(--white);cursor:pointer}
+.form-select:focus{border-color:var(--coral)}
+.form-textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;outline:none;resize:vertical;min-height:80px}
+.form-textarea:focus{border-color:var(--coral)}
+.modal-actions{display:flex;gap:10px;margin-top:22px}
+.modal-save{flex:1;padding:12px;background:var(--coral);color:#fff;border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:800;cursor:pointer}
+.modal-save:hover{opacity:.9}
+.modal-cancel{padding:12px 20px;background:none;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;color:var(--muted)}
+.modal-cancel:hover{border-color:#ccc}
+.modal-err{background:#fff0ee;color:#c0392b;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600;margin-bottom:14px;display:none}
+.modal-ok{background:#e8f5e9;color:#2e7d32;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600;margin-bottom:14px;display:none}
+
+/* CONFIRM */
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1100;display:none;align-items:center;justify-content:center}
+.confirm-overlay.open{display:flex}
+.confirm-box{background:var(--white);border-radius:16px;padding:28px;width:360px;text-align:center}
+.confirm-title{font-size:16px;font-weight:900;margin-bottom:8px}
+.confirm-sub{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:22px;line-height:1.5}
+.confirm-actions{display:flex;gap:10px}
+.confirm-yes{flex:1;padding:11px;background:#e53935;color:#fff;border:none;border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:800;cursor:pointer}
+.confirm-no{flex:1;padding:11px;background:none;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;color:var(--muted)}
+
+/* LOADING */
+.loading{text-align:center;padding:40px;color:var(--muted);font-weight:700}
+.spinner{display:inline-block;width:22px;height:22px;border:3px solid var(--border);border-top-color:var(--coral);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- AUTH GATE -->
+<div id="auth-gate" class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">Skorrd</div>
+    <div class="auth-sub">Admin access only</div>
+    <div class="auth-err" id="auth-err"></div>
+    <label class="auth-label">Passcode</label>
+    <input class="auth-input" id="a-pass" type="password" placeholder="••••••••" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="auth-btn" onclick="doLogin()">Enter</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel" style="display:none" class="admin-wrap">
+  <header class="admin-header">
+    <div class="header-left">
+      <span class="admin-logo">Skorrd</span>
+      <span class="admin-badge">Admin</span>
+    </div>
+    <div class="header-right">
+      <span class="header-email" id="admin-email-display"></span>
+      <button class="signout-btn" onclick="loadAll()">↻ Refresh</button>
+      <button class="signout-btn" onclick="doSignOut()">Sign out</button>
+    </div>
+  </header>
+
+  <nav class="admin-nav">
+    <button class="nav-tab active" onclick="switchTab('overview',this)">Overview</button>
+    <button class="nav-tab" onclick="switchTab('businesses',this)">Businesses</button>
+    <button class="nav-tab" onclick="switchTab('customers',this)">Customers</button>
+    <button class="nav-tab" onclick="switchTab('slots',this)">Slots</button>
+    <button class="nav-tab" onclick="switchTab('bookings',this)">Bookings</button>
+  </nav>
+
+  <div class="admin-content">
+
+    <!-- OVERVIEW -->
+    <div class="tab-pane active" id="pane-overview">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Businesses</div>
+          <div class="stat-value" id="stat-biz">—</div>
+          <div class="stat-sub" id="stat-biz-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Customers</div>
+          <div class="stat-value" id="stat-cust">—</div>
+          <div class="stat-sub" id="stat-cust-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Slots listed</div>
+          <div class="stat-value" id="stat-slots">—</div>
+          <div class="stat-sub" id="stat-slots-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Bookings</div>
+          <div class="stat-value" id="stat-book">—</div>
+          <div class="stat-sub" id="stat-book-sub"></div>
+        </div>
+      </div>
+      <div class="stats-grid-2">
+        <div class="stat-card">
+          <div class="stat-label">Revenue collected</div>
+          <div class="stat-value" id="stat-rev">—</div>
+          <div class="stat-sub" id="stat-rev-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Conversion rate</div>
+          <div class="stat-value" id="stat-conv">—</div>
+          <div class="stat-sub" id="stat-conv-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active businesses</div>
+          <div class="stat-value" id="stat-active">—</div>
+          <div class="stat-sub" id="stat-active-sub"></div>
+        </div>
+      </div>
+      <div class="section-header"><span class="section-title">Recent Bookings</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Customer</th><th>Service</th><th>Business</th><th>Date</th><th>Status</th><th>Booked At</th>
+          </tr></thead>
+          <tbody id="recent-bookings-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BUSINESSES -->
+    <div class="tab-pane" id="pane-businesses">
+      <div class="section-header">
+        <span class="section-title">Businesses</span>
+        <span class="section-count" id="biz-count"></span>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="t-search" id="biz-search" placeholder="Search name, suburb, email…" oninput="renderBizTable()">
+        </div>
+        <table>
+          <thead><tr>
+            <th>Business</th><th>Category</th><th>Suburb</th><th>Email</th><th>Phone</th><th>ABN</th><th>Joined</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="biz-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CUSTOMERS -->
+    <div class="tab-pane" id="pane-customers">
+      <div class="section-header">
+        <span class="section-title">Customers</span>
+        <span class="section-count" id="cust-count"></span>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="t-search" id="cust-search" placeholder="Search email…" oninput="renderCustTable()">
+        </div>
+        <table>
+          <thead><tr>
+            <th>Name</th><th>Email</th><th>Phone</th><th>Signed Up</th><th>Last Sign In</th><th>Bookings</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="cust-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SLOTS -->
+    <div class="tab-pane" id="pane-slots">
+      <div class="section-header">
+        <span class="section-title">Slots</span>
+        <span class="section-count" id="slots-count"></span>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="t-search" id="slots-search" placeholder="Search service, business…" oninput="renderSlotsTable()">
+          <select class="t-filter" id="slots-filter" onchange="renderSlotsTable()">
+            <option value="">All statuses</option>
+            <option value="available">Available</option>
+            <option value="booked">Booked</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Service</th><th>Business</th><th>Category</th><th>Price</th><th>Discount</th><th>Appointment</th><th>Status</th><th>Listed</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="slots-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BOOKINGS -->
+    <div class="tab-pane" id="pane-bookings">
+      <div class="section-header">
+        <span class="section-title">Bookings</span>
+        <span class="section-count" id="bookings-count"></span>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="t-search" id="bookings-search" placeholder="Search customer, service…" oninput="renderBookingsTable()">
+          <select class="t-filter" id="bookings-filter" onchange="renderBookingsTable()">
+            <option value="">All statuses</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="pending">Pending</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Customer</th><th>Service</th><th>Business</th><th>Appointment</th><th>Status</th><th>Hold Fee</th><th>Booked At</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="bookings-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Edit</div>
+    <div class="modal-err" id="modal-err"></div>
+    <div class="modal-ok" id="modal-ok"></div>
+    <div id="modal-fields"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-save" id="modal-save-btn" onclick="saveModal()">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-title">Are you sure?</div>
+    <div class="confirm-sub" id="confirm-sub">This action cannot be undone.</div>
+    <div class="confirm-actions">
+      <button class="confirm-no" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-yes" id="confirm-yes-btn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADMIN_EMAIL   = 'blakewaterhouse3@hotmail.com'
+const SUPABASE_URL  = 'https://ahbbnagjqpfztftswber.supabase.co'
+const ANON_KEY      = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmJuYWdqcXBmenRmdHN3YmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyODAyNDEsImV4cCI6MjA4ODg1NjI0MX0.p9SGxDNbkIMehoPN7KNQjioqdoU2PPe35EfZosstk6Q'
+const SERVICE_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmJuYWdqcXBmenRmdHN3YmVyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzI4MDI0MSwiZXhwIjoyMDg4ODU2MjQxfQ.gWJhockVc95jpuKf2XrY6w58yCK2O-FL-IJiUvH5tTU'
+
+const sb      = supabase.createClient(SUPABASE_URL, ANON_KEY, { auth: { storageKey: 'skorrd-admin-auth' } })
+const sbAdmin = supabase.createClient(SUPABASE_URL, SERVICE_KEY, { auth: { autoRefreshToken: false, persistSession: false } })
+
+// ── DATA STORE ─────────────────────────────────────────────
+let data = { businesses: [], customers: [], slots: [], bookings: [] }
+let modalCtx = null
+
+// ── AUTH ───────────────────────────────────────────────────
+const ADMIN_PASS = 'Sk0rrd@dmin26'
+
+// Check session storage on load
+if (sessionStorage.getItem('skorrd-admin-auth') === 'ok') {
+  document.getElementById('auth-gate').style.display  = 'none'
+  document.getElementById('admin-panel').style.display = 'flex'
+  loadAll()
+}
+
+function doLogin() {
+  const pass = document.getElementById('a-pass').value
+  if (pass === ADMIN_PASS) {
+    sessionStorage.setItem('skorrd-admin-auth', 'ok')
+    document.getElementById('auth-gate').style.display   = 'none'
+    document.getElementById('admin-panel').style.display = 'flex'
+    document.getElementById('admin-email-display').textContent = ADMIN_EMAIL
+    loadAll()
+  } else {
+    showAuthErr('Incorrect passcode.')
+    document.getElementById('a-pass').value = ''
+  }
+}
+
+function doSignOut() {
+  sessionStorage.removeItem('skorrd-admin-auth')
+  document.getElementById('admin-panel').style.display = 'none'
+  document.getElementById('auth-gate').style.display   = 'flex'
+}
+
+function showAuthErr(msg) { const e=document.getElementById('auth-err'); e.textContent=msg; e.style.display='block' }
+function hideAuthErr()    { document.getElementById('auth-err').style.display='none' }
+
+async function showAdmin(user) {
+  document.getElementById('auth-gate').style.display   = 'none'
+  document.getElementById('admin-panel').style.display = 'flex'
+  document.getElementById('admin-email-display').textContent = user.email
+  await loadAll()
+}
+
+// ── LOAD ALL DATA ──────────────────────────────────────────
+async function loadAll() {
+  await loadBusinesses()
+  await Promise.all([loadCustomers(), loadSlots(), loadBookings()])
+  renderOverview()
+  renderBizTable()
+  renderCustTable()
+  renderSlotsTable()
+  renderBookingsTable()
+}
+
+async function loadBusinesses() {
+  const { data: rows } = await sbAdmin.from('businesses').select('*').order('created_at', { ascending: false })
+  data.businesses = rows || []
+}
+
+async function loadCustomers() {
+  const { data: res } = await sbAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 })
+  const bizOwnerIds = new Set(data.businesses.map(b => b.owner_id).filter(Boolean))
+  data.customers = (res?.users || []).filter(u =>
+    u.email !== ADMIN_EMAIL &&
+    !bizOwnerIds.has(u.id) &&
+    u.user_metadata?.role !== 'business'
+  )
+}
+
+async function loadSlots() {
+  const { data: rows } = await sbAdmin.from('slots')
+    .select('*, businesses ( name )')
+    .order('created_at', { ascending: false })
+  data.slots = rows || []
+}
+
+async function loadBookings() {
+  const { data: rows } = await sbAdmin.from('bookings')
+    .select('*, slots ( service_name, appointment_at, businesses ( name ) )')
+    .order('created_at', { ascending: false })
+  data.bookings = rows || []
+}
+
+// ── OVERVIEW ───────────────────────────────────────────────
+function renderOverview() {
+  const biz      = data.businesses
+  const slots    = data.slots
+  const bookings = data.bookings
+  const custs    = data.customers
+
+  document.getElementById('stat-biz').textContent      = biz.length
+  document.getElementById('stat-biz-sub').textContent  = `${biz.filter(b=>!b.is_demo).length} real · ${biz.filter(b=>b.is_demo).length} demo`
+  document.getElementById('stat-cust').textContent     = custs.length
+  document.getElementById('stat-cust-sub').textContent = `registered accounts`
+  document.getElementById('stat-slots').textContent    = slots.length
+  const now = new Date()
+  document.getElementById('stat-slots-sub').textContent= `${slots.filter(s=>s.status==='available' && new Date(s.appointment_at) >= now).length} available · ${slots.filter(s=>s.status==='booked').length} booked`
+  document.getElementById('stat-book').textContent     = bookings.length
+  document.getElementById('stat-book-sub').textContent = `${bookings.filter(b=>b.status==='confirmed').length} confirmed · ${bookings.filter(b=>b.status==='cancelled').length} cancelled`
+
+  const paidBookings = bookings.filter(b => b.hold_fee_paid)
+  const revenue = paidBookings.length * 5
+  document.getElementById('stat-rev').textContent     = `$${revenue.toFixed(2)}`
+  document.getElementById('stat-rev-sub').textContent = `${paidBookings.length} hold fees @ $5 AUD`
+
+  const totalSlots = slots.length
+  const bookedSlots = slots.filter(s => s.status === 'booked').length
+  const convRate = totalSlots > 0 ? Math.round((bookedSlots / totalSlots) * 100) : 0
+  document.getElementById('stat-conv').textContent     = `${convRate}%`
+  document.getElementById('stat-conv-sub').textContent = `${bookedSlots} booked of ${totalSlots} slots`
+
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+  const activeBizIds = new Set(slots.filter(s => new Date(s.created_at) >= thirtyDaysAgo).map(s => s.business_id))
+  document.getElementById('stat-active').textContent     = activeBizIds.size
+  document.getElementById('stat-active-sub').textContent = `posted a slot in last 30 days`
+
+  const recent = [...bookings].slice(0, 10)
+  const emailMap = {}
+  data.customers.forEach(c => { emailMap[c.id] = c.email })
+
+  document.getElementById('recent-bookings-tbody').innerHTML = recent.length
+    ? recent.map(b => {
+        const sl = b.slots || {}
+        const biz = sl.businesses || {}
+        return `<tr>
+          <td>${emailMap[b.customer_id] || b.customer_id?.slice(0,8)+'…'}</td>
+          <td>${sl.service_name || '—'}</td>
+          <td>${biz.name || '—'}</td>
+          <td>${sl.appointment_at ? fmtDt(new Date(sl.appointment_at)) : '—'}</td>
+          <td>${statusChip(b.status)}</td>
+          <td class="muted">${fmtDt(new Date(b.created_at))}</td>
+        </tr>`
+      }).join('')
+    : `<tr class="empty-row"><td colspan="6">No bookings yet</td></tr>`
+}
+
+// ── BUSINESSES TABLE ───────────────────────────────────────
+function renderBizTable() {
+  const q = document.getElementById('biz-search').value.toLowerCase()
+  let rows = data.businesses
+  if (q) rows = rows.filter(b => `${b.name} ${b.suburb} ${b.email}`.toLowerCase().includes(q))
+  document.getElementById('biz-count').textContent = `${rows.length} result${rows.length !== 1 ? 's' : ''}`
+  document.getElementById('biz-tbody').innerHTML = rows.length
+    ? rows.map(b => `<tr>
+        <td><strong>${b.name || '—'}</strong></td>
+        <td>${b.category || '—'}</td>
+        <td>${b.suburb || '—'}</td>
+        <td class="muted">${b.email || '—'}</td>
+        <td class="muted">${b.phone || '—'}</td>
+        <td class="muted">${b.abn || '—'}</td>
+        <td class="muted">${fmtDate(new Date(b.created_at))}</td>
+        <td>
+          <button class="btn-edit" onclick="editBusiness('${b.id}')">Edit</button>
+          <button class="btn-del" onclick="confirmDelete('business','${b.id}','${esc(b.name)}')">✕</button>
+        </td>
+      </tr>`).join('')
+    : `<tr class="empty-row"><td colspan="8">No businesses found</td></tr>`
+}
+
+// ── CUSTOMERS TABLE ────────────────────────────────────────
+function renderCustTable() {
+  const q = document.getElementById('cust-search').value.toLowerCase()
+  let rows = data.customers
+  if (q) rows = rows.filter(c => `${c.email} ${c.user_metadata?.full_name||''} ${c.user_metadata?.phone||''}`.toLowerCase().includes(q))
+  document.getElementById('cust-count').textContent = `${rows.length} result${rows.length !== 1 ? 's' : ''}`
+
+  const bookingsByUser = {}
+  data.bookings.forEach(b => { bookingsByUser[b.customer_id] = (bookingsByUser[b.customer_id] || 0) + 1 })
+
+  document.getElementById('cust-tbody').innerHTML = rows.length
+    ? rows.map(c => {
+        const name  = c.user_metadata?.full_name || '—'
+        const phone = c.user_metadata?.phone || '—'
+        return `<tr>
+          <td><strong>${name}</strong></td>
+          <td>${c.email}</td>
+          <td class="muted">${phone}</td>
+          <td class="muted">${fmtDate(new Date(c.created_at))}</td>
+          <td class="muted">${c.last_sign_in_at ? fmtDate(new Date(c.last_sign_in_at)) : 'Never'}</td>
+          <td>${bookingsByUser[c.id] || 0}</td>
+          <td>
+            <button class="btn-edit" onclick="editCustomer('${c.id}')">Edit</button>
+            <button class="btn-del" onclick="confirmDelete('customer','${c.id}','${esc(c.email)}')">✕</button>
+          </td>
+        </tr>`
+      }).join('')
+    : `<tr class="empty-row"><td colspan="7">No customers found</td></tr>`
+}
+
+// ── SLOTS TABLE ────────────────────────────────────────────
+function renderSlotsTable() {
+  const q   = document.getElementById('slots-search').value.toLowerCase()
+  const st  = document.getElementById('slots-filter').value
+  let rows  = data.slots
+  if (q)  rows = rows.filter(s => `${s.service_name} ${s.businesses?.name}`.toLowerCase().includes(q))
+  if (st) rows = rows.filter(s => s.status === st)
+  document.getElementById('slots-count').textContent = `${rows.length} result${rows.length !== 1 ? 's' : ''}`
+
+  document.getElementById('slots-tbody').innerHTML = rows.length
+    ? rows.map(s => {
+        const disc = s.original_price && s.discounted_price
+          ? Math.round((1 - s.discounted_price / s.original_price) * 100)
+          : 0
+        return `<tr>
+          <td><strong>${s.service_name || '—'}</strong></td>
+          <td>${s.businesses?.name || '—'}</td>
+          <td>${s.category || '—'}</td>
+          <td>$${parseFloat(s.discounted_price||0).toFixed(2)}</td>
+          <td>${disc > 0 ? `<span class="chip chip-green">-${disc}%</span>` : '—'}</td>
+          <td>${s.appointment_at ? fmtDt(new Date(s.appointment_at)) : '—'}</td>
+          <td>${statusChip(s.status, s.appointment_at)}</td>
+          <td class="muted">${fmtDate(new Date(s.created_at))}</td>
+          <td>
+            <button class="btn-edit" onclick="editSlot('${s.id}')">Edit</button>
+            <button class="btn-del" onclick="confirmDelete('slot','${s.id}','${esc(s.service_name)}')">✕</button>
+          </td>
+        </tr>`
+      }).join('')
+    : `<tr class="empty-row"><td colspan="9">No slots found</td></tr>`
+}
+
+// ── BOOKINGS TABLE ─────────────────────────────────────────
+function renderBookingsTable() {
+  const q  = document.getElementById('bookings-search').value.toLowerCase()
+  const st = document.getElementById('bookings-filter').value
+  let rows = data.bookings
+  const emailMap = {}
+  data.customers.forEach(c => { emailMap[c.id] = c.email })
+
+  if (q)  rows = rows.filter(b => {
+    const em = emailMap[b.customer_id] || ''
+    const svc = b.slots?.service_name || ''
+    return `${em} ${svc}`.toLowerCase().includes(q)
+  })
+  if (st) rows = rows.filter(b => b.status === st)
+  document.getElementById('bookings-count').textContent = `${rows.length} result${rows.length !== 1 ? 's' : ''}`
+
+  document.getElementById('bookings-tbody').innerHTML = rows.length
+    ? rows.map(b => {
+        const sl  = b.slots || {}
+        const biz = sl.businesses || {}
+        return `<tr>
+          <td><strong>${emailMap[b.customer_id] || b.customer_id?.slice(0,8)+'…'}</strong></td>
+          <td>${sl.service_name || '—'}</td>
+          <td>${biz.name || '—'}</td>
+          <td>${sl.appointment_at ? fmtDt(new Date(sl.appointment_at)) : '—'}</td>
+          <td>${statusChip(b.status)}</td>
+          <td>${b.hold_fee_paid ? '<span class="chip chip-green">Paid</span>' : '<span class="chip chip-grey">No</span>'}</td>
+          <td class="muted">${fmtDate(new Date(b.created_at))}</td>
+          <td>
+            <button class="btn-edit" onclick="editBooking('${b.id}')">Edit</button>
+          </td>
+        </tr>`
+      }).join('')
+    : `<tr class="empty-row"><td colspan="8">No bookings found</td></tr>`
+}
+
+// ── EDIT MODALS ────────────────────────────────────────────
+function editBusiness(id) {
+  const b = data.businesses.find(x => x.id === id)
+  if (!b) return
+  modalCtx = { type: 'business', id }
+  document.getElementById('modal-title').textContent = 'Edit Business'
+  document.getElementById('modal-fields').innerHTML = `
+    ${field('Name', 'e-name', b.name)}
+    ${field('Category', 'e-cat', b.category)}
+    ${field('Suburb', 'e-suburb', b.suburb)}
+    ${field('Street', 'e-street', b.street)}
+    ${field('State', 'e-state', b.state)}
+    ${field('Postcode', 'e-postcode', b.postcode)}
+    ${field('Email', 'e-email', b.email)}
+    ${field('Phone', 'e-phone', b.phone)}
+    ${field('ABN', 'e-abn', b.abn)}
+    ${field('Description', 'e-desc', b.description, 'textarea')}
+    <div class="form-row">
+      <label class="form-label">Is Demo</label>
+      <select class="form-select" id="e-demo">
+        <option value="false" ${!b.is_demo ? 'selected' : ''}>No (real business)</option>
+        <option value="true"  ${b.is_demo  ? 'selected' : ''}>Yes (demo)</option>
+      </select>
+    </div>`
+  openModal()
+}
+
+function editCustomer(id) {
+  const c = data.customers.find(x => x.id === id)
+  if (!c) return
+  modalCtx = { type: 'customer', id }
+  document.getElementById('modal-title').textContent = 'Edit Customer'
+  document.getElementById('modal-fields').innerHTML = `
+    ${field('Full Name', 'e-name', c.user_metadata?.full_name || '')}
+    ${field('Phone', 'e-phone', c.user_metadata?.phone || '')}
+    ${field('Email', 'e-email', c.email)}`
+  openModal()
+}
+
+function editSlot(id) {
+  const s = data.slots.find(x => x.id === id)
+  if (!s) return
+  modalCtx = { type: 'slot', id }
+  document.getElementById('modal-title').textContent = 'Edit Slot'
+  document.getElementById('modal-fields').innerHTML = `
+    ${field('Service Name', 'e-svc', s.service_name)}
+    ${field('Category', 'e-cat', s.category)}
+    ${field('Original Price ($)', 'e-orig', s.original_price)}
+    ${field('Discounted Price ($)', 'e-disc', s.discounted_price)}
+    ${field('Appointment At', 'e-appt', s.appointment_at ? s.appointment_at.slice(0,16) : '', 'datetime-local')}
+    ${field('Duration (mins)', 'e-dur', s.duration_mins)}
+    ${field('Notes', 'e-notes', s.notes, 'textarea')}
+    <div class="form-row">
+      <label class="form-label">Status</label>
+      <select class="form-select" id="e-status">
+        <option value="available"  ${s.status==='available'  ? 'selected' : ''}>Available</option>
+        <option value="booked"     ${s.status==='booked'     ? 'selected' : ''}>Booked</option>
+        <option value="cancelled"  ${s.status==='cancelled'  ? 'selected' : ''}>Cancelled</option>
+      </select>
+    </div>`
+  openModal()
+}
+
+function editBooking(id) {
+  const b = data.bookings.find(x => x.id === id)
+  if (!b) return
+  modalCtx = { type: 'booking', id }
+  document.getElementById('modal-title').textContent = 'Edit Booking'
+  document.getElementById('modal-fields').innerHTML = `
+    <div class="form-row">
+      <label class="form-label">Status</label>
+      <select class="form-select" id="e-status">
+        <option value="confirmed"  ${b.status==='confirmed'  ? 'selected' : ''}>Confirmed</option>
+        <option value="cancelled"  ${b.status==='cancelled'  ? 'selected' : ''}>Cancelled</option>
+        <option value="pending"    ${b.status==='pending'    ? 'selected' : ''}>Pending</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Hold Fee Paid</label>
+      <select class="form-select" id="e-fee">
+        <option value="true"  ${b.hold_fee_paid ? 'selected' : ''}>Yes</option>
+        <option value="false" ${!b.hold_fee_paid ? 'selected' : ''}>No</option>
+      </select>
+    </div>`
+  openModal()
+}
+
+async function saveModal() {
+  clearModalMsg()
+  const btn = document.getElementById('modal-save-btn')
+  btn.textContent = 'Saving…'; btn.disabled = true
+
+  try {
+    if (modalCtx.type === 'business') {
+      const updates = {
+        name:        val('e-name'),
+        category:    val('e-cat'),
+        suburb:      val('e-suburb'),
+        street:      val('e-street'),
+        state:       val('e-state'),
+        postcode:    val('e-postcode'),
+        email:       val('e-email'),
+        phone:       val('e-phone'),
+        abn:         val('e-abn'),
+        description: val('e-desc'),
+        is_demo:     document.getElementById('e-demo').value === 'true',
+      }
+      const { error } = await sbAdmin.from('businesses').update(updates).eq('id', modalCtx.id)
+      if (error) throw error
+      await loadBusinesses(); renderBizTable(); renderOverview()
+
+    } else if (modalCtx.type === 'customer') {
+      const { error } = await sbAdmin.auth.admin.updateUserById(modalCtx.id, {
+        email: val('e-email'),
+        user_metadata: { full_name: val('e-name'), phone: val('e-phone') }
+      })
+      if (error) throw error
+      await loadCustomers(); renderCustTable(); renderOverview()
+
+    } else if (modalCtx.type === 'slot') {
+      const updates = {
+        service_name:     val('e-svc'),
+        category:         val('e-cat'),
+        original_price:   parseFloat(val('e-orig')) || null,
+        discounted_price: parseFloat(val('e-disc')) || null,
+        appointment_at:   val('e-appt') ? new Date(val('e-appt')).toISOString() : null,
+        duration_mins:    parseInt(val('e-dur')) || null,
+        notes:            val('e-notes'),
+        status:           document.getElementById('e-status').value,
+      }
+      const { error } = await sbAdmin.from('slots').update(updates).eq('id', modalCtx.id)
+      if (error) throw error
+      await loadSlots(); renderSlotsTable(); renderOverview()
+
+    } else if (modalCtx.type === 'booking') {
+      const updates = {
+        status:        document.getElementById('e-status').value,
+        hold_fee_paid: document.getElementById('e-fee').value === 'true',
+      }
+      const { error } = await sbAdmin.from('bookings').update(updates).eq('id', modalCtx.id)
+      if (error) throw error
+      await loadBookings(); renderBookingsTable(); renderOverview()
+    }
+
+    showModalOk('Saved successfully.')
+    setTimeout(closeModal, 900)
+  } catch(e) {
+    showModalErr(e.message || 'Save failed.')
+  } finally {
+    btn.textContent = 'Save changes'; btn.disabled = false
+  }
+}
+
+// ── DELETE ─────────────────────────────────────────────────
+function confirmDelete(type, id, name) {
+  document.getElementById('confirm-sub').textContent = `Delete "${name}"? This cannot be undone.`
+  document.getElementById('confirm-overlay').classList.add('open')
+  document.getElementById('confirm-yes-btn').onclick = () => doDelete(type, id)
+  document.getElementById('confirm-yes-btn').focus()
+}
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('open')
+  document.removeEventListener('keydown', _confirmKeyHandler)
+}
+function _confirmKeyHandler(e) {
+  if (e.key === 'Enter') { e.preventDefault(); document.getElementById('confirm-yes-btn').click() }
+  if (e.key === 'Escape') { e.preventDefault(); closeConfirm() }
+}
+document.getElementById('confirm-overlay').addEventListener('keydown', _confirmKeyHandler)
+
+async function doDelete(type, id) {
+  closeConfirm()
+  if (type === 'business') {
+    await sbAdmin.from('businesses').delete().eq('id', id)
+    await loadBusinesses(); renderBizTable(); renderOverview()
+  } else if (type === 'customer') {
+    await sbAdmin.auth.admin.deleteUser(id)
+    await loadCustomers(); renderCustTable(); renderOverview()
+  } else if (type === 'slot') {
+    await sbAdmin.from('slots').delete().eq('id', id)
+    await loadSlots(); renderSlotsTable(); renderOverview()
+  }
+}
+
+// ── HELPERS ────────────────────────────────────────────────
+function switchTab(name, el) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'))
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'))
+  document.getElementById('pane-'+name).classList.add('active')
+  el.classList.add('active')
+}
+
+function openModal() {
+  clearModalMsg()
+  document.getElementById('edit-modal').classList.add('open')
+}
+function closeModal() {
+  document.getElementById('edit-modal').classList.remove('open')
+  modalCtx = null
+}
+
+function showModalErr(msg) { const e=document.getElementById('modal-err'); e.textContent=msg; e.style.display='block' }
+function showModalOk(msg)  { const e=document.getElementById('modal-ok');  e.textContent=msg; e.style.display='block' }
+function clearModalMsg()   { document.getElementById('modal-err').style.display='none'; document.getElementById('modal-ok').style.display='none' }
+
+function field(label, id, value, type='text') {
+  if (type === 'textarea') return `<div class="form-row"><label class="form-label">${label}</label><textarea class="form-textarea" id="${id}">${esc(value||'')}</textarea></div>`
+  return `<div class="form-row"><label class="form-label">${label}</label><input class="form-input" id="${id}" type="${type}" value="${esc(value||'')}"></div>`
+}
+function val(id) { return (document.getElementById(id)?.value || '').trim() }
+function esc(s) { return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;') }
+
+function statusChip(s, appointmentAt) {
+  if (appointmentAt && new Date(appointmentAt) < new Date() && s !== 'cancelled' && s !== 'booked') {
+    return `<span class="chip chip-grey">expired</span>`
+  }
+  if (s==='confirmed'||s==='available') return `<span class="chip chip-green">${s}</span>`
+  if (s==='cancelled') return `<span class="chip chip-red">${s}</span>`
+  if (s==='booked')    return `<span class="chip chip-blue">${s}</span>`
+  return `<span class="chip chip-grey">${s||'—'}</span>`
+}
+
+function fmtDate(d) {
+  if (isNaN(d)) return '—'
+  return d.toLocaleDateString('en-AU', { day:'numeric', month:'short', year:'numeric' })
+}
+function fmtDt(d) {
+  if (isNaN(d)) return '—'
+  return d.toLocaleDateString('en-AU', { day:'numeric', month:'short' }) + ' ' +
+         d.toLocaleTimeString('en-AU', { hour:'numeric', minute:'2-digit', hour12:true })
+}
+</script>
+</body>
+</html>
