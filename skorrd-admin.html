@@ -224,7 +224,7 @@ td.muted{color:var(--muted)}
       </div>
       <div class="table-wrap">
         <div class="table-toolbar">
-          <input class="t-search" id="biz-search" placeholder="Search name, suburb, email…" oninput="renderBizTable()" autocomplete="nope">
+          <input class="t-search" id="biz-search" placeholder="Search name, suburb, email…" oninput="renderBizTable()" readonly onfocus="this.removeAttribute('readonly')">
           <select class="t-filter" id="biz-cat-filter" onchange="renderBizTable()">
             <option value="">All categories</option>
             <option>Barber</option><option>Nail Salon</option><option>Physiotherapy</option>
@@ -396,7 +396,6 @@ async function showAdmin(user) {
 
 // ── LOAD ALL DATA ──────────────────────────────────────────
 async function loadAll() {
-  document.getElementById('biz-search').value = ''
   await loadBusinesses()
   await Promise.all([loadCustomers(), loadSlots(), loadBookings()])
   renderOverview()
