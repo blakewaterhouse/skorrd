@@ -66,6 +66,8 @@ body{font-family:'Nunito Sans',sans-serif;background:#f5f4f2;color:#1a1a2e;font-
 .t-search:focus{border-color:var(--coral)}
 .t-filter{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;outline:none;cursor:pointer;background:var(--white)}
 .t-filter:focus{border-color:var(--coral)}
+.t-export{margin-left:auto;padding:8px 14px;background:none;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted)}
+.t-export:hover{border-color:var(--coral);color:var(--coral)}
 table{width:100%;border-collapse:collapse}
 thead th{padding:11px 14px;text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);background:#fafaf9;border-bottom:1.5px solid var(--border)}
 tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
@@ -233,6 +235,7 @@ td.muted{color:var(--muted)}
             <option>Tutoring</option><option>Skin &amp; Aesthetics</option><option>Therapy &amp; Counselling</option>
             <option>Other</option>
           </select>
+          <button class="t-export" onclick="exportBusinesses()">↓ Export CSV</button>
         </div>
         <table>
           <thead><tr>
@@ -252,6 +255,7 @@ td.muted{color:var(--muted)}
       <div class="table-wrap">
         <div class="table-toolbar">
           <input class="t-search" id="cust-search" placeholder="Search email…" oninput="renderCustTable()">
+          <button class="t-export" onclick="exportCustomers()">↓ Export CSV</button>
         </div>
         <table>
           <thead><tr>
@@ -277,6 +281,7 @@ td.muted{color:var(--muted)}
             <option value="booked">Booked</option>
             <option value="cancelled">Cancelled</option>
           </select>
+          <button class="t-export" onclick="exportSlots()">↓ Export CSV</button>
         </div>
         <table>
           <thead><tr>
@@ -302,6 +307,7 @@ td.muted{color:var(--muted)}
             <option value="cancelled">Cancelled</option>
             <option value="pending">Pending</option>
           </select>
+          <button class="t-export" onclick="exportBookings()">↓ Export CSV</button>
         </div>
         <table>
           <thead><tr>
@@ -821,6 +827,53 @@ async function doDelete(type, id) {
 }
 
 // ── HELPERS ────────────────────────────────────────────────
+// ── CSV EXPORT ─────────────────────────────────────────────
+function downloadCSV(rows, filename) {
+  const csv = rows.map(r => r.map(c => `"${String(c??'').replace(/"/g,'""')}"`).join(',')).join('\n')
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([csv], {type:'text/csv'})), download: filename })
+  a.click(); URL.revokeObjectURL(a.href)
+}
+
+function exportBusinesses() {
+  const rows = [['Name','Category','Suburb','Email','Phone','ABN','Slots','Bookings','Joined']]
+  const slotsByBiz = {}, bookingsByBiz = {}
+  data.slots.forEach(s => { if(s.business_id) slotsByBiz[s.business_id] = (slotsByBiz[s.business_id]||0)+1 })
+  data.bookings.forEach(bk => { const s=data.slots.find(x=>x.id===bk.slot_id); if(s?.business_id) bookingsByBiz[s.business_id]=(bookingsByBiz[s.business_id]||0)+1 })
+  data.businesses.forEach(b => rows.push([b.name,b.category,b.suburb,b.email,b.phone,b.abn,slotsByBiz[b.id]||0,bookingsByBiz[b.id]||0,fmtDate(new Date(b.created_at))]))
+  downloadCSV(rows, 'skorrd-businesses.csv')
+}
+
+function exportCustomers() {
+  const rows = [['Name','Email','Provider','Phone','Signed Up','Last Sign In','Bookings','Spend']]
+  const bookingsByUser = {}
+  data.bookings.forEach(b => { bookingsByUser[b.customer_id]=(bookingsByUser[b.customer_id]||0)+1 })
+  data.customers.forEach(c => {
+    const count = bookingsByUser[c.id]||0
+    rows.push([c.user_metadata?.full_name||'',c.email,c.identities?.[0]?.provider||'email',c.user_metadata?.phone||'',fmtDate(new Date(c.created_at)),c.last_sign_in_at?fmtDate(new Date(c.last_sign_in_at)):'Never',count,`$${(count*5).toFixed(2)}`])
+  })
+  downloadCSV(rows, 'skorrd-customers.csv')
+}
+
+function exportSlots() {
+  const rows = [['Service','Business','Category','Original Price','Discounted Price','Discount %','Appointment','Status','Listed']]
+  data.slots.forEach(s => {
+    const disc = s.original_price&&s.discounted_price ? Math.round((1-s.discounted_price/s.original_price)*100) : 0
+    rows.push([s.service_name,s.businesses?.name,s.category,s.original_price,s.discounted_price,disc+'%',s.appointment_at?fmtDt(new Date(s.appointment_at)):'',s.status,fmtDate(new Date(s.created_at))])
+  })
+  downloadCSV(rows, 'skorrd-slots.csv')
+}
+
+function exportBookings() {
+  const emailMap = {}
+  data.customers.forEach(c => { emailMap[c.id]=c.email })
+  const rows = [['Customer','Service','Business','Appointment','Status','Hold Fee Paid','Booked At']]
+  data.bookings.forEach(b => {
+    const sl=b.slots||{}, biz=sl.businesses||{}
+    rows.push([emailMap[b.customer_id]||b.customer_id,sl.service_name,biz.name,sl.appointment_at?fmtDt(new Date(sl.appointment_at)):'',b.status,b.hold_fee_paid?'Yes':'No',fmtDt(new Date(b.created_at))])
+  })
+  downloadCSV(rows, 'skorrd-bookings.csv')
+}
+
 function switchTab(name, el) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'))
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'))
