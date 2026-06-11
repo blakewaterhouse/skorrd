@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Are you overpaying for your appointments? — Skorrd</title>
+  <meta name="description" content="Take 60 seconds to find out how last-minute bookings on Skorrd could save you money on your favourite local services.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Racing+Sans+One&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --salmon: #FF6B6B;
+      --yellow: #FFD93D;
+      --white: #FFFFFF;
+      --charcoal: #1A1A1A;
+      --gray: #666666;
+      --light: #F8F8F8;
+      --border: #EBEBEB;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--white);
+      color: var(--charcoal);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Wordmark ── */
+    .wordmark {
+      font-family: 'Racing Sans One', cursive;
+      color: var(--salmon);
+      letter-spacing: 0.02em;
+      line-height: 1;
+    }
+
+    #quiz-wordmark {
+      position: fixed;
+      top: 1.25rem;
+      left: 1.5rem;
+      font-size: 1.5rem;
+      z-index: 200;
+    }
+
+    /* ── Progress bar ── */
+    #progress-wrap {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: #f0f0f0;
+      z-index: 190;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    #progress-wrap.show { opacity: 1; }
+
+    #progress-fill {
+      height: 100%;
+      background: var(--salmon);
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    #progress-label {
+      position: fixed;
+      top: 0.85rem;
+      right: 1.5rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #aaa;
+      z-index: 200;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    #progress-label.show { opacity: 1; }
+
+    /* ── Quiz stage ── */
+    #quiz-stage {
+      position: relative;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 5.5rem 1.5rem 2.5rem;
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform 0.48s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+
+    .screen.active {
+      transform: translateX(0);
+      pointer-events: all;
+    }
+
+    .screen.exit {
+      transform: translateX(-110%);
+    }
+
+    /* ── Opening screen ── */
+    .opening-content {
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .opening-headline {
+      font-family: 'Racing Sans One', cursive;
+      font-size: clamp(2rem, 5.5vw, 3.25rem);
+      line-height: 1.2;
+      margin-bottom: 1.25rem;
+    }
+
+    .opening-headline em {
+      color: var(--salmon);
+      font-style: normal;
+    }
+
+    .opening-sub {
+      font-size: 1.1rem;
+      color: var(--gray);
+      line-height: 1.65;
+      margin-bottom: 2.75rem;
+    }
+
+    .btn-start {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--salmon);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 1rem 2.5rem;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 24px rgba(255, 107, 107, 0.35);
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-start:hover {
+      background: #ff5252;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(255, 107, 107, 0.45);
+    }
+
+    .btn-start:active { transform: translateY(0); }
+
+    /* ── Question screen ── */
+    .question-content {
+      max-width: 660px;
+      width: 100%;
+    }
+
+    .q-text {
+      font-family: 'Racing Sans One', cursive;
+      font-size: clamp(1.45rem, 4vw, 2.1rem);
+      line-height: 1.3;
+      margin-bottom: 1.75rem;
+      color: var(--charcoal);
+    }
+
+    .answers {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .answer-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      background: var(--white);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--charcoal);
+      text-align: left;
+      user-select: none;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+
+    .answer-card:hover:not(.selected) {
+      border-color: var(--salmon);
+      background: #fff8f8;
+      transform: translateX(5px);
+      box-shadow: 0 2px 16px rgba(255, 107, 107, 0.1);
+    }
+
+    .answer-card.selected {
+      border-color: var(--salmon);
+      background: var(--salmon);
+      color: var(--white);
+      transform: translateX(5px);
+    }
+
+    .a-label {
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gray);
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+
+    .answer-card:hover:not(.selected) .a-label {
+      border-color: var(--salmon);
+      color: var(--salmon);
+    }
+
+    .answer-card.selected .a-label {
+      border-color: rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.92);
+    }
+
+    /* ── Results page ── */
+    #results { display: none; }
+    #results.show { display: block; }
+
+    /* Hero */
+    .r-hero {
+      background: linear-gradient(135deg, var(--salmon) 0%, #ff8a3c 55%, var(--yellow) 100%);
+      padding: 5rem 1.5rem 4.5rem;
+      text-align: center;
+    }
+
+    .r-hero .wordmark {
+      display: block;
+      font-size: 1.75rem;
+      color: rgba(255,255,255,0.95);
+      margin-bottom: 2rem;
+    }
+
+    .r-hero h1 {
+      font-family: 'Racing Sans One', cursive;
+      font-size: clamp(1.85rem, 5.5vw, 3.1rem);
+      color: var(--white);
+      max-width: 700px;
+      margin: 0 auto 1.1rem;
+      line-height: 1.2;
+      text-shadow: 0 1px 10px rgba(0,0,0,0.08);
+    }
+
+    .r-hero-sub {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.9);
+      max-width: 520px;
+      margin: 0 auto 0;
+      line-height: 1.65;
+    }
+
+    .r-hero-dynamic {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.8);
+      max-width: 500px;
+      margin: 1rem auto 0;
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    /* Trust */
+    .r-trust {
+      text-align: center;
+      padding: 1.4rem 1.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* How it works */
+    .r-how {
+      padding: 4.5rem 1.5rem;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .sec-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--salmon);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.5rem;
+    }
+
+    .sec-title {
+      font-family: 'Racing Sans One', cursive;
+      font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+      margin-bottom: 2.75rem;
+      line-height: 1.2;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+    }
+
+    .step { text-align: center; }
+
+    .step-icon {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 0.85rem;
+    }
+
+    .step-num {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--salmon);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.35rem;
+    }
+
+    .step-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .step-desc {
+      font-size: 0.9rem;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    /* Benefits */
+    .r-benefits {
+      background: var(--light);
+      padding: 4.5rem 1.5rem;
+    }
+
+    .r-benefits-inner {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .benefit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .benefit-card {
+      background: var(--white);
+      border: 2.5px solid var(--salmon);
+      border-radius: 18px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+
+    .b-icon {
+      font-size: 2.1rem;
+      display: block;
+      margin-bottom: 0.9rem;
+    }
+
+    .b-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .b-desc {
+      font-size: 0.875rem;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    /* Instagram */
+    .r-insta {
+      padding: 4.5rem 1.5rem;
+      max-width: 920px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .insta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin: 1.75rem 0 1.25rem;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .insta-tile {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Racing Sans One', cursive;
+      font-size: 1.15rem;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .insta-tile:nth-child(1) { background: linear-gradient(145deg, #FF6B6B, #FF9A3C); }
+    .insta-tile:nth-child(2) { background: linear-gradient(145deg, #FF9A3C, #FFD93D); }
+    .insta-tile:nth-child(3) { background: linear-gradient(145deg, #FFD93D, #FF6B6B); }
+    .insta-tile:nth-child(4) { background: linear-gradient(200deg, #FF6B6B, #FFD93D); }
+    .insta-tile:nth-child(5) { background: linear-gradient(200deg, #FFD93D, #FF9A3C); }
+    .insta-tile:nth-child(6) { background: linear-gradient(200deg, #FF9A3C, #FF6B6B); }
+
+    .insta-link {
+      display: inline-block;
+      color: var(--salmon);
+      font-weight: 600;
+      font-size: 0.95rem;
+      border-bottom: 2px solid var(--salmon);
+      padding-bottom: 2px;
+      transition: opacity 0.2s;
+    }
+    .insta-link:hover { opacity: 0.65; }
+
+    /* CTA */
+    .r-cta {
+      background: var(--charcoal);
+      padding: 5.5rem 1.5rem;
+      text-align: center;
+    }
+
+    .r-cta h2 {
+      font-family: 'Racing Sans One', cursive;
+      font-size: clamp(1.65rem, 4.5vw, 2.75rem);
+      color: var(--white);
+      max-width: 580px;
+      margin: 0 auto 0.85rem;
+      line-height: 1.25;
+    }
+
+    .r-cta-sub {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 2rem;
+    }
+
+    .btn-yellow {
+      display: inline-block;
+      background: var(--yellow);
+      color: var(--charcoal);
+      font-family: 'Inter', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 1rem 2.5rem;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 24px rgba(255, 217, 61, 0.3);
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-yellow:hover {
+      background: #ffce00;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(255, 217, 61, 0.45);
+    }
+
+    .btn-yellow:active { transform: translateY(0); }
+
+    .cta-below {
+      margin-top: 1.25rem;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.35);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .steps,
+      .benefit-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .insta-grid {
+        gap: 0.35rem;
+        border-radius: 12px;
+      }
+
+      .insta-tile { font-size: 0.9rem; }
+    }
+
+    @media (max-width: 480px) {
+      #quiz-wordmark { font-size: 1.3rem; top: 1rem; left: 1rem; }
+      #progress-label { right: 1rem; }
+      .screen { padding: 4.5rem 1rem 2rem; }
+      .q-text { margin-bottom: 1.5rem; }
+      .r-hero { padding: 4rem 1rem 3.5rem; }
+      .r-how, .r-insta { padding: 3.5rem 1rem; }
+      .r-benefits { padding: 3.5rem 1rem; }
+      .r-cta { padding: 4rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fixed chrome during quiz -->
+  <a href="https://skorrd.com.au" class="wordmark" id="quiz-wordmark">Skorrd</a>
+  <div id="progress-wrap"><div id="progress-fill"></div></div>
+  <div id="progress-label">Question 1 of 5</div>
+
+  <!-- ── Quiz ── -->
+  <div id="quiz-wrap">
+    <div id="quiz-stage">
+
+      <!-- Screen 0: Opening -->
+      <div class="screen active" id="s0">
+        <div class="opening-content">
+          <h1 class="opening-headline">Are you <em>overpaying</em> for your appointments?</h1>
+          <p class="opening-sub">Take 60 seconds to find out.</p>
+          <button class="btn-start" onclick="startQuiz()">Take the Quiz →</button>
+        </div>
+      </div>
+
+      <!-- Screen 1: Q1 -->
+      <div class="screen" id="s1">
+        <div class="question-content">
+          <p class="q-text">How often do you book a haircut, massage, facial or similar service?</p>
+          <div class="answers">
+            <div class="answer-card" onclick="answer(1,0,this)">
+              <span class="a-label">A</span><span>Once a month or more</span>
+            </div>
+            <div class="answer-card" onclick="answer(1,1,this)">
+              <span class="a-label">B</span><span>Every couple of months</span>
+            </div>
+            <div class="answer-card" onclick="answer(1,2,this)">
+              <span class="a-label">C</span><span>Rarely</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 2: Q2 -->
+      <div class="screen" id="s2">
+        <div class="question-content">
+          <p class="q-text">Do you usually book in advance or last minute?</p>
+          <div class="answers">
+            <div class="answer-card" onclick="answer(2,0,this)">
+              <span class="a-label">A</span><span>Always in advance — I'm a planner</span>
+            </div>
+            <div class="answer-card" onclick="answer(2,1,this)">
+              <span class="a-label">B</span><span>Mix of both</span>
+            </div>
+            <div class="answer-card" onclick="answer(2,2,this)">
+              <span class="a-label">C</span><span>Usually last minute</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 3: Q3 -->
+      <div class="screen" id="s3">
+        <div class="question-content">
+          <p class="q-text">How far would you travel for a great deal on a service you love?</p>
+          <div class="answers">
+            <div class="answer-card" onclick="answer(3,0,this)">
+              <span class="a-label">A</span><span>Only within my suburb</span>
+            </div>
+            <div class="answer-card" onclick="answer(3,1,this)">
+              <span class="a-label">B</span><span>10–15 minutes away</span>
+            </div>
+            <div class="answer-card" onclick="answer(3,2,this)">
+              <span class="a-label">C</span><span>Anywhere on the Northern Beaches</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 4: Q4 -->
+      <div class="screen" id="s4">
+        <div class="question-content">
+          <p class="q-text">What would genuinely excite you about a last-minute booking?</p>
+          <div class="answers">
+            <div class="answer-card" onclick="answer(4,0,this)">
+              <span class="a-label">A</span><span>Saving money on something I was going to do anyway</span>
+            </div>
+            <div class="answer-card" onclick="answer(4,1,this)">
+              <span class="a-label">B</span><span>Trying a new local business</span>
+            </div>
+            <div class="answer-card" onclick="answer(4,2,this)">
+              <span class="a-label">C</span><span>Getting a premium service I normally can't afford</span>
+            </div>
+            <div class="answer-card" onclick="answer(4,3,this)">
+              <span class="a-label">D</span><span>All of the above</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 5: Q5 -->
+      <div class="screen" id="s5">
+        <div class="question-content">
+          <p class="q-text">What's stopping you from booking last minute right now?</p>
+          <div class="answers">
+            <div class="answer-card" onclick="answer(5,0,this)">
+              <span class="a-label">A</span><span>I didn't know deals like this existed</span>
+            </div>
+            <div class="answer-card" onclick="answer(5,1,this)">
+              <span class="a-label">B</span><span>I don't trust last-minute options</span>
+            </div>
+            <div class="answer-card" onclick="answer(5,2,this)">
+              <span class="a-label">C</span><span>Nothing — I'd do it today</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /quiz-stage -->
+  </div><!-- /quiz-wrap -->
+
+  <!-- ── Results ── -->
+  <div id="results">
+
+    <!-- Hero -->
+    <div class="r-hero">
+      <a href="https://skorrd.com.au" class="wordmark">Skorrd</a>
+      <h1>You're exactly who Skorrd was built for.</h1>
+      <p class="r-hero-sub">Last-minute appointments at local Northern Beaches businesses — booked in seconds, often at a discount.</p>
+      <p class="r-hero-dynamic" id="r-dynamic"></p>
+    </div>
+
+    <!-- Trust line -->
+    <div class="r-trust">Discover local salons, gyms, and clinics with availability right now</div>
+
+    <!-- How it works -->
+    <div class="r-how">
+      <p class="sec-eyebrow">How it works</p>
+      <h2 class="sec-title">Here's how Skorrd works for you</h2>
+      <div class="steps">
+        <div class="step">
+          <span class="step-icon">🔍</span>
+          <p class="step-num">Step 1</p>
+          <p class="step-title">Search near you</p>
+          <p class="step-desc">Browse last-minute availability from local salons, gyms, allied health providers and more across the Northern Beaches.</p>
+        </div>
+        <div class="step">
+          <span class="step-icon">🏷️</span>
+          <p class="step-num">Step 2</p>
+          <p class="step-title">Find a deal</p>
+          <p class="step-desc">Businesses offer their empty slots — often at a discount — to customers who are ready to book today.</p>
+        </div>
+        <div class="step">
+          <span class="step-icon">✅</span>
+          <p class="step-num">Step 3</p>
+          <p class="step-title">Book instantly</p>
+          <p class="step-desc">No phone calls, no waiting. Confirm your appointment in seconds and you're done.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benefits -->
+    <div class="r-benefits">
+      <div class="r-benefits-inner">
+        <p class="sec-eyebrow">Why you'll love Skorrd</p>
+        <h2 class="sec-title">Built for people like you</h2>
+        <div class="benefit-grid">
+          <div class="benefit-card">
+            <span class="b-icon">💸</span>
+            <p class="b-title">Last-minute deals.</p>
+            <p class="b-desc">Save money on services you were going to book anyway. Empty slots mean motivated businesses.</p>
+          </div>
+          <div class="benefit-card">
+            <span class="b-icon">📍</span>
+            <p class="b-title">Local businesses.</p>
+            <p class="b-desc">Every business on Skorrd is local to the Northern Beaches. Support local and save at the same time.</p>
+          </div>
+          <div class="benefit-card">
+            <span class="b-icon">⚡</span>
+            <p class="b-title">Book in seconds.</p>
+            <p class="b-desc">No phone tag, no back-and-forth. Find an available slot and lock it in instantly.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Instagram -->
+    <div class="r-insta">
+      <p class="sec-eyebrow">Instagram</p>
+      <h2 class="sec-title">Follow along @skorrd</h2>
+      <div class="insta-grid">
+        <div class="insta-tile">Skorrd</div>
+        <div class="insta-tile">Skorrd</div>
+        <div class="insta-tile">Skorrd</div>
+        <div class="insta-tile">Skorrd</div>
+        <div class="insta-tile">Skorrd</div>
+        <div class="insta-tile">Skorrd</div>
+      </div>
+      <a href="https://instagram.com/skorrd" target="_blank" rel="noopener" class="insta-link">See more on Instagram →</a>
+    </div>
+
+    <!-- CTA -->
+    <div class="r-cta">
+      <h2>Ready to find your next last-minute deal?</h2>
+      <p class="r-cta-sub">Browse real availability from Northern Beaches businesses right now.</p>
+      <a href="https://skorrd.com.au" target="_blank" rel="noopener" class="btn-yellow">Browse Deals Near You</a>
+      <p class="cta-below">It's completely free to browse and book.</p>
+    </div>
+
+  </div><!-- /results -->
+
+  <script>
+    var answers = {};
+
+    // Q4 personalisation copy
+    var Q4_COPY = {
+      0: 'Based on your answers, you\'re the kind of person who books smart. Skorrd puts last-minute discounts from local businesses right in front of you.',
+      1: 'Based on your answers, you love discovering new local spots. Skorrd is full of Northern Beaches businesses you haven\'t tried yet — with availability today.',
+      2: 'Based on your answers, you appreciate quality. Skorrd lets you access premium local services at last-minute prices — no compromising on either.',
+      3: 'Based on your answers, you want it all — and honestly, why not. Skorrd was made for exactly that. Great local businesses, last-minute availability, and prices that make it a no-brainer.'
+    };
+
+    function startQuiz() {
+      goTo(0, 1);
+      document.getElementById('progress-wrap').classList.add('show');
+      document.getElementById('progress-label').classList.add('show');
+      setProgress(1);
+    }
+
+    function setProgress(q) {
+      document.getElementById('progress-fill').style.width = (q / 5 * 100) + '%';
+      document.getElementById('progress-label').textContent = 'Question ' + q + ' of 5';
+    }
+
+    function answer(q, idx, el) {
+      var screen = document.getElementById('s' + q);
+      if (screen.querySelector('.selected')) return;
+      answers[q] = idx;
+      el.classList.add('selected');
+      setTimeout(function() {
+        if (q < 5) {
+          goTo(q, q + 1);
+          setProgress(q + 1);
+        } else {
+          showResults();
+        }
+      }, 380);
+    }
+
+    function goTo(from, to) {
+      var prev = document.getElementById('s' + from);
+      var next = document.getElementById('s' + to);
+      prev.classList.remove('active');
+      prev.classList.add('exit');
+      next.classList.add('active');
+      setTimeout(function() { prev.classList.remove('exit'); }, 550);
+    }
+
+    function showResults() {
+      var q4 = answers[4];
+      var dynamicText = Q4_COPY[q4 !== undefined ? q4 : 3];
+      document.getElementById('r-dynamic').textContent = dynamicText;
+
+      document.getElementById('quiz-wrap').style.display = 'none';
+      document.getElementById('quiz-wordmark').style.display = 'none';
+      document.getElementById('progress-wrap').style.display = 'none';
+      document.getElementById('progress-label').style.display = 'none';
+      document.getElementById('results').classList.add('show');
+      window.scrollTo(0, 0);
+    }
+  </script>
+
+</body>
+</html>
